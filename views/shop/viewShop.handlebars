@@ -1,0 +1,289 @@
+<script type="text/javascript">
+    /// some script
+
+    // jquery ready start
+    $(document).ready(function () {
+        // jQuery code
+
+
+        /////////////////  items slider. /plugins/owlslider/
+        if ($('.slider-items-owl').length > 0) { // check if element exists
+            $('.slider-items-owl').owlCarousel({
+                //change the loop daddy
+                loop: false,
+                nav: true,
+                autoWidth: true,
+                margin: 20,
+                navText: ["<i class='fa fa-chevron-left'></i>", "<i class='fa fa-chevron-right'></i>"],
+                responsive: {
+                    0: {
+                        items: 1
+                    },
+                    640: {
+                        items: 2
+                    },
+                    1024: {
+                        items: 3
+                    }
+                }
+            })
+        } // end if
+
+
+
+
+    });
+
+
+// jquery end
+</script>
+<div class="container padding-y">
+    {{#if (ifSame user.AccountTypeID 1)}}
+    {{!-- implement helper to do a if tutor --}}
+    <form style="" action="/Shop/ItemListing" method="POST">
+        <figure class="card card-product-grid" style="width: 25rem; padding: 30px;">
+            <div class="form-group form-row">
+                <label class="col-md-5 col-form-label">Name</label>
+                <div class="col-md-9">
+                    <input class="form-control" type="text" id="name" name="name" placeholder="Enter Product Name">
+                </div>
+            </div>
+            <div class="form-group form-row">
+                <label class="col-md-5 col-form-label">Price</label>
+                <div class="col-md-9">
+                    <input class="form-control" type="number" min="1" step="any" id="price" name="price"
+                        placeholder="Enter Product Price">
+                </div>
+            </div>
+            <div class="form-group form-row">
+                <label class="col-md-5 col-form-label">Description</label>
+                <div class="col-md-9">
+                    <textarea class="form-control" type="text" id="description" name="description"
+                        placeholder="Give a description"></textarea>
+                </div>
+            </div>
+            <input type="file" id="imageUpload" name="imageUpload" accept="image/png,image/jpeg,image/jpg,image/gif">
+            <div id="poster"></div>
+            <div class="font-weight-bold text-danger small" id="posterErr" style="display:none"></div>
+            <br>
+            <input type="hidden" id="fileName" name="fileName">
+            <button class="btn btn-primary" type="submit">List Item</button>
+            {{>_errors}}
+        </figure> <!-- card // -->
+    </form>
+    <div class="row">
+        <h1>Your Listing</h1>
+    </div>
+    <hr>
+    <div class="row">
+        {{#each itemlists}}
+        {{#if (ifSame this.user.user_id ../user.user_id)}}
+        <div class="item-slide">
+            <form class='block-register' action="/Shop/ItemDelete/{{this.item_id}}" method="POST"
+                enctype="multipart/form-data">
+                <figure class="card card-product-grid" style="width: 16rem; padding: 30px;">
+                    <img class="card-img-top" src="/images/itemlisting/{{ this.Picture }}" height="140"
+                        width="140">
+                    <figcaption class="info-wrap">
+                        <h5 class="title" style="height:58px;">{{ this.Name }}</h5>
+                        <small style="color:red; font-size:14px;">${{ this.Price }}
+                            <br>
+                            <button class="btn btn-danger" type="submit">Delete</button></small>
+                    </figcaption>
+                </figure> <!-- card // -->
+            </form>
+        </div>
+        {{/if}}
+        {{/each}}
+    </div>
+    {{!-- {{ if count.value == 0 }}
+    <div class="row">
+        <p style="text-align:center" class="text-muted">You have not listed any items.</p>
+        <br>
+    </div>
+    {% endif %} --}}
+    {{/if}}
+
+    <div class="row">
+        <h1>Essentials</h1>
+    </div>
+    <hr>
+    <div class="row">
+
+    </div>
+        <div class="slider-items-owl owl-carousel owl-theme center-x" style="position:relative;">
+
+            {{#each itemlists}}
+            {{#if (ifSame this.user.user_id ../user.user_id)}}
+            {{else}}
+            <div class="item-slide">
+                <form class='block-register' action="" method="POST">
+                    <figure class="card card-product-grid" style="width: 16rem; padding: 30px;">
+                        <img class="card-img-top" src="/images/itemlisting/{{this.Picture}}" height="140" width="140">
+                        <br>
+                        <div class="widget-header row">
+                            <a href="#view page of tutor">
+                                <div class="icon"><img class="icon icon-md rounded-circle border"
+                                        src="/images/profilepictures/{{this.user.Profile_pic}}"></div>
+                                <div class="text">
+                                    <p style="font-size:1em;">{{this.user.Username}}</p> <br>
+                                </div>
+                            </a>
+                        </div>
+                        <figcaption class="info-wrap">
+                            <h5 class="title" style="height:58px;">{{this.Name}}</h5>
+                            <h6>
+                                {{#if this.Description}}
+                                {{this.Description}}
+                                {{else}}
+                                No Description
+                                {{/if}}
+                            </h6>
+                            <small style="color:red; font-size:14px;">${{this.Price}}</small>
+                        </figcaption>
+                    </figure> <!-- card // -->
+                </form>
+            </div>
+            {{/if}}
+            {{/each}}
+
+        </div>
+    </div>
+
+    <script>
+        $('#imageUpload').on('change', function () {
+            let image = $("#imageUpload")[0].files[0];
+            let formdata = new FormData();
+            formdata.append('imageUpload', image);
+            $.ajax({
+                url: '/shop/ItemListingUpload',
+                type: 'POST',
+                data: formdata,
+                contentType: false,
+                processData: false,
+                'success': (data) => {
+                    $('#poster').attr('src', data.path);
+                    $('#fileName').attr('value', data.file);// sets posterURL hidden field
+                    if (data.err) {
+                        $('#posterErr').show();
+                        $('#posterErr').text(data.err.message);
+                    } else {
+                        $('#posterErr').hide();
+                    }
+                }
+            });
+        });</script>
+
+
+
+    {{!-- TRANSFORM --}}
+
+
+
+
+    {{!-- <div class="row">
+        <h1>Your Listing</h1>
+    </div>
+    <hr>
+    <div class="row">
+        {{var count = 0}}
+        {% for item in itemlist %}
+        {% if item.get_user_id() == session['user_id'] %}
+        {% set count.value = count.value + 1 %}
+        <div class="item-slide">
+            <form class='block-register' action="{{ url_for('itemDelete', name=item.get_name())}}" method="POST"
+                enctype="multipart/form-data">
+                <figure class="card card-product-grid" style="width: 16rem; padding: 30px;">
+                    <img class="card-img-top" src="../static/images/itemlisting/{{ item.get_picture() }}" height="140"
+                        width="140">
+                    <figcaption class="info-wrap">
+                        <h5 class="title" style="height:58px;">{{ item.get_name().replace('_', ' ') }}</h5>
+                        <small style="color:red; font-size:14px;">${{ item.get_price() }}
+                            <br>
+                            <button class="btn btn-danger" type="submit">Delete</button></small>
+                    </figcaption>
+                </figure> <!-- card // -->
+            </form>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+    {% if count.value == 0 %}
+    <div class="row">
+        <p style="text-align:center" class="text-muted">You have not listed any items.</p>
+        <br>
+    </div>
+    {% endif %}
+    {% endif %}
+    <div class="row">
+        <h1>Essentials</h1>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="slider-items-owl owl-carousel owl-theme center-x" style="position:relative;">
+            {% for item in itemlist %}
+            {% if item.get_user_id() != session['user_id'] %}
+            <div class="item-slide">
+                <form class='block-register' action="{{ url_for('orderitems', action='order')}}" method="POST"
+                    enctype="multipart/form-data">
+                    <figure class="card card-product-grid" style="width: 16rem; padding: 30px;">
+                        <img class="card-img-top" src="../static/images/itemlisting/{{ item.get_picture() }}"
+                            height="140" width="140">
+                        <br>
+                        <div class="widget-header row">
+                            <a href="#view page of tutor">
+                                <div class="icon"><img class="icon icon-md rounded-circle border"
+                                        src=/static/images/profilepictures/{{item.get_userpic()}}></div>
+                                <div class="text">
+                                    <p style="font-size:1em;">{{item.get_username()}}</p> <br>
+                                </div>
+                            </a>
+                        </div>
+                        <figcaption class="info-wrap">
+                            <h5 class="title" style="height:58px;">{{ item.get_name().replace('_', ' ') }}</h5>
+                            <small style="color:red; font-size:14px;">${{ item.get_price() }}
+                                <br>
+                                <button class="btn btn-primary" type="submit" name="add_cart"
+                                    value='{{ item.get_name() }},{{ item.get_price() }}'>Add Cart</button></small>
+                        </figcaption>
+                    </figure> <!-- card // -->
+                </form>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="row">
+    <h1>Essentials</h1>
+    <div class="slider-items-owl owl-carousel owl-theme center-x" style="position:relative;">
+        {% for item in itemlist %}
+        <div class="item-slide">
+            <form class='block-register' action="{{ url_for('orderitems', action='order')}}" method="POST"
+                enctype="multipart/form-data">
+                <figure class="card card-product-grid" style="width: 16rem; padding: 30px;">
+                    <img class="card-img-top" src="../static/images/itemlisting/{{ item.get_picture() }}" height="140"
+                        width="140">
+                    <br>
+                    <div class="widget-header row">
+                        <a href="#view page of tutor">
+                            <div class="icon"><img class="icon icon-md rounded-circle border"
+                                    src=/static/images/profilepictures/{{item.get_userpic()}}></div>
+                            <div class="text">
+                                <p style="font-size:1em;">{{item.get_username()}}</p> <br>
+                            </div>
+                        </a>
+                    </div>
+                    <figcaption class="info-wrap">
+                        <h5 class="title" style="height:58px;">{{ item.get_name().replace('_', ' ') }}</h5>
+                        <small style="color:red; font-size:14px;">${{ item.get_price() }}</small>
+                    </figcaption>
+                </figure> <!-- card // -->
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %} --}}

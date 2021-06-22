@@ -1,0 +1,77 @@
+<div class="container padding-y">
+  <h1>My Schedule</h1>
+  <p id="tutor_id"class="text-muted">{{tutor_id}}</p>
+</div>
+
+<div class="todo-grid-parent container padding-y">
+    <div>
+        <h3>Change Availability</h3>
+      <div class="todo-input todo-block">
+        {{!-- make all day in month avaialble or not, do it todo.js and by using moment --}}
+        <span>Select all dates as avaialble</span>
+        <input type="checkbox" id="allmonth">
+        <span>Date:</span>
+        <input type="date" id="dateInput" min="2021-02-14">
+        <span>Time:</span>
+        <input type="time" id="timeInput">
+        <span></span>
+        <button class="btn rounded-pill btn-primary" id="addBtn">Add</button>
+        <span></span>
+      </div>
+      <br>
+      <br>
+      <div id="todotablediv">
+      <table id="todoTable" class="todo-block">
+          <tr>
+            <td>Date</td>
+            <td>Time</td>
+            <td>Category</td>
+            <td></td>
+            <td></td>
+          </tr>
+      </table>
+      </div>
+      <br>
+      <br>
+    </div>
+
+    <div class="todo-calendar  todo-block">
+      <div id='calendar'></div>
+    </div>
+
+  </div> <!-- class="todo-grid-parent" -->
+
+  <div class="todo-overlay" id="todo-overlay">
+    <div class="todo-modal" id="todo-modal">
+      <div class="todo-input todo-block">
+        <span>Category: </span>
+        <input type="text" placeholder="Enter category" list="categoryList"  id="todo-edit-category">
+        <datalist id="categoryList">
+          <option value="Personal"></option>
+          <option value="Work"></option>
+        </datalist>
+        <span>Date:</span>
+        <input type="date" id="todo-edit-date" min="2021-02-14">
+        <span>Time:</span>
+        <input type="time" id="todo-edit-time">
+        <button class="btn rounded-pill btn-primary" id="changeBtn">Save Change</button>
+      </div>
+    </div>
+    <div class="todo-modal-close-btn" id="todo-modal-close-btn">X</div>
+  </div>
+
+{{!-- <script src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script> <!--https://stackoverflow.com/questions/23603514/javascript-require-function-giving-referenceerror-require-is-not-defined --> --}}
+
+<link rel="stylesheet" href="/css/todo.css">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.1.0/main.min.css">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.1.0/main.min.js"></script>
+<script>moment().format()</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!--
+<link rel="stylesheet" href="./fullcalendar/main.min.css">
+<script src="./fullcalendar/main.min.js" defer></script>
+https://youtu.be/Un5DrBn5gxc
+-->
+<script src="/js/todo.js" defer></script>

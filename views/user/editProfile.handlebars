@@ -1,0 +1,85 @@
+<style>
+label
+{text-align:right;
+font-weight:bold;}
+
+h3,h4
+{font-family:sans-serif;
+font-weight:normal;}
+
+@media only screen and (max-width: 780px)
+{
+label{
+text-align:left;
+}
+}
+</style>
+<!-- ========================= SECTION CONTENT ========================= -->
+<section class="container-fluid padding-y" style="min-height:84vh; width:90%;">
+<!-- ============================ COMPONENT LOGIN   ================================= -->
+	<div class="card mx-auto">
+      <div class="card-body">
+          <div class="row">
+              <div class="col">
+                  <h2 class="card-title mb-4">Edit My Profile</h2>
+              </div>
+              <div class="col">
+                  <a href="/user/viewProfile"><button class="btn btn-primary float-right">View Profile</button></a>
+              </div>
+          </div>
+      <hr>
+        <h4 class="text-muted">Introduction</h4>
+        <h6 class="text-muted">How do you want others to know you?</h6>
+          <br>
+      <form class='block-register' action="/user/editProfile" method="POST" enctype="multipart/form-data">
+          <div class="form-group form-row">
+              <label class="col-md-2 col-form-label">Username</label>
+              <div class="col-md-8">
+                  <input class="form-control" type="text" id="username" name="username" value="{{user.Username}}">
+              </div>
+		  </div>
+          <div class="form-group form-row">
+            <label class="col-md-2 col-form-label">First Name</label>
+            <div class="col-md-3">
+                <input class="form-control" type="text" id="firstName" name="firstName" value="{{user.FirstName}}">
+            </div>
+            <label class="col-md-2 col-form-label">Last Name</label>
+            <div class="col-md-3">
+                <input class="form-control" type="text" id="lastName" name="lastName" value="{{user.LastName}}">
+            </div>
+          </div>
+          <div class="form-group form-row">
+            <label class="col-md-2 col-form-label">Profile Picture</label>
+              <div class='col-md-3'>
+                  <img  src="/images/profilepictures/{{user.Profile_pic}}" class="img-md rounded-circle border">
+                <div style="position:relative;">
+                  <input type="file" name="image" id="image">
+                           {{!-- {% if extensionerror %}
+                            <p  style="color:red;" class="error"><strong>Error:</strong> {{ extensionerror }}
+                        {% endif %} --}}
+                    </div>
+                  </div>
+
+              </div>
+          <hr>
+          <h4 class="text-muted">More About You</h4>
+        <h6 class="text-muted">Tell others more about yourself. Find others like you.</h6>
+          <br>
+          <div class="form-group form-row">
+            <label class="col-md-2 col-form-label">About Me</label>
+              <div class="col-md-8">
+                  <textarea class="form-control" type="text" id="description " name="description">{{user.description}}</textarea>
+              </div>
+          </div>
+          <button class="btn btn-primary float-right" type="submit">Save Changes</button>
+
+
+      </form>
+      </div>
+    </div>
+     <br><br>
+<!-- ============================ COMPONENT LOGIN  END.// ================================= -->
+
+
+</section>
+<!-- ========================= SECTION CONTENT END// ========================= -->
