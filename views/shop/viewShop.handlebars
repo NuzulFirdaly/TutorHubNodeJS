@@ -45,14 +45,15 @@
             <div class="form-group form-row">
                 <label class="col-md-5 col-form-label">Name</label>
                 <div class="col-md-9">
-                    <input class="form-control" type="text" id="name" name="name" placeholder="Enter Product Name">
+                    <input class="form-control" type="text" id="name" name="name" placeholder="Enter Product Name"
+                        required>
                 </div>
             </div>
             <div class="form-group form-row">
                 <label class="col-md-5 col-form-label">Price</label>
                 <div class="col-md-9">
                     <input class="form-control" type="number" min="1" step="any" id="price" name="price"
-                        placeholder="Enter Product Price">
+                        placeholder="Enter Product Price" required>
                 </div>
             </div>
             <div class="form-group form-row">
@@ -62,7 +63,8 @@
                         placeholder="Give a description"></textarea>
                 </div>
             </div>
-            <input type="file" id="imageUpload" name="imageUpload" accept="image/png,image/jpeg,image/jpg,image/gif">
+            <input type="file" id="imageUpload" name="imageUpload" accept="image/png,image/jpeg,image/jpg,image/gif"
+                required>
             <div id="poster"></div>
             <div class="font-weight-bold text-danger small" id="posterErr" style="display:none"></div>
             <br>
@@ -77,24 +79,31 @@
     <hr>
     <div class="row">
         {{#if yourlists}}
-            {{#each yourlists}}
-                <div class="item-slide">
-                    <form class='block-register' action="/Shop/ItemDelete/{{this.item_id}}" method="POST"
-                        enctype="multipart/form-data">
-                        <figure class="card card-product-grid" style="width: 16rem; padding: 30px;">
-                            <img class="card-img-top" src="/images/itemlisting/{{ this.Picture }}" height="140" width="140">
-                            <figcaption class="info-wrap">
-                                <h5 class="title" style="height:58px;">{{ this.Name }}</h5>
-                                <small style="color:red; font-size:14px;">${{ this.Price }}
-                                    <br>
-                                    <button class="btn btn-danger" type="submit">Delete</button></small>
-                            </figcaption>
-                        </figure> <!-- card // -->
-                    </form>
-                </div>
-            {{/each}}
+        {{#each yourlists}}
+        <div class="item-slide">
+            <form class='block-register' action="/Shop/ItemDelete/{{this.item_id}}" method="POST"
+                enctype="multipart/form-data">
+                <figure class="card card-product-grid" style="width: 16rem; padding: 30px;">
+                    <img class="card-img-top" src="/images/itemlisting/{{ this.Picture }}" height="140" width="140">
+                    <figcaption class="info-wrap">
+                        <h5 class="title" style="height:58px;">{{ this.Name }}</h5>
+                        <p>
+                            {{#if this.Description}}
+                            {{this.Description}}
+                            {{else}}
+                            No Description
+                            {{/if}}
+                        </p>
+                        <small style="color:red; font-size:14px;">${{ this.Price }}
+                            <br>
+                            <button class="btn btn-danger" type="submit">Delete</button></small>
+                    </figcaption>
+                </figure> <!-- card // -->
+            </form>
+        </div>
+        {{/each}}
         {{else}}
-            You have no items listed.
+        You have no items listed.
         {{/if}}
     </div>
     {{!-- {{ if count.value == 0 }}
@@ -109,9 +118,6 @@
         <h1>Essentials</h1>
     </div>
     <hr>
-    <div class="row">
-
-    </div>
     <div class="slider-items-owl owl-carousel owl-theme center-x" style="position:relative;">
 
         {{#each itemlists}}
@@ -133,13 +139,13 @@
                     </div>
                     <figcaption class="info-wrap">
                         <h5 class="title" style="height:58px;">{{this.Name}}</h5>
-                        <h6>
+                        <p>
                             {{#if this.Description}}
                             {{this.Description}}
                             {{else}}
                             No Description
                             {{/if}}
-                        </h6>
+                        </p>
                         <small style="color:red; font-size:14px;">${{this.Price}}</small>
                     </figcaption>
                 </figure> <!-- card // -->

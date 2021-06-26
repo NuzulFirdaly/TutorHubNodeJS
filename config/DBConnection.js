@@ -5,6 +5,7 @@ const User = require('../models/User');
 const mySQLDB = require('./DBConfig');
 const PendingTutor = require('../models/PendingTutor');
 const ItemListing = require('../models/ItemListing');
+const RateReview = require('../models/RateReview');
 
 // const user = require('../models/User');
 // const video = require('../models/Video');
@@ -27,6 +28,12 @@ const setUpDB = (drop) => {
         PendingTutor.belongsTo(User);
         User.hasMany(ItemListing);
         ItemListing.belongsTo(User);
+        CourseListing.hasMany(RateReview, {foreignKey: "CourseId"});
+        RateReview.belongsTo(CourseListing, {foreignKey: "CourseId"});
+        User.hasMany(RateReview, {foreignKey: "TutorId"});
+        RateReview.belongsTo(User, {foreignKey: "TutorId"});
+        User.hasMany(RateReview, {foreignKey: "UserId"});
+        RateReview.belongsTo(User, {foreignKey: "UserId"});
         // user.hasMany(video);
         mySQLDB.sync({ // Creates table if none exists
             force: drop

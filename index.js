@@ -25,6 +25,7 @@ const courseRoute = require("./routes/course");
 const scheduleRoute = require("./routes/schedule");
 const userRoute = require("./routes/user");
 const shopRoute = require("./routes/shop");
+const rateRoute = require("./routes/ratereview");
 
 
 
@@ -71,6 +72,12 @@ app.engine('handlebars', exphbs({
 		ifSame(a, b){
             return a==b
         },
+		format(date){
+			dateParsed = new Date(Date.parse(date));
+			// return `${dateParsed.getFullYear()} - ${(dateParsed.getMonth() + 1)} - ${dateParsed.getDate()}`
+			return dateParsed
+		}
+
     },
 }));
 app.set('view engine', 'handlebars');
@@ -117,13 +124,15 @@ app.use(flash());
 app.use(FlashMessenger.middleware);
 //WAS MISSING THIS WHAT IS THIS
 app.use(function (req, res, next) {
-	console.log("THHIS is fuCking local")
-    console.log("savnig to local")
+	// console.log("THHIS is fuCking local")
+    // console.log("savnig to local")
 
 	res.locals.success_msg = req.flash('success_msg');
 	res.locals.error_msg = req.flash('error_msg');
 	res.locals.error = req.flash('error');
-	res.locals.user = req.user || null;
+	if (req.user){
+		res.locals.user = req.user.dataValues;
+	}
     //setup framework
 	next();
 });
@@ -141,6 +150,7 @@ app.use("/course", courseRoute);
 app.use("/myschedule", scheduleRoute);
 app.use("/user", userRoute);
 app.use("/shop", shopRoute);
+app.use("/rate", rateRoute);
 
 // // Method override middleware to use other HTTP methods such as PUT and DELETE
 // app.use(methodOverride('_method'));

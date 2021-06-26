@@ -18,8 +18,9 @@ router.get('/viewShop', (req, res) => {
                     yourlists = JSON.parse(JSON.stringify(yourlist, null, 2));
                     res.render('shop/viewShop', { layout: 'shop', yourlists, itemlists, user: req.user.dataValues });
                 })
-            }
-)});
+        }
+        )
+});
 
 // router.post('/ItemListingUpload', (req, res) => {
 //     if (!fs.existsSync('./public/images/itemlisting/')) {
@@ -45,26 +46,22 @@ router.post('/ItemListing', (req, res) => {
         if (err) {
             res.json({ file: '/img/no-image.jpg', err: err });
         } else {
-
-            let { name, price, description } = req.body;
-            let filename = req.file.filename
-            //express validator
-            ItemListing.create({ Name: name, Price: price, Description: description, Picture: filename, userUserId: req.user.user_id })
-                .then(itemlist => {
-                    alertMessage(res, 'success', itemlist.Name + ' added.', 'fas fa-sign-in-alt', true);
-                    res.redirect(301, '/shop/viewShop');
-                })
-                .catch(err => console.log(err));
+            if (req.file === undefined) {
+                res.json({ file: '/img/no-image.jpg', err: err });
+            } else {
+                let { name, price, description } = req.body;
+                let filename = req.file.filename
+                //express validator
+                ItemListing.create({ Name: name, Price: price, Description: description, Picture: filename, userUserId: req.user.user_id })
+                    .then(itemlist => {
+                        alertMessage(res, 'success', itemlist.Name + ' added.', 'fas fa-sign-in-alt', true);
+                        res.redirect(301, '/shop/viewShop');
+                    })
+                    .catch(err => console.log(err));
+            }
         }
-        // } else {
-        //     if (req.file === undefined) {
-        //         res.json({ file: '/img/no-image.jpg', err: err });
-        //     } else {
-        //         image = req.file.filename;
-        //         res.json({ path: `/images/itemlisting/${req.file.filename}` , file:`${req.file.filename}`});
-        //     }
-        // }
-    });
+
+        });
 });
 
 router.post('/ItemDelete/:itemid', (req, res) => {
