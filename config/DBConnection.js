@@ -5,6 +5,8 @@ const User = require('../models/User');
 const mySQLDB = require('./DBConfig');
 const PendingTutor = require('../models/PendingTutor');
 const ItemListing = require('../models/ItemListing');
+const Calendar = require('../models/Calendar');
+
 
 // const user = require('../models/User');
 // const video = require('../models/Video');
@@ -27,6 +29,8 @@ const setUpDB = (drop) => {
         PendingTutor.belongsTo(User);
         User.hasMany(ItemListing);
         ItemListing.belongsTo(User);
+        User.hasMany(Calendar);
+        Calendar.belongsTo(User)
         // user.hasMany(video);
         mySQLDB.sync({ // Creates table if none exists
             force: drop

@@ -23,7 +23,7 @@ router.get('/becometutor', async (req,res) => {    //check if user is logged in 
             res.redirect('/tutor_onboarding/finish')
         }else{
             if ((req.user) && (req.user.AccountTypeID == 0)){
-                res.render('tutor_onboarding/tutor_onboarding', {title: "Become A Tutor!", layout: 'tutor_onboarding_base' })
+                res.render('tutor_onboarding/tutor_onboarding', {title: "Become A Tutor!", layout: 'tutor_onboarding_base', user: req.user.dataValues })
             }
             else{
                 res.redirect("/")
@@ -50,8 +50,44 @@ router.get('/becometutor', async (req,res) => {    //check if user is logged in 
     
 });
 
+router.post("/profilePictureUpload", (req,res)=>{
+    profilePictureUpload(req,res, async (err)=>{
+        console.log("profile picture upload printing req.file.filename")
+        console.log(req.file)
+        if (err) {
+            res.json({err: err});
+        } else {
+            if (req.file === undefined) {
+                res.json({err: err});
+            } else {
+                res.json({file: `${req.file.filename}`, path:'/images/profilepictures/'+`${req.file.filename}`});
+                //check to see if the course record exist or not if so just update it with the new picture
+                await User.findOne({where: {user_id:  req.user.user_id } }).then(user => {
+                    user.update({Profile_pic:req.file.filename})
+                })
+            }
+        }   
+    });
+})
+
 router.get('/personal_info', async (req,res) => {
     //checking to see whether theres already a pending ticket
+       //checking to see whether theres already a pending ticket
+       await PendingTutor.findOne({where:{ userUserId: req.user.user_id}}).then(pendingticket =>{
+        if(pendingticket !== null){
+            res.redirect('/tutor_onboarding/finish')
+
+        }else{
+            if ((req.user) && (req.user.AccountTypeID == 0)){
+                res.render('tutor_onboarding/personal_info',{
+                    layout: 'tutor_onboarding_base'
+                });
+            }
+            else{
+                res.redirect("/")
+            };
+        }
+    })   
   
 });
 
@@ -65,7 +101,7 @@ router.post('/pendingcertUpload',(req,res)=>{
             if (req.file === undefined) {
                 res.json({err: err});
             } else {
-                res.json({file: `/pendingcerts/${req.file.filename}`});
+                res.json({path: `/pendingcerts/${req.file.filename}`, file: `${req.file.filename}`});
                 await Pending.findOne({where: {user_id:  req.user.user_id } }).then(user => {
                     user.update({cert:req.file.filename})
                 })
@@ -76,14 +112,15 @@ router.post('/pendingcertUpload',(req,res)=>{
 router.post('/personal_info_upload', [
     body('first_name').not().isEmpty().trim().escape().withMessage("First name is invalid"), 
     body('last_name').not().isEmpty().trim().escape().withMessage("Last name is invalid"), 
-    body('description').not().isEmpty().trim().escape().withMessage("description is invalid")
+    body('description').not().isEmpty().trim().escape().withMessage("description is invalid"),
+
 ],ensureAuthenticated,(req, res) => {
     //retrieve input
     //validate input
     //update record in user table
     //redirect to professional info
     console.log(req.body)
-    let {first_name, last_name, description } = req.body;
+    let {first_name, last_name, description, trueFileName } = req.body;
     let errors = [];
     const validatorErrors = validationResult(req);
     if (!validatorErrors.isEmpty()){ //if isEmpty is false
@@ -155,10 +192,11 @@ router.post('/professional_info',
             }
             return true;
             }),
-        body('cert').not().isEmpty().trim().escape().withMessage("Please upload a cert")
+        body('cert').not().isEmpty().trim().escape().withMessage("Please upload a cert"), 
+
     ]
     ,ensureAuthenticated,(req,res)=> {
-        let {occupation, fromyear, toyear, college_country, college_name, major, graduateyear, dateofbirth, nric, cert} = req.body
+        let {occupation, fromyear, toyear, college_country, college_name, major, graduateyear, dateofbirth, nric, cert: trueFileName} = req.body
         let errors = [];
         const validatorErrors = validationResult(req);
         if (!validatorErrors.isEmpty()){ //if isEmpty is false
@@ -180,7 +218,7 @@ router.post('/professional_info',
             console.log("======= creating tutor record ======")
             console.log(req.user.dataValues.user_id);
             userid = req.user.dataValues.user_id;
-            PendingTutor.create({ occupation: occupation, fromyear: fromyear, toyear: toyear, college_country:college_country, college_name, major, graduate:graduateyear, dateofbirth, NRIC:nric, userUserId: userid,cert })
+            PendingTutor.create({ occupation: occupation, fromyear: fromyear, toyear: toyear, college_country:college_country, college_name, major, graduate:graduateyear, dateofbirth, NRIC:nric, userUserId: userid,cert: trueFileName })
             .then(tutor => {
                 alertMessage(res, 'success', tutor.tutor_id + 'user has been verified as tutor', 'fas fa-sign-in-alt', true);
                 res.redirect('/');

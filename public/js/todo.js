@@ -39,7 +39,8 @@ async function todoMain() {
 
     today = yyyy+'-'+mm+'-'+dd;
     dateInput.setAttribute("min", today)
-    timeInput = document.getElementById("timeInput");
+    startTimeInput = document.getElementById("startTimeInput");
+    endTimeInput = document.getElementById("endTimeInput");
     addButton = document.getElementById("addBtn");
     selectElem = document.getElementById("categoryFilter");
     changeBtn = document.getElementById("changeBtn");
@@ -53,17 +54,182 @@ async function todoMain() {
     }
     await request()
     console.log(tutor_id)
+
+    // toggleswitch = document.getElementById("toggleswitch")
   }
    //Adding the event to a list which isnt a persistent object i dont think.
     //Change this to a modal when a user click certain date.
   function addListeners() {
+    dateInput.addEventListener("change", findTime)
     addButton.addEventListener("click", addEntry, false);
 
     document.getElementById("todo-modal-close-btn").addEventListener("click", closeEditModalBox, false);
 
-    changeBtn.addEventListener("click", commitEdit, false);
+    // changeBtn.addEventListener("click", commitEdit, false);
+
+    //allmonth
+    document.getElementById("allmonth").addEventListener("click", autoselectalldatesinmonth)
+    //unselectallmonth
+    document.getElementById("unselectallmonth").addEventListener("click", autounselectalldatesinmonth)
+
+    document.getElementById("unavailableBtn").addEventListener("click", makeUnavailable)
+
+    // toggleswitch.addEventListener("change", function(){
+    //   if (this.checked){
+    //     //if its checked change the text
+    //     document.getElementById("toggleswitchlabel").innerText = 'Make Unavailable'
+    //   } else {
+    //     document.getElementById("toggleswitchlabel").innerText = 'Make Available'
+
+    //   }
+   
+    // })
+
+  }
+  async function makeUnavailable(){
+    thebutton = document.getElementById("unavailableBtn")
+    id = thebutton.dataset.id
+    date = document.getElementById("todo-edit-date").value
+    starttime = document.getElementById("todo-edit-starttime").value
+    endtime = document.getElementById("todo-edit-endtime").value
+    console.log("make unavailable", id,date, starttime, endtime)
+
+    await fetch("/myschedule/unavailable_entry/" + tutor_id,{
+      method :"POST",
+      credentials: "include", //include cookies
+      body: JSON.stringify({id,date, starttime, endtime}),
+      cache: "no-cache",
+      headers: new Headers({
+          "content-type": "application/json"
+      })
+    })
+    load()
+
+
+
+  }
+  async function findTime(){
+    //do a fetch request to check whether the selected date already has time booked 
   }
 
+  async function autounselectalldatesinmonth(){
+     // get all remaining dates of the month
+     var currentdate = GetCalendarDateRange()
+     // console.log(currentdate.getFullYear(), currentdate.getMonth())
+     var lastday = new Date(currentdate.getFullYear(), currentdate.getMonth()+ 1, 0).getDate(); //https://www.w3resource.com/javascript-exercises/javascript-date-exercise-9.php
+     // console.log("this is the last day now do a for loop from the current date to last date and send a post request", lastday)
+     today = new Date(Date.parse(today))
+     console.log(today)
+     if(today.getMonth() == currentdate.getMonth()){
+       //just take remaining date
+       for(let i = today.getDate(); i<= lastday; i++){
+         startdate = new Date(today.getFullYear(), today.getMonth(), i, 9)
+         enddate = new Date(today.getFullYear(), today.getMonth(), i, 24)
+         await autodeletedates(startdate,enddate)
+     }
+     console.log('this is after unselect', todoList)
+     }else{
+       console.log("future month")
+       for(let i = 1; i<= lastday; i++){
+         startdate = new Date(currentdate.getFullYear(), currentdate.getMonth(), i, 9)
+         enddate = new Date(currentdate.getFullYear(), currentdate.getMonth(), i, 24)
+         await autodeletedates(startdate,enddate)
+        }
+ 
+       //it means the user is looking at the future month
+      }
+  }
+  function autoselectalldatesinmonth(){
+    // get all remaining dates of the month
+    var currentdate = GetCalendarDateRange()
+    // console.log(currentdate.getFullYear(), currentdate.getMonth())
+    var lastday = new Date(currentdate.getFullYear(), currentdate.getMonth()+ 1, 0).getDate(); //https://www.w3resource.com/javascript-exercises/javascript-date-exercise-9.php
+    // console.log("this is the last day now do a for loop from the current date to last date and send a post request", lastday)
+    today = new Date(Date.parse(today))
+    console.log(today)
+    if(today.getMonth() == currentdate.getMonth()){
+      //just take remaining date
+      for(let i = today.getDate(); i<= lastday; i++){
+        startdate = new Date(today.getFullYear(), today.getMonth(), i, 9)
+        enddate = new Date(today.getFullYear(), today.getMonth(), i, 24)
+        autochangedates(startdate,enddate)
+      }
+    }else{
+      console.log("future month")
+      for(let i = 1; i<= lastday; i++){
+        startdate = new Date(currentdate.getFullYear(), currentdate.getMonth(), i, 9)
+        enddate = new Date(currentdate.getFullYear(), currentdate.getMonth(), i, 24)
+        autochangedates(startdate,enddate)
+      }
+
+      //it means the user is looking at the future month
+    }
+    
+
+  }
+  function autochangedates(startdate, enddate){ 
+    // console.log("saving this", startdate, enddate )
+    // console.log('checking whether this dates has duplicates', startdate,enddate)    //we making it available/unavailable on a full time slow 9am to 12 am
+    for(let i = 0; i< todoList.length; i++){ //looping through to check whether entry exists in the todolist
+      todoStartDate = new Date(Date.parse(todoList[i].startdate))
+      todoEndDate = new Date(Date.parse(todoList[i].enddate))
+      // console.log("++",todoStartDate ,todoEndDate)
+      if((todoStartDate.getTime() == startdate.getTime() ) && (todoEndDate.getTime() == enddate.getTime() ) ){ //https://stackoverflow.com/questions/492994/compare-two-dates-with-javascript
+        // console.log("there is a duplicate: ",todoList[i])
+        return null
+      }
+    } 
+    //if they never find
+    let obj = {
+      id : _uuid(),
+      category: 'Available',
+      startdate: startdate,
+      enddate: enddate,
+      starttime : '0900',
+      endtime: '0000',
+      done: false
+    }
+    renderRow(obj)
+    todoList.push(obj)
+    save()
+  }
+  async function autodeletedates(startdate, enddate){
+    // removing from calendar object
+    calendarEventList = calendar.getEvents()
+    console.log("this is calendar event list", calendarEventList)
+    for(let i = 0; i< calendarEventList.length; i++){
+      //if the startdate and enddate is the same remove the event from the calendar
+      thecurrentevent = calendarEventList[i]
+      thecurrenteventstart = thecurrentevent.start
+      thecurrenteventend = thecurrentevent.end
+
+      if((thecurrenteventstart.getTime() == startdate.getTime()) && (thecurrenteventend.getTime() == enddate.getTime())){
+        thecurrentevent.remove()
+      }
+
+    }
+
+    //removing from todolist and therefore the database after
+    todoList = todoList.filter(function(dateobject){ 
+      // new Date(Date.parse(todoList[i].enddate)
+      //basically converting the dateobject into a Date object and then comparing to our startdate function paramater
+      
+      return ((new Date(Date.parse(dateobject.startdate)).getTime() != startdate.getTime()) && (new Date(Date.parse(dateobject.enddate)).getTime() != enddate.getTime()))
+    
+    })
+    await deletefromdatabase()
+  }
+  function GetCalendarDateRange() {
+    //check if the month they are looking at is the current month or the future month, if current month just take the todays date, else take the first month
+    
+    var currentdate = document.getElementsByClassName("fc-toolbar-title")[0].innerText
+    // console.log("currently looking at this current date", currentdate)
+    var whatthe = Date.parse(currentdate)
+    var therealdate = new Date(whatthe)
+    console.log('Whatthe', whatthe)
+    console.log('therealdate', therealdate)
+    return therealdate
+  }
   function addEntry(event) {
 
     let dateValue = dateInput.value;
@@ -97,20 +263,46 @@ async function todoMain() {
   }
 
   function save() {
-    console.log(tutor_id);
-    calendarobject = {[tutor_id]:todoList} //need bracket for the variable-key because idky but it works
+    //need bracket for the variable-key because idky but it works
     let stringified = JSON.stringify(todoList);
     localStorage.setItem("todoList", stringified);
+    //before we post we check whether the data exists in our local todo list
     fetch("/myschedule/submit_entry",{
                 method :"POST",
                 credentials: "include", //include cookies
-                body: JSON.stringify(calendarobject),
+                body: JSON.stringify(todoList),
                 cache: "no-cache",
                 headers: new Headers({
                     "content-type": "application/json"
                 })
 
-            });
+    });
+  }
+  function deletefromdatabase() {
+    let stringified = JSON.stringify(todoList);
+    localStorage.setItem("todoList", stringified);
+    //before we post we check whether the data exists in our local todo list
+    fetch("/myschedule/delete_entry",{
+                method :"POST",
+                credentials: "include", //include cookies
+                body: JSON.stringify(todoList),
+                cache: "no-cache",
+                headers: new Headers({
+                    "content-type": "application/json"
+                })
+
+    }).then(function(response){
+      // console.log("response:",response.clone().json())
+      return response.clone().json()
+    }).then(function(data){
+      // console.log("data",data)
+      //    let retrieved = localStorage.getItem("todoList");
+      //    todoList = JSON.parse(retrieved);
+      todoList = data
+      // console.log("list from local",todoList)
+      //console.log(typeof todoList)
+      // console.log("this is the current todoList",todoList)
+      })
   }
 
   function load() {
@@ -123,13 +315,13 @@ async function todoMain() {
         return response.clone().json()
     })
     .then(function(data){
-    console.log("data",data)
+    // console.log("data",data)
     //    let retrieved = localStorage.getItem("todoList");
     //    todoList = JSON.parse(retrieved);
     todoList = data
-    console.log("list from local",todoList)
+    // console.log("list from local",todoList)
     //console.log(typeof todoList)
-    console.log("this is the current todoList",todoList)
+    // console.log("this is the current todoList",todoList)
     renderRows(todoList);
     })
    console.log("==== FInished ====")
@@ -138,12 +330,12 @@ async function todoMain() {
 
   function renderRows(arr) {
     arr.forEach(todoObj => {
-        console.log("rendering",todoObj);
+        // console.log("rendering",todoObj);
       renderRow(todoObj);
     })
   }
 
-  function renderRow({category: inputValue2, id, date, time, done }) {
+  function renderRow({category: inputValue2, id, startdate, enddate, starttime,endtime, done }) {
     // add a new row
 
     let table = document.getElementById("todoTable");
@@ -154,13 +346,17 @@ async function todoMain() {
     // date cell
     let dateElem = document.createElement("td");
 
-    dateElem.innerText = formatDate(date);
+    dateElem.innerText = formatDate(startdate);
     trElem.appendChild(dateElem);
 
-    // time cell
-    let timeElem = document.createElement("td");
-    timeElem.innerText = time;
-    trElem.appendChild(timeElem);
+    // start time cell
+    let startTimeElem = document.createElement("td");
+    startTimeElem.innerText = starttime;
+    trElem.appendChild(startTimeElem);
+    // end time cell
+    let endTimeElem = document.createElement("td");
+    endTimeElem.innerText = endtime;
+    trElem.appendChild(endTimeElem);
 
     // category cell
     let tdElem3 = document.createElement("td");
@@ -192,15 +388,21 @@ async function todoMain() {
     addEvent({
       id: id,
       title: inputValue2,
-      start: date,
+      start: startdate,
+      end: enddate
     });
 
     dateElem.dataset.type = "date";
-    dateElem.dataset.value = date;
-    timeElem.dataset.type = "time";
+    dateElem.dataset.value = startdate;
+    startTimeElem.dataset.type = "time";
+    startTimeElem.dataset.value = starttime
+    endTimeElem.dataset.type = "time"
+    endTimeElem.dataset.value = endtime
 
     dateElem.dataset.id = id;
-    timeElem.dataset.id = id;
+    startTimeElem.dataset.id = id;
+    endTimeElem.dataset.id = id;
+    // console.log("checking what dataset is",startTimeElem)
 
     function deleteItem() {
       trElem.remove();
@@ -294,6 +496,7 @@ async function todoMain() {
 
   function addEvent(event){
     calendar.addEvent( event );
+
   }
 
   function clearTable(){
@@ -382,6 +585,10 @@ async function todoMain() {
   }
 
   function closeEditModalBox(event){
+    document.getElementById("todo-edit-starttime").innerHTML = ""
+    document.getElementById("todo-edit-endtime").innerHTML = ""
+    document.getElementById("todo-edit-endtime").disabled = true;
+
     document.getElementById("todo-overlay").classList.remove("slidedIntoView");
   }
 
@@ -390,8 +597,9 @@ async function todoMain() {
 
     let id = event.target.dataset.id;
     let category = document.getElementById("todo-edit-category").value;
-    let date = document.getElementById("todo-edit-date").value;
-    let time = document.getElementById("todo-edit-time").value;
+    let date = document.getElementById("todo-edit-startdate").value;
+    let starttime = document.getElementById("todo-edit-starttime").value;
+    let endtime = document.getElementById("todo-edit-endtime").value
 
     // remove from calendar
     calendar.getEventById( id ).remove();
@@ -415,24 +623,24 @@ async function todoMain() {
 
     save();
 
-    // Update the table
-    let tdNodeList = todoTable.querySelectorAll("td");
-    for(let i = 0; i < tdNodeList.length; i++){
-      if(tdNodeList[i].dataset.id == id){
-        let type = tdNodeList[i].dataset.type;
-        switch(type){
-          case "date" :
-            tdNodeList[i].innerText = formatDate(date);
-            break;
-          case "time" :
-            tdNodeList[i].innerText = time;
-            break;
-          case "category" :
-            tdNodeList[i].innerText = category;
-            break;
-        }
-      }
-    }
+    // // Update the table
+    // let tdNodeList = todoTable.querySelectorAll("td");
+    // for(let i = 0; i < tdNodeList.length; i++){
+    //   if(tdNodeList[i].dataset.id == id){
+    //     let type = tdNodeList[i].dataset.type;
+    //     switch(type){
+    //       case "date" :
+    //         tdNodeList[i].innerText = formatDate(date);
+    //         break;
+    //       case "time" :
+    //         tdNodeList[i].innerText = time;
+    //         break;
+    //       case "category" :
+    //         tdNodeList[i].innerText = category;
+    //         break;
+    //     }
+    //   }
+    // }
   }
 
   function toEditItem(event){
@@ -450,13 +658,91 @@ async function todoMain() {
 
   function preFillEditForm(id){
     let result = todoList.find(todoObj => todoObj.id == id);
-    let {category, date, time} = result;
+    let {category, startdate,enddate, starttime, endtime} = result;
+    startDateParsed = new Date(Date.parse(startdate))
+    endDateParsed = new Date(Date.parse(enddate))
+
+    console.log("prefill this is date", startDateParsed)
+    console.log(starttime)
+    console.log(endtime)
 
     document.getElementById("todo-edit-category").value = category;
-    document.getElementById("todo-edit-date").value = date;
-    document.getElementById("todo-edit-time").value = time;
+    document.getElementById("todo-edit-date").value = `${startDateParsed.toISOString().slice(0,10)}`;
+    startTimeInput = document.getElementById("todo-edit-starttime")
+    startTimeInput.addEventListener("change",updateEndInput)
+    // console.log("this is start time input", startTimeInput)
+    // console.log("<option value='" + startDateParsed.getHours()  + "'>" + formatAMPM(startDateParsed)  + "</option>")
+    var startOption = document.createElement("option")
+    startOption.text = formatAMPM(startDateParsed)
+    startOption.value = startDateParsed.getHours()
+    startTimeInput.add(startOption)
 
-    changeBtn.dataset.id = id;
+    startArray = range(14, startAt = startDateParsed.getHours()+1)
+    console.log(startArray)
+    for (let index in startArray){
+      time = startArray[index]
+      option = document.createElement("option")
+      option.text = timeToFormat(time)
+      option.value = time
+      startTimeInput.add(option)
+    }
+    // startTimeInput.innerHTMl = "<option value='" + startDateParsed.getHours  + "'>" + formatAMPM(startDateParsed)  + "</option>"
+    endTimeInput = document.getElementById("todo-edit-endtime")
+    var endOption = document.createElement("option")
+    endOption.text = formatAMPM(endDateParsed)
+    endOption.value =endDateParsed.getHours()
+    endTimeInput.add(endOption)
+
+
+    unavailableBtn.dataset.id = id;
+    availableBtn.dataset.id = id;
+  }
+  function updateEndInput(){
+    //emptying end time input box
+    endTimeInput = document.getElementById("todo-edit-endtime")
+    endTimeInput.disabled = false;
+    endTimeInput.innerHTML = ""
+    startTimeInput = document.getElementById("todo-edit-starttime")
+    startValue = startTimeInput.value
+    endTimeInput = document.getElementById("todo-edit-endtime")
+    endArray = range(24-parseInt(startValue), startAt = parseInt(startValue)+1)
+    console.log(endArray)
+    for (let index in endArray){
+      time = endArray[index]
+      option = document.createElement("option")
+      option.text = timeToFormat(time)
+      option.value = time
+      endTimeInput.add(option)
+    }
+
+
+  }
+  //to format date to a 12 hour formate
+  function formatAMPM(date) {
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+    var ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    minutes = minutes < 10 ? '0'+minutes : minutes;
+    var strTime = hours + ':' + minutes + ' ' + ampm;
+    return strTime;
+  }
+  function range(size, startAt = 0) {
+    return [...Array(size).keys()].map(i => i + startAt);
+  }
+
+  function timeToFormat(hour){
+    if (hour <=11){
+      strTime = hour + ":" + '00' + " am"
+    }else if (hour == 12){
+      strTime = hour + ":" + '00' + " pm"
+    }else if(hour <=23){
+      strTime = hour%12 + ":" + '00' + " pm"
+    }else if(hour ==24){
+      strTime = "12"+ ":" + '00' + " am"
+    }
+    return strTime
   }
 
 }

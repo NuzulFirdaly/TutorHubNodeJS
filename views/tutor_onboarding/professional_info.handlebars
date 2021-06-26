@@ -293,6 +293,7 @@
     <label class="col-md-3 col-form-label">Certification <br> <p class="text-muted" style="max-width:200px;">For verification purposes, this will remain private</p>  </label>
     <div class="col">
       <input type="file" name="cert" id="cert">
+      <input type="hidden" id='trueFileName' name="trueFileName">
        <div class="font-weight-bold text-danger small" id="certErr" style="display:none"></div>
     </div>
       <div class="col-s-1 col-form-label"><label>Date of Birth</label></div>
@@ -329,8 +330,9 @@
       processData: false,
       type: 'POST',
       'success': (data) => {
-        console.log(data.file);
-        $('#cert').attr('src', data.file);
+        console.log(data);
+        $('#cert').attr('src', data.path);
+        $('#trueFileName').attr('value', data.file)
         if (data.err) {
           $('#certErr').show();
           $('#certErr').text(data.err.message);

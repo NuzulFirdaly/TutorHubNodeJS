@@ -117,13 +117,16 @@ app.use(flash());
 app.use(FlashMessenger.middleware);
 //WAS MISSING THIS WHAT IS THIS
 app.use(function (req, res, next) {
-	console.log("THHIS is fuCking local")
-    console.log("savnig to local")
+	// console.log("THHIS is fuCking local")
+    // console.log("savnig to local")
 
 	res.locals.success_msg = req.flash('success_msg');
 	res.locals.error_msg = req.flash('error_msg');
 	res.locals.error = req.flash('error');
-	res.locals.user = req.user || null;
+	if (req.user){
+		res.locals.user = req.user.dataValues 
+	}
+	// console.log("this is next()", res.locals.user)
     //setup framework
 	next();
 });

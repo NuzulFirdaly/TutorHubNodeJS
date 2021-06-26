@@ -76,8 +76,8 @@
       processData: false,
       type: 'POST',
       'success': (data) => {
-        console.log(data.file);
-        $('#profilePicture').attr('src', data.file);
+        console.log(data);
+        $('#profilePicture').attr('src', data.path);
         if (data.err) {
           $('#profilePictureErr').show();
           $('#profilePictureErr').text(data.err.message);
