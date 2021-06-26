@@ -1,10 +1,38 @@
 <style>
-.checked {
-  color: orange;
-}
+    .checked {
+        color: orange;
+    }
+
+    .stars-outer {
+        position: relative;
+        display: inline-block;
+    }
+
+    .stars-inner {
+        position: absolute;
+        top: 0;
+        left: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        width: 0;
+    }
+
+    .stars-outer::before {
+        content: "\f005 \f005 \f005 \f005 \f005";
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        color: #ccc;
+    }
+
+    .stars-inner::before {
+        content: "\f005 \f005 \f005 \f005 \f005";
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        color: #f8ce0b;
+    }
 </style>
 <section class="section-content padding-y">
-        <div class="container">
+    <div class="container">
         <div class="row">
             {{#with course}}
             <div class="col-md-6">
@@ -12,12 +40,14 @@
                     <h1>{{Title}}</h1>
                     <br>
                     <div class="widget-header">
-                                <a href="{url_for('viewtutor', tutor_id = courseobject.tutor)}" target="_blank" class="ml-3 icontext">
-                                    <div class="icon"><img class="icon icon-md rounded-circle border" src="/images/profilepictures/{{user.Profile_pic}}"></div>
-                                    <div class="text">
-                                        <p style="font-size:2em;">{{user.FirstName}} {{user.LastName}}</p> <br>
-                                    </div>
-                                </a>
+                        <a href="{url_for('viewtutor', tutor_id = courseobject.tutor)}" target="_blank"
+                            class="ml-3 icontext">
+                            <div class="icon"><img class="icon icon-md rounded-circle border"
+                                    src="/images/profilepictures/{{user.Profile_pic}}"></div>
+                            <div class="text">
+                                <p style="font-size:2em;">{{user.FirstName}} {{user.LastName}}</p> <br>
+                            </div>
+                        </a>
                     </div>
                     <br> <br>
                     <img src="/images/coursethumbnails/{{Course_thumbnail}}" class="img-fluid" alt="Responsive image">
@@ -46,101 +76,157 @@
                     {{/each}}
                 </div>
                 <hr>
-                {{!-- <div class="row">
-                    <h3>{{courseobject.reviews|length}} Reviews</h3>
-                    {% set count = namespace(value=1) %}
-                    {% for i in range(5) %}
-						{% if count.value <= rating|round %}
-                            {% set count.value = count.value + 1 %}
-                            <span class="fa fa-star checked" style="padding-top: 10px;"></span>
-                        {% else %}
-                            <span class="fa fa-star" style="padding-top: 10px;"></span>
-						{% endif %}
-                    {% endfor %}
-                    {% if rating|round == 5 %}
-                        <h3><span class="checked">{{ rating }}</span></h3>
-                    {% else %}
-                    <h3>{{ rating }}</h3>
-                    {% endif %}
-                </div> --}}
-                {{!-- {% if session.get('loggedin') and session['username'] != userobject.get_username() %}
-                    {% if session['user_id'] not in courseobject.reviews %}
-                        <form class='block-register' action="{{url_for('review', item = 'course', id = courseobject.course_id)}}" method="POST" enctype="multipart/form-data">
-                            {{ render_field(form.rating, class="form-control", value=1) }}
-                            {{ render_field(form.comment, class="form-control") }}
-                            <button class="btn btn-primary" type="submit">Send</button>
-                        </form>
-                        {% if error %}
-                            <p  style="color:red;" class="error"><strong>Error:</strong> {{ error }}
-                          {% endif %}
-                        <div>
-                        {% for review in courseobject.reviews %}
-                            <hr>
-                            <p><strong>{{ courseobject.reviews[review][2] }}</strong><span class="fa fa-star checked">{{ courseobject.reviews[review][0] }}</span><br></p>
-                            <p>{{ courseobject.reviews[review][1] }}</p>
-                            <p class="text-muted">{{ courseobject.reviews[review][3] }}</p>
-                            <form action="{{ url_for('reportreview', item='course', id=courseobject.course_id, uservictim=review, userreport=session['user_id'],  comment=courseobject.reviews[review][1]) }}" method="POST" enctype="multipart/form-data">
-                                    <button class="btn btn-danger" type="submit">Report</button>
-                            </form>
-                            <br>
-                        {% endfor %}
+                <div class="row">
+                    <h3>
+                        <input type="hidden" value="{{../avgRating}}" id="avgrating">
+                        {{#if ../ratereviews}}
+                        {{../ratereviews.length}}
+                        {{else}}
+                        0
+                        {{/if}}
+                        Reviews
+                    </h3>
+                    <div style="padding-top: 6px">
+                        <div class="stars-outer">
+                            <div class="stars-inner"></div>
                         </div>
-                    {% else %}
-                        <hr>
-                        <form class='block-register' action="{{url_for('review', item = 'course', id=courseobject.course_id)}}" method="POST" enctype="multipart/form-data">
-                            <p><strong>{{ courseobject.reviews[session['user_id']][2] }}</strong><span class="fa fa-star checked"></span>{{ render_field(form.rating, class="form-control", value=courseobject.reviews[session['user_id']][0]) }}</p>
-                            <p>{{ render_field(form.comment, class="form-control") }}</p>
-                            <p class="text-muted">{{ courseobject.reviews[session['user_id']][3] }}</p>
-                        <div class="row gx-5">
-                            <button class="btn btn-primary" type="submit">Update</button>
-                        </form>
-                        <form action="{{ url_for('deletereview', item='course', id=courseobject.course_id) }}" method="POST" enctype="multipart/form-data">
-                            <button class="btn btn-danger" type="submit">Delete</button>
-                        </form>
-                        </div>
-
-                        <div>
-                        {% for review in courseobject.reviews %}
-                            {% if review != session['user_id'] %}
-                                <hr>
-                                <p><strong>{{ courseobject.reviews[review][2] }}</strong><span class="fa fa-star checked">{{ courseobject.reviews[review][0] }}</span><br></p>
-                                <p>{{ courseobject.reviews[review][1] }}</p>
-                                <p class="text-muted">{{ courseobject.reviews[review][3] }}</p>
-                                <form action="{{ url_for('reportreview', item='course', id=courseobject.course_id, uservictim=review, userreport=session['user_id'],  comment=courseobject.reviews[review][1]) }}" method="POST" enctype="multipart/form-data">
-                                        <button class="btn btn-danger" type="submit">Report</button>
-                                </form>
-                                <br>
-                            {% endif %}
-                        {% endfor %}
-                        </div>
-                    {% endif %} --}}
-                {{!-- {% else %}
-                    {% for review in courseobject.reviews %}
-                            <hr>
-                            <p><strong>{{ courseobject.reviews[review][2] }}</strong><span class="fa fa-star checked">{{ courseobject.reviews[review][0] }}</span><br></p>
-                            <p>{{ courseobject.reviews[review][1] }}</p>
-                            <p class="text-muted">{{ courseobject.reviews[review][3] }}</p>
-                            <form action="{{ url_for('reportreview', item='course', id=courseobject.course_id, uservictim=review, userreport=session['user_id'],  comment=courseobject.reviews[review][1]) }}" method="POST" enctype="multipart/form-data">
-                                    <button class="btn btn-danger" type="submit">Report</button>
-                            </form>
-                            <br>
-                        {% endfor %}
-                {% endif %} --}}
-                    {{!-- </div>
-                    <div class="col-md-6">
-                        <div class="card" style="width:50%;">
-                            <div class="card-body">
-                                <div>
-                                    <h3 style="position:absolute;" >Hourly</h3>
-                                    <h3 class="float-right" >${{courseobject.hourlyrate}}</h3>
-                                </div>
-                            {% if session.get('loggedin') and session['username'] != userobject.get_username() %}
-                                <a href="{{url_for('viewavailableslots', course_id = courseobject.course_id, tutor_id = courseobject.tutor)}}" style="position:relative; margin-top:4rem;" class=" center-x btn btn-primary">Book</a>
-                            {% endif%}
-                            </div>
-                        </div> --}}
+                        <span class="number-rating"></span>
+                    </div>
+                </div>
+                {{!-- if logged in --}}
+                {{#if ../users}}
+                {{!-- if you made the course --}}
+                {{#if (ifSame userUserId ../users.user_id) }}
+                {{#each ../ratereviews}}
+                <hr>
+                <p><strong>{{ this.user.Username }}</strong><span class="fa fa-star checked">
+                        {{ this.Rating }}</span><br></p>
+                <p>{{ this.Review }}</p>
+                <p class="text-muted">{{#format this.Date }}{{/format}}</p>
+                {{!-- <form
+                    action="{{ url_for('reportreview', item='course', id=courseobject.course_id, uservictim=review, userreport=session['user_id'],  comment=courseobject.reviews[review][1]) }}"
+                    method="POST" enctype="multipart/form-data">
+                    <button class="btn btn-danger" type="submit">Report</button>
+                </form> --}}
+                <br>
+                {{/each}}
+                {{!-- if you did not make the course --}}
+                {{else}}
+                {{!-- if you have written a review --}}
+                {{#if ../yourRateReview}}
+                <hr>
+                <form class='block-register' action="/rate/editRating/course/{{course_id}}" method="POST">
+                    <p><strong>{{ ../yourRateReview.users.Username }}</strong><span></span>
+                        <input class="form-control" type="number" min="1" max="5" id="rating" name="rating"
+                            value="{{../yourRateReview.Rating}}" required>
+                    </p>
+                    <p><textarea class="form-control" type="text" id="review" name="review"
+                            required>{{../yourRateReview.Review}}</textarea></p>
+                    <p class="text-muted">{{ ../yourRateReview.Date }}</p>
+                    <div class="row gx-5">
+                        <button class="btn btn-primary" type="submit">Update</button>
+                </form>
+                <form action="/rate/deleteRating/course/{{course_id}}" method="POST">
+                    <button class="btn btn-danger" type="submit">Delete</button>
+                </form>
             </div>
-            {{/with}}
-        </div> <!-- end row -->
+
+            <div>
+                {{#each ../ratereviews}}
+                {{#if (ifSame this.UserId ../../users.user_id)}}
+                {{else}}
+                <hr>
+                <p><strong>{{ this.users.Username }}</strong><span class="fa fa-star checked">
+                        {{ this.Rating }}</span><br></p>
+                <p>{{ this.Review }}</p>
+                <p class="text-muted">{{#format this.Date }}{{/format}}</p>
+                {{!-- <form
+                    action="{{ url_for('reportreview', item='course', id=courseobject.course_id, uservictim=review, userreport=session['user_id'],  comment=courseobject.reviews[review][1]) }}"
+                    method="POST" enctype="multipart/form-data">
+                    <button class="btn btn-danger" type="submit">Report</button>
+                </form> --}}
+                {{/if}}
+                {{/each}}
+            </div>
+            {{!-- if you have not written a review --}}
+            {{else}}
+            <form class='block-register' action="/rate/giveRating/course/{{course_id}}" method="POST">
+                <input class="form-control" type="number" min="1" max="5" id="rating" name="rating" required>
+                <textarea class="form-control" type="text" id="review" name="review" required></textarea>
+                <button class="btn btn-primary" type="submit">Send</button>
+            </form>
+            {{!-- {% if error %}
+            <p style="color:red;" class="error"><strong>Error:</strong> {{ error }}
+                {% endif %} --}}
+            <div>
+                {{#each ../ratereviews}}
+                <hr>
+                <p><strong>{{ this.users.Username }}</strong><span class="fa fa-star checked">
+                        {{ this.Rating }}</span><br></p>
+                <p>{{ this.Review }}</p>
+                <p class="text-muted">{{#format this.Date }}{{/format}}</p>
+                {{!-- <form
+                    action="{{ url_for('reportreview', item='course', id=courseobject.course_id, uservictim=review, userreport=session['user_id'],  comment=courseobject.reviews[review][1]) }}"
+                    method="POST" enctype="multipart/form-data">
+                    <button class="btn btn-danger" type="submit">Report</button>
+                </form> --}}
+                <br>
+                {{/each}}
+            </div>
+            {{/if}}
+            {{/if}}
+            {{else}}
+            {{#each ../ratereviews}}
+            <hr>
+            <p><strong>{{ this.users.Username }}</strong><span class="fa fa-star checked">
+                    {{ this.Rating }}</span><br></p>
+            <p>{{ this.Review }}</p>
+            <p class="text-muted">{{#format this.Date }}{{/format}}</p>
+            {{!-- <form
+                action="{{ url_for('reportreview', item='course', id=courseobject.course_id, uservictim=review, userreport=session['user_id'],  comment=courseobject.reviews[review][1]) }}"
+                method="POST" enctype="multipart/form-data">
+                <button class="btn btn-danger" type="submit">Report</button>
+            </form> --}}
+            <br>
+            {{/each}}
+            {{/if}}
         </div>
- </section>
+        {{!-- <div class="col-md-6">
+            <div class="card" style="width:50%;">
+                <div class="card-body">
+                    <div>
+                        <h3 style="position:absolute;">Hourly</h3>
+                        <h3 class="float-right">${{courseobject.hourlyrate}}</h3>
+                    </div>
+                    {% if session.get('loggedin') and session['username'] != userobject.get_username() %}
+                    <a href="{{url_for('viewavailableslots', course_id = courseobject.course_id, tutor_id = courseobject.tutor)}}"
+                        style="position:relative; margin-top:4rem;" class=" center-x btn btn-primary">Book</a>
+                    {% endif%}
+                </div>
+            </div>
+        </div> --}}
+        {{/with}}
+    </div> <!-- end row -->
+    </div>
+</section>
+<script>
+    const starsTotal = 5
+
+    var avgRating = Math.round(parseFloat(document.querySelector("#avgrating").value) * 10) / 10;
+
+    document.addEventListener('DOMContentLoaded', getRatings);
+
+    function getRatings() {
+        // Get percentage
+        const starPercentage = (avgRating / starsTotal) * 100;
+
+    // Round to nearest 10
+    const starPercentageRounded = `${Math.round(starPercentage / 10) * 10}%`;
+
+    // Set width of stars-inner to percentage
+    document.querySelector(".stars-inner").style.width = starPercentageRounded;
+
+    // Add number rating
+    document.querySelector(".number-rating").innerHTML = avgRating;
+    }
+</script>

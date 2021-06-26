@@ -15,108 +15,107 @@ const CourseListing = require('../models/CoursesListing');
 
 const { body, validationResult } = require('express-validator');
 
-const courseThumbnailUpload = require('../helpers/thumbnailUploads')
+const courseThumbnailUpload = require('../helpers/thumbnailUploads');
+const RateReview = require('../models/RateReview');
 
 
 //change this to database where admin can add
-categories = {'GRAPHIC DESIGN':['LOGO DESIGN','BRAND STYLE GUIDES','GAME ART','RESUME DESIGN'],
-              'DIGITAL MARKETING':['SOCIAL MEDIA ADVERTISING','SEO','PODCAST MARKETING','SURVEY','WEB TRAFFIC'],
-              'WRITING & TRANSLATION':['ARTICLES & BLOG POSTS'],
-             'PROGRAMMING & TECH':['WEB PROGRAMMING','E-COMMERCE DEVELOPMENT','MOBILE APPLS','DESKTOP APPLICATIONS','DATABASES','USER TESTING']
-              }
+categories = {
+    'GRAPHIC DESIGN': ['LOGO DESIGN', 'BRAND STYLE GUIDES', 'GAME ART', 'RESUME DESIGN'],
+    'DIGITAL MARKETING': ['SOCIAL MEDIA ADVERTISING', 'SEO', 'PODCAST MARKETING', 'SURVEY', 'WEB TRAFFIC'],
+    'WRITING & TRANSLATION': ['ARTICLES & BLOG POSTS'],
+    'PROGRAMMING & TECH': ['WEB PROGRAMMING', 'E-COMMERCE DEVELOPMENT', 'MOBILE APPLS', 'DESKTOP APPLICATIONS', 'DATABASES', 'USER TESTING']
+}
 //a route so that our createcourse select field can fetch the data
-router.get("/category/:category", (req,res)=>
-{   
+router.get("/category/:category", (req, res) => {
     choicesArray = categories[req.params.category]
-    res.end(JSON.stringify({"subcategories":choicesArray}));
+    res.end(JSON.stringify({ "subcategories": choicesArray }));
 });
-router.get("/CreateCourse", (req,res)=> {
+router.get("/CreateCourse", (req, res) => {
     // console.log(req.user.AccountTypeID)
-    if (((req.user != null) && (req.user.AccountTypeID == 1)) && (req.user.AccountTypeID == 1)){
-        res.render("course/coursecreation",{
-            user:req.user.dataValues, //have to do this for all pages
+    if (((req.user != null) && (req.user.AccountTypeID == 1)) && (req.user.AccountTypeID == 1)) {
+        res.render("course/coursecreation", {
+            user: req.user.dataValues, //have to do this for all pages
         })
     }
-    else{
+    else {
         res.redirect("/")
     };
-  
+
 });
 
-router.post("/courseThumbnailUpload", (req,res)=>{
-    courseThumbnailUpload(req,res, async (err)=>{
+router.post("/courseThumbnailUpload", (req, res) => {
+    courseThumbnailUpload(req, res, async (err) => {
         console.log("profile picture upload printing req.file.filename")
         console.log(req.file)
         if (err) {
-            res.json({err: err});
+            res.json({ err: err });
         } else {
             if (req.file === undefined) {
-                res.json({err: err});
+                res.json({ err: err });
             } else {
-                res.json({file: `${req.file.filename}`, path:'/images/coursethumbnails/'+`${req.file.filename}`});
+                res.json({ file: `${req.file.filename}`, path: '/images/coursethumbnails/' + `${req.file.filename}` });
                 //check to see if the course record exist or not if so just update it with the new picture
                 // await Pending.findOne({where: {user_id:  req.user.user_id } }).then(user => {
                 //     user.update({cert:req.file.filename})
                 // })
             }
-        }   
+        }
     });
 })
 router.post("/CreateCourse",
-[
-    body('coursetitle').not().isEmpty().trim().escape().withMessage("Course Title is invalid"), 
-    body('courseThumbnailUpload').not().isEmpty().trim().escape().withMessage("please select a course thumbnail"), 
-    body('trueFileName').not().isEmpty().trim().escape().withMessage("please select a course thumbnail"), 
-    body('short_description').not().isEmpty().trim().escape().withMessage("Short description is invalid"),
-    body('description').not().isEmpty().trim().escape().withMessage("description is invalid"),
-    body('category').not().isEmpty().trim().escape().withMessage("please select a category"),
-    body('subcategory').not().isEmpty().trim().escape().withMessage("subcategory is invalid")
-]
-,(req,res) => {
-    console.log(req.body);
-    let {coursetitle, category, subcategory, short_description, description, courseThumbnailUpload, trueFileName} = req.body;
-    let errors = [];
-    const validatorErrors = validationResult(req);
-    if (!validatorErrors.isEmpty()){ //if isEmpty is false
-        console.log("There are errors")
-        validatorErrors.array().forEach(error=>{
-            console.log(error);
-            errors.push({text:error.msg})
-        })
-        res.render("course/coursecreation",{
-            user:req.user.dataValues, //have to do this for all pages
-            errors
-        })
-    } else {
-        userid = req.user.dataValues.user_id;
-        console.log(userid)  
-        Course.create({Title : coursetitle, Category:category, Subcategory: subcategory, Short_description: short_description, Description: description, userUserId: userid, Course_thumbnail:trueFileName })
-            .then(course => {
-                alertMessage(res, 'success', course.Title + ' added.', 'fas fa-sign-in-alt', true);
-                res.redirect('/course/CreateSession/'+course.course_id);
+    [
+        body('coursetitle').not().isEmpty().trim().escape().withMessage("Course Title is invalid"),
+        body('courseThumbnailUpload').not().isEmpty().trim().escape().withMessage("please select a course thumbnail"),
+        body('trueFileName').not().isEmpty().trim().escape().withMessage("please select a course thumbnail"),
+        body('short_description').not().isEmpty().trim().escape().withMessage("Short description is invalid"),
+        body('description').not().isEmpty().trim().escape().withMessage("description is invalid"),
+        body('category').not().isEmpty().trim().escape().withMessage("please select a category"),
+        body('subcategory').not().isEmpty().trim().escape().withMessage("subcategory is invalid")
+    ]
+    , (req, res) => {
+        console.log(req.body);
+        let { coursetitle, category, subcategory, short_description, description, courseThumbnailUpload, trueFileName } = req.body;
+        let errors = [];
+        const validatorErrors = validationResult(req);
+        if (!validatorErrors.isEmpty()) { //if isEmpty is false
+            console.log("There are errors")
+            validatorErrors.array().forEach(error => {
+                console.log(error);
+                errors.push({ text: error.msg })
             })
-            .catch(err => console.log(err));
-    }
-});
+            res.render("course/coursecreation", {
+                user: req.user.dataValues, //have to do this for all pages
+                errors
+            })
+        } else {
+            userid = req.user.dataValues.user_id;
+            console.log(userid)
+            Course.create({ Title: coursetitle, Category: category, Subcategory: subcategory, Short_description: short_description, Description: description, userUserId: userid, Course_thumbnail: trueFileName })
+                .then(course => {
+                    alertMessage(res, 'success', course.Title + ' added.', 'fas fa-sign-in-alt', true);
+                    res.redirect('/course/CreateSession/' + course.course_id);
+                })
+                .catch(err => console.log(err));
+        }
+    });
 
 router.get("/CreateSession/:courseid", (req, res) => {
-    if ((req.user != null) && (req.user.AccountTypeID == 1)){
+    if ((req.user != null) && (req.user.AccountTypeID == 1)) {
         course_id = req.params.courseid
-        console.log(course_id)
         //raw: true need because we dont want other attributes like _previousdatavalue
-        Lessons.findAll({where: {courseListingCourseId: course_id}, raw: true, order:[['session_no', 'ASC']]})
-        
-        //lessons are all the lessons from the course id(return multiple lessons)
-        .then((lessons)=> {
-            console.log(lessons)
-            res.render("course/sessioncreation",{
-                sessionarray : lessons,
-                course_id : course_id,
-                user:req.user.dataValues,
-            })
-      });
+        Lessons.findAll({ where: { courseListingCourseId: course_id }, raw: true, order: [['session_no', 'ASC']] })
+
+            //lessons are all the lessons from the course id(return multiple lessons)
+            .then((lessons) => {
+                res.render("course/sessioncreation", {
+                    sessionarray: lessons,
+                    course_id: course_id,
+                    user: req.user.dataValues,
+                })
+            });
     }
-    else{
+    else {
         res.redirect("/")
     };
 })
@@ -139,38 +138,38 @@ router.get("/CreateSession/:courseid", (req, res) => {
 //     }
 // })
 
-router.post("/CreateSession/:courseid", async (req,res)=>{
-    await Lessons.findAll({where: {courseListingCourseId: req.params.courseid}, raw: true, order:[['session_no', 'ASC']]})
-    //lessons are all the lessons from the course id(return multiple lessons)
-    .then((lessons)=> {
-        let errors = [];
-        console.log('this is lesson query in createsession post')
-        console.log(lessons)
-        console.log(lessons.length)
-        if(lessons.length === 0){
-            errors.push({text: "You must have at least 1 session"})
-            res.render('course/sessioncreation', {
-                errors,
-                course_id : req.params.courseid,
-                user: req.user.dataValues
-            })
-        }else{
-            if((req.user) && (req.user.AccountTypeID == 1) ){
-                res.redirect(301, '/course/addpricing/' + req.params.courseid)
+router.post("/CreateSession/:courseid", async (req, res) => {
+    await Lessons.findAll({ where: { courseListingCourseId: req.params.courseid }, raw: true, order: [['session_no', 'ASC']] })
+        //lessons are all the lessons from the course id(return multiple lessons)
+        .then((lessons) => {
+            let errors = [];
+            console.log('this is lesson query in createsession post')
+            console.log(lessons)
+            console.log(lessons.length)
+            if (lessons.length === 0) {
+                errors.push({ text: "You must have at least 1 session" })
+                res.render('course/sessioncreation', {
+                    errors,
+                    course_id: req.params.courseid,
+                    user: req.user.dataValues
+                })
+            } else {
+                if ((req.user) && (req.user.AccountTypeID == 1)) {
+                    res.redirect(301, '/course/addpricing/' + req.params.courseid)
+                }
+                else {
+                    res.redirect("/")
+                }
+                //render session and push error saying need to have 1 cost
             }
-            else{
-                res.redirect("/")
-            }
-            //render session and push error saying need to have 1 cost
-        }
-    })
+        })
 
     // if (((req.user != null) && (req.user.AccountTypeID == 1)) && (req.user.AccountTypeID == 1)){
     //     course_id = req.params.courseid
     //     console.log(course_id)
     //     //raw: true need because we dont want other attributes like _previousdatavalue
     //     Lessons.findAll({where: {courseListingCourseId: course_id}, raw: true, order:[['session_no', 'ASC']]})
-        
+
     //     //lessons are all the lessons from the course id(return multiple lessons)
     //     .then((lessons)=> {
     //         console.log(lessons)
@@ -188,150 +187,152 @@ router.post("/CreateSession/:courseid", async (req,res)=>{
 
 })
 
-router.get("/addnewlesson/:courseid",(req,res) => {
-    if (((req.user != null) && (req.user.AccountTypeID == 1)) && (req.user.AccountTypeID == 1)){
-        res.render("course/addnewlesson",{
-            course_id : req.params.courseid,
-            user:req.user.dataValues,
+router.get("/addnewlesson/:courseid", (req, res) => {
+    if (((req.user != null) && (req.user.AccountTypeID == 1)) && (req.user.AccountTypeID == 1)) {
+        res.render("course/addnewlesson", {
+            course_id: req.params.courseid,
+            user: req.user.dataValues,
         })
     }
-    else{
+    else {
         res.redirect("/")
     };
 
 })
 router.post("/addnewlesson/:courseid",
-[
-    body('title').not().isEmpty().trim().escape().withMessage("Session Title is invalid"),
-    body('session_description').not().isEmpty().trim().escape().withMessage("Session Title is invalid"),
-    body('time_approx').not().isEmpty().trim().escape().withMessage("Session Title is invalid")
-]
-,(req,res) => {
-    let {title, session_description, time_approx} = req.body
-    let errors = [];
-    sessioncount = 0
-    const validatorErrors = validationResult(req);
-    if (!validatorErrors.isEmpty()){ //if isEmpty is false
-        console.log("There are errors")
-        validatorErrors.array().forEach(error=>{
-            console.log(error);
-            errors.push({text:error.msg})
-        })
-        res.render(`course/addnewlesson/${req.params.courseid}`,{
-            user:req.user.dataValues, //have to do this for all pages
-            errors
-        })
-    } else {
-    //to get the current count
-        Lessons.findAll({where: {courseListingCourseId: req.params.courseid}, raw: true, order: [
-            ['session_no', 'ASC'] ]})
-        //lessons are all the lessons from the course id(return multiple lessons)
-        .then((lessons)=> {
-            console.log(lessons)
-            sessioncount = lessons.length
-            console.log("printing session count")
-            console.log(sessioncount)
-            console.log("Going to create session now")
-            Lessons.create({session_no:sessioncount + 1, session_title: title, session_description: session_description, time_approx: time_approx, courseListingCourseId: req.params.courseid})
-            .then(lesson => {
-                console.log("succesfully create session redirecting now")
-                alertMessage(res, 'success', lesson.session_title + ' added.', 'fas fa-sign-in-alt', true);
-                res.redirect(301,'/course/CreateSession/'+req.params.courseid)
+    [
+        body('title').not().isEmpty().trim().escape().withMessage("Session Title is invalid"),
+        body('session_description').not().isEmpty().trim().escape().withMessage("Session Title is invalid"),
+        body('time_approx').not().isEmpty().trim().escape().withMessage("Session Title is invalid")
+    ]
+    , (req, res) => {
+        let { title, session_description, time_approx } = req.body
+        let errors = [];
+        sessioncount = 0
+        const validatorErrors = validationResult(req);
+        if (!validatorErrors.isEmpty()) { //if isEmpty is false
+            console.log("There are errors")
+            validatorErrors.array().forEach(error => {
+                console.log(error);
+                errors.push({ text: error.msg })
             })
-        });
-    }
-   
-})
-
-function* enumerate (it, start = 1)
-{ let i = start
-  for (const x of it){
-    yield [i++, x]
-  }
-}
-
-router.post("/deletelesson/:courseid/:sessionno",(req,res)=>{
-    Lessons.findAll({where:{courseListingCourseId: req.params.courseid}, raw:true, order:[['session_no', 'ASC']]})
-    .then(lessons=>{
-        //deleting lesson with session no
-        console.log(lessons)
-        Lessons.destroy({where:{session_no: req.params.sessionno}}).then(function(){
-        //updating all lessons number
-        Lessons.findAll({where:{courseListingCourseId:req.params.courseid}, raw:true, order:[['session_no','ASC']]})
-        .then(lessons=>{
-            
-                console.log("========== after delet ===========")
-                for(const[index, object] of enumerate(lessons)){
-                    console.log(index,object)
-                    Lessons.findOne({where:{session_id: object.session_id}})
-                    .then(lesson=>{
-                        lesson.update({session_no: index})
-                    })
-                }
-                res.redirect(301,"/course/CreateSession/"+ req.params.courseid)
+            res.render(`course/addnewlesson/${req.params.courseid}`, {
+                user: req.user.dataValues, //have to do this for all pages
+                errors
             })
-        })
+        } else {
+            //to get the current count
+            Lessons.findAll({
+                where: { courseListingCourseId: req.params.courseid }, raw: true, order: [
+                    ['session_no', 'ASC']]
+            })
+                //lessons are all the lessons from the course id(return multiple lessons)
+                .then((lessons) => {
+                    console.log(lessons)
+                    sessioncount = lessons.length
+                    console.log("printing session count")
+                    console.log(sessioncount)
+                    console.log("Going to create session now")
+                    Lessons.create({ session_no: sessioncount + 1, session_title: title, session_description: session_description, time_approx: time_approx, courseListingCourseId: req.params.courseid })
+                        .then(lesson => {
+                            console.log("succesfully create session redirecting now")
+                            alertMessage(res, 'success', lesson.session_title + ' added.', 'fas fa-sign-in-alt', true);
+                            res.redirect(301, '/course/CreateSession/' + req.params.courseid)
+                        })
+                });
+        }
 
-       
     })
 
+function* enumerate(it, start = 1) {
+    let i = start
+    for (const x of it) {
+        yield [i++, x]
+    }
+}
+
+router.post("/deletelesson/:courseid/:sessionno", (req, res) => {
+    Lessons.findAll({ where: { courseListingCourseId: req.params.courseid }, raw: true, order: [['session_no', 'ASC']] })
+        .then(lessons => {
+            //deleting lesson with session no
+            console.log(lessons)
+            Lessons.destroy({ where: { session_no: req.params.sessionno } }).then(function () {
+                //updating all lessons number
+                Lessons.findAll({ where: { courseListingCourseId: req.params.courseid }, raw: true, order: [['session_no', 'ASC']] })
+                    .then(lessons => {
+
+                        console.log("========== after delet ===========")
+                        for (const [index, object] of enumerate(lessons)) {
+                            console.log(index, object)
+                            Lessons.findOne({ where: { session_id: object.session_id } })
+                                .then(lesson => {
+                                    lesson.update({ session_no: index })
+                                })
+                        }
+                        res.redirect(301, "/course/CreateSession/" + req.params.courseid)
+                    })
+            })
+
+
+        })
+
 })
-router.get("/addpricing/:courseid",(req,res)=>{
-     if ((req.user != null) && (req.user.AccountTypeID == 1)){
+router.get("/addpricing/:courseid", (req, res) => {
+    if ((req.user != null) && (req.user.AccountTypeID == 1)) {
         course_id = req.params.courseid
         console.log(course_id)
-        Lessons.findAll({where: {courseListingCourseId: course_id}, raw: true, order:[['session_no','ASC']]})
-        //lessons are all the lessons from the course id(return multiple lessons)
-        .then((lessons)=> {
-            sessioncount = lessons.length;
-            let totalhours = 0
-            for(let i = 0; i < sessioncount;i++){
-                totalhours += parseInt(lessons[i].time_approx)
-            }
-            res.render("course/addpricing",{
-                sessionarray : lessons,
-                course_id : course_id,
-                user:req.user.dataValues,
-                sessioncount: sessioncount 
-            })
-      });
+        Lessons.findAll({ where: { courseListingCourseId: course_id }, raw: true, order: [['session_no', 'ASC']] })
+            //lessons are all the lessons from the course id(return multiple lessons)
+            .then((lessons) => {
+                sessioncount = lessons.length;
+                let totalhours = 0
+                for (let i = 0; i < sessioncount; i++) {
+                    totalhours += parseInt(lessons[i].time_approx)
+                }
+                res.render("course/addpricing", {
+                    sessionarray: lessons,
+                    course_id: course_id,
+                    user: req.user.dataValues,
+                    sessioncount: sessioncount
+                })
+            });
     }
-    else{
+    else {
         res.redirect("/")
     };
 })
 
-router.post("/addnewpricing/:courseid", (req,res)=>{
-    let{hourlyrate, minimumdays, maximumdays} = req.body;
+router.post("/addnewpricing/:courseid", (req, res) => {
+    let { hourlyrate, minimumdays, maximumdays } = req.body;
     CourseListing.update({
         Hourlyrate: hourlyrate,
         Maximumdays: maximumdays,
         Minimumdays: minimumdays,
-        },
-        {where: {course_id: req.params.courseid}})
-        .then(course =>
-            {
-                console.log(course)
-                res.redirect(301,"/course/mycourses")
-            })
+    },
+        { where: { course_id: req.params.courseid } })
+        .then(course => {
+            console.log(course)
+            res.redirect(301, "/course/mycourses")
+        })
 });
 
-router.get("/mycourses", (req,res)=> {
-    if ((req.user != null) && (req.user.AccountTypeID == 1)){
+router.get("/mycourses", (req, res) => {
+    if ((req.user != null) && (req.user.AccountTypeID == 1)) {
         tutor_id = req.user.dataValues.user_id;
-        CourseListing.findAll({where: {userUserId: tutor_id},raw:true
+        CourseListing.findAll({
+            where: { userUserId: tutor_id }, raw: true
         })
-        .then((courses)=>{
-            
-            console.log(courses);
-            res.render("course/mycourses",{
-                user:req.user.dataValues,
-                userobject : req.user.dataValues,
-                coursesarray : courses
-            })
-        });
+            .then((courses) => {
+
+                console.log(courses);
+                res.render("course/mycourses", {
+                    user: req.user.dataValues,
+                    userobject: req.user.dataValues,
+                    coursesarray: courses
+                })
+            });
     }
-    else{
+    else {
         res.redirect("/")
     };
 });
@@ -339,270 +340,321 @@ router.get("/mycourses", (req,res)=> {
 //associationze.UUID, allowNull: false }});
 
 
-router.get("/viewcourse/:courseid",(req,res) =>{
+router.get("/viewcourse/:courseid", (req, res) => {
 
-    courseid = req.params.courseid
-    CourseListing.findAll({where:{course_id: courseid}, include: [Lessons, User], order:[[ Lessons, 'session_no','ASC' ]]
+    courseid = req.params.courseid;
+    CourseListing.findAll({
+        where: { course_id: courseid }, include: [Lessons, User], order: [[Lessons, 'session_no', 'ASC']]
     })
-    .then(course => {
-        // console.log(course);
-        console.log("================")
-        // console.log(JSON.stringify(course, null, 2))
-        course = JSON.parse(JSON.stringify(course,null,2))[0]
-        console.log(course)
-        console.log("================")
-        if ((req.user != null) && (req.user.AccountTypeID == 1)){
-            res.render("course/viewcourse",{
-                user:req.user.dataValues, //have to do this for all pages
-                course
-            })
-        }
-        else{
-            res.render("course/viewcourse",{course:course})
-        };
+        .then(course => {
+            console.log("THIS IS COURSE NUZULLLLLLLL")
+            console.log(course)
+            RateReview.findAll({ where: { CourseId: courseid }, include: [User] })
 
-    }).catch(error => console.log(error));
-}) 
+                .then(ratereviews => {
+                    RateReview.findAll({
+                        attributes: [[Sequelize.fn('avg', Sequelize.col('Rating')), 'avgRating']],
+                        raw: true,
+                    })
+                        .then(async function (avgRating) {
+                            if (!avgRating) {
+                                avgRating = 0;
+                            }
 
-router.get("/updatecourse/:courseid", (req,res)=>{
-    courseid = req.params.courseid
-    CourseListing.findAll({where:{course_id: courseid}, include: [Lessons, User], order:[[ Lessons, 'session_no','ASC' ]]
-    })
-    .then(course => {
-        // console.log(course);
-        console.log("================")
-        // console.log(JSON.stringify(course, null, 2))
-        course = JSON.parse(JSON.stringify(course,null,2))[0]
-        console.log(course)
-        console.log("================")
-        if ((req.user != null) && (req.user.AccountTypeID == 1)){
-            res.render("course/updatecourse",{
-                user:req.user.dataValues, //have to do this for all pages
-                course
-            })
-        }
-        else{
-            res.redirect("/")
-        };
+                            if (req.user) {
+                                console.log("ymca")
+                                console.log(req.user.user_id)
+                                await RateReview.findOne({ where: { UserId: req.user.user_id }, include: [User] })
+                                    .then(yourRateReview => {
+                                        console.log('gjfdjgjldfgj')
+                                        course = JSON.parse(JSON.stringify(course, null, 2))[0]
+                                        yourRateReview = yourRateReview
+                                        if (yourRateReview) {
+                                            console.log("kms")
+                                            console.log(JSON.parse(JSON.stringify(ratereviews, null, 2)))
+                                            res.render("course/viewcourse", {
+                                                users: req.user.dataValues, //have to do this for all pages
+                                                course,
+                                                avgRating: avgRating[0].avgRating,
+                                                yourRateReview: yourRateReview.dataValues,
+                                                ratereviews: JSON.parse(JSON.stringify(ratereviews, null, 2))
+                                            })
+                                        }
+                                        else {
+                                            console.log(JSON.parse(JSON.stringify(ratereviews, null, 2)))
+                                            console.log(ratereviews)
+                                            console.log(avgRating)
+                                            console.log("yopopropr")
+                                            res.render("course/viewcourse", {
+                                                users: req.user.dataValues, //have to do this for all pages
+                                                course,
+                                                avgRating: avgRating[0].avgRating,
+                                                ratereviews: JSON.parse(JSON.stringify(ratereviews, null, 2))
+                                            })
+                                        }
+                                    })
+                                    .catch(error => console.log(error));
+                            }
+                            else { // console.log(course);
+                                console.log("================")
+                                // console.log(JSON.stringify(course, null, 2))
+                                console.log("================")
+                                course = JSON.parse(JSON.stringify(course, null, 2))[0]
+                                res.render("course/viewcourse", {
+                                    course: course,
+                                    avgRating: avgRating[0].avgRating,
+                                    ratereviews: JSON.parse(JSON.stringify(ratereviews, null, 2))
+                                })
 
-    }).catch(error => console.log(error));
+                            }
+
+                        });
+                })
+        }).catch(error => console.log(error));
 })
 
-router.get("/editcourse/:courseid", (req,res)=>{
-    CourseListing.findOne({where:{course_id: req.params.courseid}, raw:true})
-    .then(course=>{
-        console.log(course);
-        if ((req.user != null) && (req.user.AccountTypeID == 1)){
-            res.render("course/editcourse",{
-                user:req.user.dataValues, //have to do this for all pages
-                course: course
-            })
-        }
-        else{
-            res.render("/")
-        };
+router.get("/updatecourse/:courseid", (req, res) => {
+    courseid = req.params.courseid
+    CourseListing.findAll({
+        where: { course_id: courseid }, include: [Lessons, User], order: [[Lessons, 'session_no', 'ASC']]
     })
+        .then(course => {
+            // console.log(course);
+            console.log("================")
+            // console.log(JSON.stringify(course, null, 2))
+            course = JSON.parse(JSON.stringify(course, null, 2))[0]
+            console.log(course)
+            console.log("================")
+            if ((req.user != null) && (req.user.AccountTypeID == 1)) {
+                res.render("course/updatecourse", {
+                    user: req.user.dataValues, //have to do this for all pages
+                    course
+                })
+            }
+            else {
+                res.redirect("/")
+            };
+
+        }).catch(error => console.log(error));
 })
-router.post("/editcourse/:courseid",(req,res)=>{
-    let {coursetitle, category, subcategory, short_description, description} = req.body;
+
+router.get("/editcourse/:courseid", (req, res) => {
+    CourseListing.findOne({ where: { course_id: req.params.courseid }, raw: true })
+        .then(course => {
+            console.log(course);
+            if ((req.user != null) && (req.user.AccountTypeID == 1)) {
+                res.render("course/editcourse", {
+                    user: req.user.dataValues, //have to do this for all pages
+                    course: course
+                })
+            }
+            else {
+                res.render("/")
+            };
+        })
+})
+router.post("/editcourse/:courseid", (req, res) => {
+    let { coursetitle, category, subcategory, short_description, description } = req.body;
     console.log(coursetitle, category, short_description, description)
 
-    CourseListing.findOne({where:{course_id:req.params.courseid}})
-    .then(course=>{
-        course.update({Title : coursetitle, Category:category, Subcategory: subcategory, Short_description: short_description, Description: description })
-        res.redirect(301,'/course/updatecourse/'+req.params.courseid)
-    })
-    .catch(err => console.log(err));
+    CourseListing.findOne({ where: { course_id: req.params.courseid } })
+        .then(course => {
+            course.update({ Title: coursetitle, Category: category, Subcategory: subcategory, Short_description: short_description, Description: description })
+            res.redirect(301, '/course/updatecourse/' + req.params.courseid)
+        })
+        .catch(err => console.log(err));
 })
 
 //get editaddnewsession
-router.get('/editaddnewlesson/:courseid', (req,res)=>{
-    if ((req.user != null) && (req.user.AccountTypeID == 1)){
-        res.render("course/editaddnewlesson",{
-            course_id : req.params.courseid,
-            user:req.user.dataValues,
+router.get('/editaddnewlesson/:courseid', (req, res) => {
+    if ((req.user != null) && (req.user.AccountTypeID == 1)) {
+        res.render("course/editaddnewlesson", {
+            course_id: req.params.courseid,
+            user: req.user.dataValues,
         })
     }
-    else{
+    else {
         res.redirect("/")
     };
 })
 //post editaddnewsession
 router.post('/editaddnewlesson/:courseid',
-[
-    body('title').not().isEmpty().trim().escape().withMessage("Session Title is invalid"),
-    body('session_description').not().isEmpty().trim().escape().withMessage("Session Title is invalid"),
-    body('time_approx').not().isEmpty().trim().escape().withMessage("Session Title is invalid")
-]
-,(req,res)=>{
-    let {title, session_description, time_approx} = req.body
-    let errors = [];
-    sessioncount = 0
-    const validatorErrors = validationResult(req);
-    if (!validatorErrors.isEmpty()){ //if isEmpty is false
-        console.log("There are errors")
-        validatorErrors.array().forEach(error=>{
-            console.log(error);
-            errors.push({text:error.msg})
-        })
-        res.render(`course/editaddnewlesson/${req.params.courseid}`,{
-            user:req.user.dataValues, //have to do this for all pages
-            errors
-        })
-    } else {
-    //to get the current count
-        Lessons.findAll({where: {courseListingCourseId: req.params.courseid}, raw: true, order: [
-            ['session_no', 'ASC'] ]})
-        //lessons are all the lessons from the course id(return multiple lessons)
-        .then((lessons)=> {
-            console.log(lessons)
-            sessioncount = lessons.length
-            console.log("printing session count")
-            console.log(sessioncount)
-            console.log("Going to create session now")
-            Lessons.create({session_no:sessioncount + 1, session_title: title, session_description: session_description, time_approx: time_approx, courseListingCourseId: req.params.courseid})
-            .then(lesson => {
-                console.log("succesfully create session redirecting now")
-                alertMessage(res, 'success', lesson.session_title + ' added.', 'fas fa-sign-in-alt', true);
-                res.redirect(301,'/course/editlesson/'+req.params.courseid)
+    [
+        body('title').not().isEmpty().trim().escape().withMessage("Session Title is invalid"),
+        body('session_description').not().isEmpty().trim().escape().withMessage("Session Title is invalid"),
+        body('time_approx').not().isEmpty().trim().escape().withMessage("Session Title is invalid")
+    ]
+    , (req, res) => {
+        let { title, session_description, time_approx } = req.body
+        let errors = [];
+        sessioncount = 0
+        const validatorErrors = validationResult(req);
+        if (!validatorErrors.isEmpty()) { //if isEmpty is false
+            console.log("There are errors")
+            validatorErrors.array().forEach(error => {
+                console.log(error);
+                errors.push({ text: error.msg })
             })
-        });
-    }
+            res.render(`course/editaddnewlesson/${req.params.courseid}`, {
+                user: req.user.dataValues, //have to do this for all pages
+                errors
+            })
+        } else {
+            //to get the current count
+            Lessons.findAll({
+                where: { courseListingCourseId: req.params.courseid }, raw: true, order: [
+                    ['session_no', 'ASC']]
+            })
+                //lessons are all the lessons from the course id(return multiple lessons)
+                .then((lessons) => {
+                    console.log(lessons)
+                    sessioncount = lessons.length
+                    console.log("printing session count")
+                    console.log(sessioncount)
+                    console.log("Going to create session now")
+                    Lessons.create({ session_no: sessioncount + 1, session_title: title, session_description: session_description, time_approx: time_approx, courseListingCourseId: req.params.courseid })
+                        .then(lesson => {
+                            console.log("succesfully create session redirecting now")
+                            alertMessage(res, 'success', lesson.session_title + ' added.', 'fas fa-sign-in-alt', true);
+                            res.redirect(301, '/course/editlesson/' + req.params.courseid)
+                        })
+                });
+        }
 
-})
+    })
 
-router.get("/editlesson/:courseid", (req,res)=>{
-    if ((req.user != null) && (req.user.AccountTypeID == 1)){
+router.get("/editlesson/:courseid", (req, res) => {
+    if ((req.user != null) && (req.user.AccountTypeID == 1)) {
         course_id = req.params.courseid
         console.log(course_id)
         //raw: true need because we dont want other attributes like _previousdatavalue
-        Lessons.findAll({where: {courseListingCourseId: course_id}, raw: true, order:[['session_no','ASC']]})
-        
-        //lessons are all the lessons from the course id(return multiple lessons)
-        .then((lessons)=> {
-            console.log(lessons)
-            res.render("course/editlesson",{
-                lessons,
-                course_id : course_id,
-                user:req.user.dataValues,
-            })
-      });
+        Lessons.findAll({ where: { courseListingCourseId: course_id }, raw: true, order: [['session_no', 'ASC']] })
+
+            //lessons are all the lessons from the course id(return multiple lessons)
+            .then((lessons) => {
+                console.log(lessons)
+                res.render("course/editlesson", {
+                    lessons,
+                    course_id: course_id,
+                    user: req.user.dataValues,
+                })
+            });
     }
-    else{
+    else {
         res.redirect("/")
     };
 });
 
-router.post("/editlesson/:courseid", async (req,res)=>{
-     await Lessons.findAll({where: {courseListingCourseId: req.params.courseid}, raw: true, order:[['session_no', 'ASC']]})
-    //lessons are all the lessons from the course id(return multiple lessons)
-    .then((lessons)=> {
-        let errors = [];
-        console.log('this is lesson query in createsession post')
-        console.log(lessons)
-        console.log(lessons.length)
-        if(lessons.length === 0){
-            errors.push({text: "You must have at least 1 session"})
-            res.render('course/editlesson', {
-                errors,
-                course_id : req.params.courseid,
-                user: req.user.dataValues
-            })
-        }else{
-            if((req.user) && (req.user.AccountTypeID == 1) ){
-                res.redirect(301, '/course/editpricing/' + req.params.courseid)
+router.post("/editlesson/:courseid", async (req, res) => {
+    await Lessons.findAll({ where: { courseListingCourseId: req.params.courseid }, raw: true, order: [['session_no', 'ASC']] })
+        //lessons are all the lessons from the course id(return multiple lessons)
+        .then((lessons) => {
+            let errors = [];
+            console.log('this is lesson query in createsession post')
+            console.log(lessons)
+            console.log(lessons.length)
+            if (lessons.length === 0) {
+                errors.push({ text: "You must have at least 1 session" })
+                res.render('course/editlesson', {
+                    errors,
+                    course_id: req.params.courseid,
+                    user: req.user.dataValues
+                })
+            } else {
+                if ((req.user) && (req.user.AccountTypeID == 1)) {
+                    res.redirect(301, '/course/editpricing/' + req.params.courseid)
+                }
+                else {
+                    res.redirect("/")
+                }
+                //render session and push error saying need to have 1 cost
             }
-            else{
-                res.redirect("/")
-            }
-            //render session and push error saying need to have 1 cost
-        }
-    })
+        })
 })
-router.get("/editpricing/:courseid", (req,res)=>{
-    if ((req.user != null) && (req.user.AccountTypeID == 1)){
+router.get("/editpricing/:courseid", (req, res) => {
+    if ((req.user != null) && (req.user.AccountTypeID == 1)) {
         course_id = req.params.courseid
         console.log(course_id)
-        Lessons.findAll({where: {courseListingCourseId: course_id}, raw: true, order:[['session_no','ASC']]})
-        //lessons are all the lessons from the course id(return multiple lessons)
-        .then((lessons)=> {
-            sessioncount = lessons.length;
-            let totalhours = 0
-            for(let i = 0; i < sessioncount;i++){
-                totalhours += parseInt(lessons[i].time_approx)
-            }
-            res.render("course/editpricing",{
-                sessionarray : lessons,
-                course_id : course_id,
-                user:req.user.dataValues,
-                sessioncount: sessioncount,
-                totalhours 
-            })
-      });
+        Lessons.findAll({ where: { courseListingCourseId: course_id }, raw: true, order: [['session_no', 'ASC']] })
+            //lessons are all the lessons from the course id(return multiple lessons)
+            .then((lessons) => {
+                sessioncount = lessons.length;
+                let totalhours = 0
+                for (let i = 0; i < sessioncount; i++) {
+                    totalhours += parseInt(lessons[i].time_approx)
+                }
+                res.render("course/editpricing", {
+                    sessionarray: lessons,
+                    course_id: course_id,
+                    user: req.user.dataValues,
+                    sessioncount: sessioncount,
+                    totalhours
+                })
+            });
     }
-    else{
+    else {
         res.redirect("/")
     };
 })
 
-router.post("/editdeletesession/:courseid/:sessionno",(req,res)=>{
-    Lessons.findAll({where:{courseListingCourseId: req.params.courseid}, raw:true, order:[['session_no', 'ASC']]})
-    .then(lessons=>{
-        //deleting lesson with session no
-        console.log(lessons)
-        Lessons.destroy({where:{session_no: req.params.sessionno}}).then(function(){
-        //updating all lessons number
-        Lessons.findAll({where:{courseListingCourseId:req.params.courseid}, raw:true, order:[['session_no','ASC']]})
-        .then(lessons=>{
-            
-                console.log("========== after delet ===========")
-                for(const[index, object] of enumerate(lessons)){
-                    console.log(index,object)
-                    Lessons.findOne({where:{session_id: object.session_id}})
-                    .then(lesson=>{
-                        lesson.update({session_no: index})
+router.post("/editdeletesession/:courseid/:sessionno", (req, res) => {
+    Lessons.findAll({ where: { courseListingCourseId: req.params.courseid }, raw: true, order: [['session_no', 'ASC']] })
+        .then(lessons => {
+            //deleting lesson with session no
+            console.log(lessons)
+            Lessons.destroy({ where: { session_no: req.params.sessionno } }).then(function () {
+                //updating all lessons number
+                Lessons.findAll({ where: { courseListingCourseId: req.params.courseid }, raw: true, order: [['session_no', 'ASC']] })
+                    .then(lessons => {
+
+                        console.log("========== after delet ===========")
+                        for (const [index, object] of enumerate(lessons)) {
+                            console.log(index, object)
+                            Lessons.findOne({ where: { session_id: object.session_id } })
+                                .then(lesson => {
+                                    lesson.update({ session_no: index })
+                                })
+                        }
+                        res.redirect(301, "/course/editlesson/" + req.params.courseid)
                     })
-                }
-                res.redirect(301,"/course/editlesson/"+ req.params.courseid)
-            })
-        }) 
-    })
-});
-
-router.post("/deletecourse/:courseid", (req,res)=>{
-    console.log("deleting course")
-    CourseListing.destroy({where:{course_id: req.params.courseid}})
-    .then(function(){
-        res.redirect(301, '/course/mycourses')
-    })
-})
-
-
-router.get("/editupdatesession/:sessionid",(req,res)=>{
-    if ((req.user != null) && (req.user.AccountTypeID == 1)){
-        Lessons.findOne({where:{session_id:req.params.sessionid}, raw:true})
-        .then(lesson => {
-            console.log(lesson)
-            res.render("course/editupdatesession",{
-                user:req.user.dataValues, 
-                lesson
-
             })
         })
-       
-    }
-    else{
-        res.redirect("/")
-    };
-   
+});
+
+router.post("/deletecourse/:courseid", (req, res) => {
+    console.log("deleting course")
+    CourseListing.destroy({ where: { course_id: req.params.courseid } })
+        .then(function () {
+            res.redirect(301, '/course/mycourses')
+        })
 })
 
-router.post("/editupdatesession/:sessionid", (req,res)=>{
-    let {title,session_description,time_approx } = req.body;
-    Lessons.findOne({where:{session_id: req.params.sessionid}})
-    .then(lesson=>{
-        lesson.update({session_title:title, session_description, time_approx})
-        res.redirect(301,"/course/editlesson/"+lesson.courseListingCourseId) 
-    })
+
+router.get("/editupdatesession/:sessionid", (req, res) => {
+    if ((req.user != null) && (req.user.AccountTypeID == 1)) {
+        Lessons.findOne({ where: { session_id: req.params.sessionid }, raw: true })
+            .then(lesson => {
+                console.log(lesson)
+                res.render("course/editupdatesession", {
+                    user: req.user.dataValues,
+                    lesson
+
+                })
+            })
+
+    }
+    else {
+        res.redirect("/")
+    };
+
 })
-module.exports= router;
+
+router.post("/editupdatesession/:sessionid", (req, res) => {
+    let { title, session_description, time_approx } = req.body;
+    Lessons.findOne({ where: { session_id: req.params.sessionid } })
+        .then(lesson => {
+            lesson.update({ session_title: title, session_description, time_approx })
+            res.redirect(301, "/course/editlesson/" + lesson.courseListingCourseId)
+        })
+})
+module.exports = router;

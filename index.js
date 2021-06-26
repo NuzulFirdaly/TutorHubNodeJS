@@ -4,7 +4,7 @@ const path = require('path');
 const exphbs = require('express-handlebars');
 const methodOverride = require('method-override');
 const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');//to retrieve req.body
+const bodyParser = require('body-parser'); //to retrieve req.body
 const Sequelize = require('sequelize');
 
 
@@ -25,6 +25,7 @@ const courseRoute = require("./routes/course");
 const scheduleRoute = require("./routes/schedule");
 const userRoute = require("./routes/user");
 const shopRoute = require("./routes/shop");
+const rateRoute = require("./routes/ratereview");
 
 
 
@@ -46,15 +47,15 @@ var app = express();
 // Body parser middleware to parse HTTP body in order to read HTTP data
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
-	extended: false
+    extended: false
 }));
 
 // HandleBar middlewares
 app.engine('handlebars', exphbs({
-    defaultLayout:'main',
+    defaultLayout: 'main',
     helpers: {
-        loopcourse: function(value, options){
-            return options.fn({ test:value}) 
+        loopcourse: function(value, options) {
+            return options.fn({ test: value })
         },
         ifEquals(a, b, options) {
             // console.log("helper function")
@@ -68,9 +69,15 @@ app.engine('handlebars', exphbs({
                 return options.inverse(this) //hide this
             }
         },
-		ifSame(a, b){
-            return a==b
+        ifSame(a, b) {
+            return a == b
         },
+        format(date) {
+            dateParsed = new Date(Date.parse(date));
+            // return `${dateParsed.getFullYear()} - ${(dateParsed.getMonth() + 1)} - ${dateParsed.getDate()}`
+            return dateParsed
+        }
+
     },
 }));
 app.set('view engine', 'handlebars');
@@ -87,22 +94,22 @@ app.use(cookieParser());
 
 // Express session middleware - uses MySQL to store session
 app.use(session({
-	key: 'tutorhub_session',
-	secret: 'nuzulfirdaly',
-	store: new MySQLStore({
-	host: db.host,
-	port: 3306,
-	user: db.username,
-	password: db.password,
-	database: db.database,
-	clearExpired: true,
-	// How frequently expired sessions will be cleared; milliseconds:
-	checkExpirationInterval: 900000,
-	// The maximum age of a valid session; milliseconds:
-	expiration: 900000,
-	}),
-	resave: false,
-	saveUninitialized: false
+    key: 'tutorhub_session',
+    secret: 'nuzulfirdaly',
+    store: new MySQLStore({
+        host: db.host,
+        port: 3306,
+        user: db.username,
+        password: db.password,
+        database: db.database,
+        clearExpired: true,
+        // How frequently expired sessions will be cleared; milliseconds:
+        checkExpirationInterval: 900000,
+        // The maximum age of a valid session; milliseconds:
+        expiration: 900000,
+    }),
+    resave: false,
+    saveUninitialized: false
 }));
 
 
@@ -116,19 +123,18 @@ app.use(passport.session());
 app.use(flash());
 app.use(FlashMessenger.middleware);
 //WAS MISSING THIS WHAT IS THIS
-app.use(function (req, res, next) {
-	// console.log("THHIS is fuCking local")
+app.use(function(req, res, next) {
+    // console.log("THHIS is fuCking local")
     // console.log("savnig to local")
 
-	res.locals.success_msg = req.flash('success_msg');
-	res.locals.error_msg = req.flash('error_msg');
-	res.locals.error = req.flash('error');
-	if (req.user){
-		res.locals.user = req.user.dataValues 
-	}
-	// console.log("this is next()", res.locals.user)
+    res.locals.success_msg = req.flash('success_msg');
+    res.locals.error_msg = req.flash('error_msg');
+    res.locals.error = req.flash('error');
+    if (req.user) {
+        res.locals.user = req.user.dataValues;
+    }
     //setup framework
-	next();
+    next();
 });
 // Place to define global variables - not used in practical 1
 // app.use(function (req, res, next) {
@@ -138,12 +144,13 @@ app.use(function (req, res, next) {
 
 
 //Routes
-app.use("/",mainRoute); // mainRoute is declared to point to routes/main.js
-app.use('/tutor_onboarding',tutorOnboardingRoute);
+app.use("/", mainRoute); // mainRoute is declared to point to routes/main.js
+app.use('/tutor_onboarding', tutorOnboardingRoute);
 app.use("/course", courseRoute);
 app.use("/myschedule", scheduleRoute);
 app.use("/user", userRoute);
 app.use("/shop", shopRoute);
+app.use("/rate", rateRoute);
 
 // // Method override middleware to use other HTTP methods such as PUT and DELETE
 // app.use(methodOverride('_method'));
@@ -154,6 +161,6 @@ app.set('port', (process.env.PORT || 3000));
 
 
 //Initializing app with this port number
-app.listen(app.get('port'), function(){
+app.listen(app.get('port'), function() {
     console.log(`Server started on port ${app.get('port')}`)
 });
