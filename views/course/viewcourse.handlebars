@@ -221,12 +221,16 @@
         const starPercentage = (avgRating / starsTotal) * 100;
 
     // Round to nearest 10
-    const starPercentageRounded = `${Math.round(starPercentage / 10) * 10}%`;
+    const starPercentageRounded = ${Math.round(starPercentage / 10) * 10}%;
 
     // Set width of stars-inner to percentage
     document.querySelector(".stars-inner").style.width = starPercentageRounded;
 
     // Add number rating
-    document.querySelector(".number-rating").innerHTML = avgRating;
+    if (Number.isNaN(avgRating)){
+        document.querySelector(".number-rating").innerHTML = '0';
+    }else{
+        document.querySelector(".number-rating").innerHTML = avgRating;
+    }
     }
 </script>
