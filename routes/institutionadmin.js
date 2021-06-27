@@ -62,6 +62,7 @@ router.get('/showyourpage', async(req, res) => {
         // 		res.render('institution_admin/yourpage', {title: "Your institution", layout: 'institution_admin_base'})
         // 	}
         // });,
+        // ----
         console.log("Finding institution.........");
         Institution.findOne({
                 where: {
