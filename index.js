@@ -7,6 +7,8 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser'); //to retrieve req.body
 const Sequelize = require('sequelize');
 
+const Handlebars = require('handlebars');
+const { allowInsecurePrototypeAccess } = require('@handlebars/allow-prototype-access')
 
 
 
@@ -26,6 +28,8 @@ const scheduleRoute = require("./routes/schedule");
 const userRoute = require("./routes/user");
 const shopRoute = require("./routes/shop");
 const rateRoute = require("./routes/ratereview");
+const mainInstitutionRoute = require('./routes/maininstitution');
+const institutionAdminRoute = require('./routes/institutionadmin');
 
 
 
@@ -76,9 +80,20 @@ app.engine('handlebars', exphbs({
             dateParsed = new Date(Date.parse(date));
             // return `${dateParsed.getFullYear()} - ${(dateParsed.getMonth() + 1)} - ${dateParsed.getDate()}`
             return dateParsed
+        },
+        ifNotEquals(a, b) {
+            return a != b;
+        },
+        forloop(from, to, incr, block) {
+            var accum = ''
+            for (var i = from; i < to; i += incr) {
+                accum += block.fn(i)
+            }
+            return accum;
         }
 
     },
+    handlebars: allowInsecurePrototypeAccess(Handlebars)
 }));
 app.set('view engine', 'handlebars');
 
@@ -151,6 +166,10 @@ app.use("/myschedule", scheduleRoute);
 app.use("/user", userRoute);
 app.use("/shop", shopRoute);
 app.use("/rate", rateRoute);
+
+app.use("/institution", mainInstitutionRoute)
+app.use("/institution_admin", institutionAdminRoute);
+
 
 // // Method override middleware to use other HTTP methods such as PUT and DELETE
 // app.use(methodOverride('_method'));

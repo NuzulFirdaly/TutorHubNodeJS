@@ -1,0 +1,96 @@
+
+<!-- ========================= SECTION CONTENT ========================= -->
+<section class="padding-y bg">
+  <section class="container-fluid" style="min-height: 84vh; width: 90%">
+    <br>
+    <!-- ==================== form content ============ -->
+    <center><h2>Institution Registration Form</h2></center>
+    <br>
+    <div class="col-md-12 text-left">
+      <p>
+        Please fill up the following details <br>
+        <strong>Do take Note:</strong> <br>
+        1. Institution Registration shall only be done with the permission of Institution Management, head of Department or the Owner.
+        <br>
+        2. Submit certificates of proof for Institution for legal purposes. Zip into one folder for all documents if any. Please name your file/zip file as <br>
+        <center>"(InstitutionName)_Registration_(DD/MM/YYYY)"
+        <br>
+        example: "Fun_Teaching_Registration_16_01_2003"</center>
+        <br><br>
+        Upon confirmation, Institution page will be automatically created along with the Administrator's Account.
+        Username and Password will be sent via email.
+      </p>
+    </div>
+
+    <br>
+    <form class="block-register" action="/institution/registration" method="POST" enctype="multipart/form-data">
+      <div class="card mx-auto">
+        <div class="card-body">
+          <h5 class="card-title mb-4">Institution Details</h5>
+            <div class="form-group form-row">
+              <label class="col-md-2 col-form-label text-left">Name of Institution</label>
+              <div class="col-md-4">
+                <input class="form-control"  type="text" name="instituteName" value="{{instituteName}}" placeholder="Your institution" required>
+              </div>
+              <label class="col-md-2 col-form-label text-left">Address of Institution</label>
+              <div class="col-md-4">
+                <textarea class="form-control" name="instituteAddress" value="{{instituteAddress}}" placeholder="Clementi road #12-34" required></textarea>
+              </div>
+            </div>
+
+            <div class="form-group form-row">
+              <label class="col-md-2 col-form-label text-left">Postal Code</label>
+              <div class="col-md-4">
+                <input class="form-control" type="number" pattern="[0-9]{6}" name="institutePC" placeholder="123456" value="{{institutePC}}" required>
+              </div>
+              <label class="col-md-2 col-form-label text-left">Institution's Email Address</label>
+              <div class="col-md-4">
+                <input class="form-control"  type="email" name="InstituteEmail" value="{{InstituteEmail}}" placeholder="school@gmail.com" required>
+              </div>
+            </div>
+            <div class="form-group form-row">
+              <label class="col-md-2 col-form-label text-left">Website URL</label>
+              <div class="col-md-4">
+                <input class="form-control" type="url" name="instituteUrl" value="{{instituteUrl}}" placeholder="yourwebsite.com" required>
+              </div>
+              <label class="col-md-2 col-form-label text-left">Office No.</label>
+              <div class="col-md-4">
+                <input class="form-control" type="tel" pattern="[0-9]{8}" name="instituteNo" value="{{instituteNo}}" placeholder="1234-5678" required>
+              </div>
+            </div>
+            <div class="form-group form-row">
+              <label class="col-md-2 col-form-label text-left">Submit relevant documentation here</label>
+              <input type="file" name="instituteDoc" value="{{instituteDoc}}" required>
+            </div>
+            <br><br>
+            <h5 class="card-title mb-4">Administrator details</h5>
+            <div class="form-group form-row">
+              <label class="col-md-2 col-form-label text-left">First name</label>
+              <div class="col-md-4">
+                  <input class="form-control" type="text" name="IAFname" value="{{IAFname}}" placeholder="Your admin's first name" required>
+              </div>
+              <label class="col-md-2 col-form-label text-left">Last name</label>
+              <div class="col-md-4">
+                  <input class="form-control" type="text" name="IALname" value="{{IALname}}" placeholder="Your admin's last name" required>
+              </div>
+            </div>
+            <div class="form-group form-row">
+              <label class="col-md-2">Contact No.</label>
+              <div class="col-md-4">
+                  <input class="form-control" type="tel" pattern="[0-9]{8}" name="IANo" value="{{IANo}}" placeholder="1234-5678" required>
+              </div>
+              <label class="col-md-2">Email Address</label>
+              <div class="col-md-4">
+                  <input class="form-control" type="email" name="IAEmail" value="{{IAEmail}}" placeholder="youradmin@gmail.com" required>
+              </div>
+            </div>
+        </div>
+      </div>
+      <br>
+      <button class="btn btn-primary float-right" type="submit" value="upload">Submit</button>
+    </form>
+  <br>
+  <br>
+  </section>
+</section>
+<!-- ========================= SECTION CONTENT END// ========================= -->

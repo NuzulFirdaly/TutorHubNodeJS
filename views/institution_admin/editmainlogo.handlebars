@@ -1,0 +1,166 @@
+<section class="padding-y bg">
+<div class="container">
+<div class="row">
+    <div class="col-md-12">
+        <!-- ============================ COMPONENT BANNER 7 ================================= -->
+        <div class="card-banner text-center" style="min-height:200px;">
+          <div style="margin-left: 400px;">
+			  <br>
+			  <br>
+			  <h1 class="card-title" style="font-size: 60px;">Your Page</h1>
+			  <p>Edit your institution page and let it be seen by everyone.</p>
+          </div>
+        </div>
+        <!-- ============================ COMPONENT BANNER 7  END .// =========================== -->
+    </div> <!-- col.// -->
+</div>
+</div>
+</section>
+<section class="section-content padding-y bg">
+<div class="container">
+
+<div class="row">
+<aside class="col-md-3">
+<!-- COMPONENTS SIDEBAR -->
+<output>
+<div class="card col-md-12">
+	<article class="filter-group">
+		<header class="card-header">
+			<a href="#" data-toggle="collapse" data-target="#collapse_aside1">
+				<i class="icon-control fa fa-chevron-down"></i>
+				<h6 class="title">Your Main logo</h6> 
+			</a>
+		</header>
+		<div class="filter-content collapse show" id="collapse_aside1">
+			<div class="card-body">
+                    <p></p>
+					<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editmainlogo" name="editmainlogo" value="editmainlogo">edit your main logo</button>
+					&nbsp;&nbsp;
+
+			</div> <!-- card-body.// -->
+			<form class="block-register" action="/institution_admin/yourpage/addbanner" method="POST" enctype="multipart/form-data">
+				<!-- Modal for addbanners -->
+				<div class="modal fade" id="editmainlogo" tabindex="-1" role="dialog" aria-labelledby="editmainlogolabel" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="editmainlogolabel">Add Image</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								<div class="form-group form-row">
+									<div class="col-md-6">
+										<label>Upload your main logo image here</label>
+										<br>
+										<img id='mainLogoThumbnail' name="mainLogoThumbnail" src="\images\Institutionpictures\1.jpg" width="240" height="135" class="border">
+										<div style="position:relative; "></div>
+										<input type="file" name="institutionMainLogoUpload" id="institutionMainLogoUpload">
+										<input type="hidden" id='trueFileLogoName' name="trueFileLogoName">
+										{{!-- <input type="text" id="imgFilename" name="imgFilename" > --}}
+										<div class="font-weight-bold text-danger small" id="logoErr" style="display:none">
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+								<button type="submit" class="btn btn-primary">Upload Image</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- end of modal for addbanners -->
+			</form>
+		</div>
+	</article> <!-- filter-group  .// -->
+</div> <!-- card.// -->
+</output>
+<!-- COMPONENTS SIDEBAR END .// -->
+	</aside>
+
+
+
+<main class="col-md-9">
+
+
+<!-- ============================ COMPONENT 1  ================================= -->
+{{#with mainlogoarray}}
+<article class="card card-product-list">
+	<div class="row no-gutters">
+		<br><br>
+		<center>
+			<div class="col-md-5" style="height: 70%;">
+				<a href="#" class="img-wrap"> 
+					<img src="/images/Institutionpictures/{{mainlogo}}"> 
+				</a>
+			</div>
+		</center>
+		<br><br>
+	</div>
+	<hr>
+	<br>
+	<div class="row no-gutters">
+		<center>
+			<div class="col-md-12" style="height: 70%; margin-left: 20px;">
+				<h5>This is what it'll look like at the main page.</h5>
+			</div>
+		</center>
+	</div>
+	<br><br>
+	<div class="row">
+		<center>
+			<div class="col-md-4">
+				<div href="#" class="card card-product-grid">
+					<a href="/institution/showinstitutionpage" class="img-wrap"> <img src="/images/Institutionpictures/{{mainlogo}}"> </a>
+					<figcaption class="info-wrap">
+						<a href="/institution/showinstitutionpage" class="title">{{name}}</a>
+					</figcaption>
+				</div>
+			</div> <!-- col.// -->
+		</center>
+	</div>
+</article> <!-- card-product .// -->
+{{/with}}
+<!-- ============================ COMPONENT 1  END .// ================================= -->
+
+<!-- ============================ COMPONENT 3 .//END ================================= -->
+</main> <!-- col.// -->
+</div> <!-- row.// -->
+
+
+</div> <!-- container .//  -->
+</section>
+<script>
+	$('#institutionMainLogoUpload').on('change', function() {
+		var file = $("#institutionMainLogoUpload")[0].files[0];
+		var formdata.append('institutionMainLogoUpload', file);
+		
+		$.ajax({
+			url: 'institution_admin/institutionMainLogoUpload',
+			data: formdata,
+			contentType: false,
+			processData: false,
+			type: 'POST',
+			'success': (data) => {
+				console.log(data);
+				console.log(data.path);
+				$('#mainLogoThumbnail').attr('src', data.path);
+				$('#trueFileLogoName').attr('value', data.file);
+
+				if (data.err) {
+					$('#logoErr').show();
+					$('#logoErr').text(data.err.message);
+				}
+				else {
+					$('#logoErr').hide();
+				}
+			},
+			error: function (xhr,errorType,exception) {
+               //responseText = jQuery.parseJSON(xhr.responseText);
+               alert(" Can't do because: ", errorType);
+            }
+		})
+	});
+</script>

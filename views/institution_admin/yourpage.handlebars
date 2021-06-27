@@ -1,0 +1,997 @@
+<section class="padding-y bg">
+<div class="container">
+<div class="row">
+    <div class="col-md-12">
+        <!-- ============================ COMPONENT BANNER 7 ================================= -->
+        <div class="card-banner text-center" style="min-height:200px;">
+          <div style="margin-left: 400px;">
+			  <br>
+			  <br>
+			  <h1 class="card-title" style="font-size: 60px;">Your Page</h1>
+			  <p>Edit your institution page and let it be seen by everyone.</p>
+          </div>
+        </div>
+        <!-- ============================ COMPONENT BANNER 7  END .// =========================== -->
+    </div> <!-- col.// -->
+</div>
+</div>
+</section>
+<section class="section-content padding-y bg">
+<div class="container">
+
+<div class="row">
+<aside class="col-md-3">
+<!-- COMPONENTS SIDEBAR -->
+<output>
+<div class="card">
+	<article class="filter-group">
+		<header class="card-header">
+			<a href="#" data-toggle="collapse" data-target="#collapse_aside1">
+				<i class="icon-control fa fa-chevron-down"></i>
+				<h6 class="title">Banners</h6>
+			</a>
+		</header>
+		<div class="filter-content collapse show" id="collapse_aside1">
+			<div class="card-body">
+                    <p></p>
+					<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addbanners" name="addbanner" value="addbanner">Add Image</button>
+					<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#deletebanner" name="deletebanner" value="deletebanner">Delete image</button>
+			</div> <!-- card-body.// -->
+			<!-- ADD BANNERS HERE======================================================= -->
+			<form class="block-register" action="/institution_admin/yourpage/addbanner" method="POST" enctype="multipart/form-data">
+				<!-- Modal for addbanners -->
+				<div class="modal fade" id="addbanners" tabindex="-1" role="dialog" aria-labelledby="addbannerslabel" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="addbannerslabel">Add Image</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								<div class="form-group form-row">
+									<div class="col-md-6">
+										<label>Upload your Banner image here</label>
+										<br>
+										<img id='bannerThumbnail' name="bannerThumbnail" src="\images\Institutionpictures\banner\2.jpg" width="240" height="135" class="border">
+										<div style="position:relative; "></div>
+										<input type="file" name="institutionBannerUpload" id="institutionBannerUpload">
+										<input type="hidden" id='trueFileInstitutionName' name="trueFileInstitutionName">
+										{{!-- <input type="text" id="imgFilename" name="imgFilename" > --}}
+										<div class="font-weight-bold text-danger small" id="bannerErr" style="display:none">
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+								<button type="submit" class="btn btn-primary">Upload Image</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- end of modal for addbanners -->
+			</form>
+			<!-- ============================================================== -->
+			<!-- DELETE BANNERS HERE ========================================== -->
+			<form class="block-register" action="/institution_admin/yourpage/deletebanner" method="POST" enctype="multipart/form-data">
+				<div class="modal fade" id="deletebanner" tabindex="-1" role="dialog" aria-labelledby="deletebannerlabel" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="deletebannerlabel">Delete Banner Image</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								<div class="row">
+									<label>Choose the banner you wish to delete.</label>
+									<br>
+								</div>
+								{{#each bannerarray}}
+								<div class="row">
+									<img class="col-md-10" src="/images/Institutionpictures/banner/{{bannerpicture}}">
+									<button type="submit" name="uploaddeletebanner" value="{{banner_id}}"><span class="col-md-1">&times;</span></button>
+								</div>
+								<br>
+								{{/each}}
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+			<!-- ===================================================== -->
+		</div>
+	</article> <!-- filter-group  .// -->
+	<article class="filter-group">
+		<header class="card-header">
+			<a href="#" data-toggle="collapse" data-target="#collapse_aside6">
+				<i class="icon-control fa fa-chevron-down"></i>
+				<h6 class="title">About and offered courses</h6>
+			</a>
+		</header>
+		<div class="filter-content collapse show" id="collapse_aside6">
+			<div class="card-body">
+                    <p></p>
+					<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addabouts" name="addabout" value="addabout">Edit About</button>
+					<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addmycourses" name="addmycourse" value="addmycourse">Edit Courses</button>
+			</div> <!-- card-body.// -->
+			<!-- ADD MY ABOUT HERE======================================================= -->
+			<form class="block-register" action="/institutionAdmin/yourpage/editabout" method="POST" enctype="multipart/form-data">
+				<!-- Modal for addabout -->
+				<div class="modal fade" id="addabouts" tabindex="-1" role="dialog" aria-labelledby="addaboutlabel" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="addaboutlabel">Edit your about description</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								<div class="form-group form-row">
+									<div class="col-md-6">
+										<label>Edit your about</label>
+										<br>
+										<input class="form-control"  type="text" name="instituteAbout" value="{{instituteAbout}}" placeholder="Your description" required>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+								<button type="submit" class="btn btn-primary">Upload about</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- end of modal for addbanners -->
+			</form>
+			<!-- ============================================================== -->
+			<!-- ADD MY COURSES HERE======================================================= -->
+			<form class="block-register" action="/institutionAdmin/yourpage/editmycourses" method="POST" enctype="multipart/form-data">
+				<!-- Modal for addabout -->
+				<div class="modal fade" id="addmycourses" tabindex="-1" role="dialog" aria-labelledby="addmycourselabel" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="addmycourselabel">Edit your courses description</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								<div class="form-group form-row">
+									<div class="col-md-6">
+										<label>Edit your courses description</label>
+										<br>
+										<input class="form-control"  type="text" name="institutemycourse" value="{{institutemycourse}}" placeholder="Your description" required>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+								<button type="submit" class="btn btn-primary">Upload</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- end of modal for addbanners -->
+			</form>
+			<!-- ============================================================== -->
+		</div>
+	</article> <!-- filter-group  .// -->
+	<article class="filter-group">
+		<header class="card-header">
+			<a href="#" data-toggle="collapse" data-target="#collapse_aside2">
+				<i class="icon-control fa fa-chevron-down"></i>
+				<h6 class="title">Widgets</h6>
+			</a>
+		</header>
+		<div class="filter-content collapse show" id="collapse_aside2">
+			<div class="card-body">
+					<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addsocialmedia" name="addsm" value="addsm">Add </button>
+					<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#updatesocialmedia" name="updatesm" value="updatesm">Update</button>
+					<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#deletesocialmedia" name="deletesm" value="deletesm">Delete</button>
+					
+			</div> <!-- card-body.// -->
+			<!-- Model for Add socal media here ===================================== -->
+			<form class="block-register" action="/institutionAdmin/yourpage/addsocialmedia" method="POST" enctype="multipart/form-data">
+				<div class="modal fade" id="addsocialmedia" tabindex="-1" role="dialog" aria-labelledby="addsocialmedialabel" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="addsocialmedialabel">Add your social media</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							</div>
+							<div class="modal-body">
+								<div class="form-group form-row">
+									<div class="col-md-8">
+										<label for="socialmediaimage">Social Media Image</label>
+										<br>
+										<div>
+											<img id="socialmediaimage" src="#" alt="your image" class="float-right img-sm rounded-circle"/>
+										</div>
+										<input type="file" onchange="readURL(this);" class="float-left" name="uploadaddsm" value="{{uploadaddsm}}"/>
+									</div>
+								</div>
+								<div class="form-group form-row">
+									<div class="col-md-6">
+										<label>URL to social media</label>
+										<br>
+										<input class="form-control" type="url" name="smurl" value="{{smurl}}" placeholder="yourwebsite.com" required>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+								<button type="submit" class="btn btn-primary">Upload</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+			<!-- ===================================================================== -->
+			<!-- Model for Update socal media here ===================================== -->
+			<form class="block-register" action="/institutionAdmin/yourpage/updatesocialmedia" method="POST" enctype="multipart/form-data">
+				<div class="modal fade" id="updatesocialmedia" tabindex="-1" role="dialog" aria-labelledby="updatesocialmedialabel" aria-hidden="false">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="updatesocialmedialabel">Update your social media</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							</div>
+							<div class="modal-body">
+								<label>Choose the social media you wish to update</label>
+								<br>
+								<label class="col-md-7">Image 1</label>
+								<br>
+								<div class="form-group form-row">
+									<br>
+									<img class="img-md rounded-circle mx-auto" src=""/>
+								</div>
+								<div class="form-group form-row">
+									<p><a href="#" data-toggle="modal" class="btn btn-primary mx-auto button" data-target="#upload-avatar1"><span class="col-md-1">Update</span></a> </p>
+								</div>
+								<br><br>
+								<!-- second model for update social medida -->
+								<div class="modal fade" id="upload-avatar1" tabindex="-1" role="dialog" aria-labelledby="upload-avatar-title" aria-hidden="true">
+									<div class="modal-dialog">
+										<div class="modal-content">
+											<div class="modal-header">
+												<h4 class="modal-title" id="upload-avatar-title">Update Image 1</h4>
+												<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+											</div>
+											<div class="modal-body">
+												<div class="form-group form-row">
+													<div class="col-md-8">
+														<label for="smpictureimage">Edit any of the followings</label>
+														<br>
+														<div>
+															<img id="smpictureimage" src="" alt="your image" class="float-right img-sm rounded-circle"/>
+														</div>
+
+														<input type="file" onchange="readURL(this);" class="float-left" name="uploadaddsm" value="uploadaddsm"/>
+													</div>
+												</div>
+												<div class="form-group form-row">
+													<div class="col-md-6">
+														<label>URL to social media: </label>
+														<br>
+														<input class="form-control" type="url" name="smurl" value="smurl" placeholder="yourwebsite.com" required>
+													</div>
+												</div>
+											</div>
+											<div class="modal-footer">
+												<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+												<button type="submit" class="btn btn-primary">Save changes</button>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div id="push"></div>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+			<!-- ===================================================================== -->
+			<!-- Model for delete socal media here ===================================== -->
+			<form class="block-register" action="/institutionAdmin/yourpage" method="POST" enctype="multipart/form-data">
+				<div class="modal fade" id="deletesocialmedia" tabindex="-1" role="dialog" aria-labelledby="deletesocialmedialabel" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="deletesocialmedialabel">Delete your social media</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							</div>
+							<div class="modal-body">
+								<label>Choose which social media you wish to delete.</label>
+								<br>
+								<label class="col-md-7">Image1</label>
+								<div class="form-group form-row">
+									<img class="img-md rouded-circle mx-auto" src=""/>
+								</div>
+								<div class="form-group form-row">
+									<button class="btn btn-primary mx-auto" type="submit" name="smdelete" value="smdelete"><span class="col-md-1">Delete</span></button>
+								</div>
+								<br>
+								<br>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+			<!-- ===================================================================== -->
+		</div>
+	</article> <!-- filter-group  .// -->
+	<article class="filter-group">
+		<header class="card-header">
+			<a href="#" data-toggle="collapse" data-target="#collapse_aside3">
+				<i class="icon-control fa fa-chevron-down"></i>
+				<h6 class="title">Featured Tutors</h6>
+			</a>
+		</header>
+		<div class="filter-content collapse show" id="collapse_aside3">
+			<div class="card-body">
+					<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#tutadd" name="addtutor" value="addtutor">Feature</button>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#deletetut" name="deletetutor" value="deletetutor">Remove</button>
+			</div> <!-- card-body.// -->
+			<!-- feature tutor here ========================================= -->
+			<form class="block-register" action="/institutionAdmin/yourpage" method="POST" enctype="multipart/form-data">
+				<div class="modal fade" id="tutadd" tabindex="-1" role="dialog" aria-labelledby="addtutorlabel" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="addtutorlabel">Select your Tutor to feature</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							</div>
+							<div class="modal-body">
+								<br>
+								<br>
+								<div class="form-group form-row">
+									<br>
+									<img class="img-sm rounded-circle mx-auto" src=""/>
+									<br>
+									<label class="col-md-7">Erika Sampang</label>
+									<br>
+									<button class="btn btn-primary mx-auto" type="submit" name="featuretut" value="featuretut"><span class="col-md-1">feature</span></button>
+								</div>
+								<br><br>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+			<!-- =========================================================== -->
+			<!-- remove feature tutor here ========================================= -->
+			<form class="block-register" action="/institutionAdmin/yourpage" method="POST" enctype="multipart/form-data">
+				<div class="modal fade" id="deletetut" tabindex="-1" role="dialog" aria-labelledby="deletetutorlabel" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="deletetutorlabel">Select a tutor to remove</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							</div>
+							<div class="modal-body">
+								<br>
+								<br>
+								<div class="form-group form-row">
+									<br>
+									<img class="img-sm rounded-circle mx-auto" src=""/>
+									<br>
+									<label class="col-md-7">Erika Sampang</label>
+									<br>
+									<button class="btn btn-primary mx-auto" type="submit" name="tutordelete" value="tutordelete"><span class="col-md-1">Remove</span></button>
+								</div>
+								<br><br>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+			<!-- =========================================================== -->
+		</div>
+	</article> <!-- filter-group  .// -->
+    <article class="filter-group">
+		<header class="card-header">
+			<a href="#" data-toggle="collapse" data-target="#collapse_aside4">
+				<i class="icon-control fa fa-chevron-down"></i>
+				<h6 class="title">Featured Courses</h6>
+			</a>
+		</header>
+		<div class="filter-content collapse show" id="collapse_aside4">
+			<div class="card-body">
+					<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addtopcourses" name="addtopcourse" value="addtopcourse">Feature</button>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#deletetopcourses" name="deletetopcourse" value="deletetopcourse">Remove</button>
+			</div> <!-- card-body.// -->
+			<!-- add feature course here ========================================= -->
+			<form class="block-register" action="/institutionAdmin/yourpage" method="POST" enctype="multipart/form-data">
+				<div class="modal fade" id="addtopcourses" tabindex="-1" role="dialog" aria-labelledby="addtopcourseslabel" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="addtopcourseslabel">Select a course to feature</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							</div>
+							<div class="modal-body">
+								<br>
+								<br>
+								<div class="form-group form-row">
+									<br>
+									<img class="img-sm rounded-circle mx-auto" src=""/>
+									<br>
+									<label class="col-md-7">Erika Sampang</label>
+									<br>
+									<button class="btn btn-primary mx-auto" type="submit" name="featurecourse" value="featurecourse"><span class="col-md-1">feature</span></button>
+								</div>
+								<br><br>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+			<!-- =========================================================== -->
+			<!-- delete feature course here ========================================= -->
+			<form class="block-register" action="/institutionAdmin/yourpage" method="POST" enctype="multipart/form-data">
+				<div class="modal fade" id="deletetopcourses" tabindex="-1" role="dialog" aria-labelledby="deletetopcourseslabel" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="deletetopcourseslabel">Select a course to remove</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							</div>
+							<div class="modal-body">
+								<br>
+								<br>
+								<div class="form-group form-row">
+									<br>
+									<img class="img-sm rounded-circle mx-auto" src=""/>
+									<br>
+									<label class="col-md-7">Erika Sampang</label>
+									<br>
+									<button class="btn btn-primary mx-auto" type="submit" name="removecourse" value="removecourse"><span class="col-md-1">feature</span></button>
+								</div>
+								<br><br>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+			<!-- =========================================================== -->
+		</div>
+	</article> <!-- filter-group  .// -->
+    <article class="filter-group">
+		<header class="card-header">
+			<a href="#" data-toggle="collapse" data-target="#collapse_aside5">
+				<i class="icon-control fa fa-chevron-down"></i>
+				<h6 class="title">Seminars and Events</h6>
+			</a>
+		</header>
+		<div class="filter-content collapse show" id="collapse_aside5">
+			<div class="card-body">
+					<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addsemin" name="addseminars" value="addseminars">Add</button>
+					<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#updatesemin" name="updateseminar" value="updateseminar">Update</button>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#deletesemin" name="deleteseminar" value="deleteseminar">Delete</button>
+			</div> <!-- card-body.// -->
+			<!-- add seminar model here ========================================= -->
+			<form class="block-register" action="/institutionAdmin/yourpage" method="POST" enctype="multipart/form-data">
+				<div class="modal fade" id="addsemin" tabindex="-1" role="dialog" aria-labelledby="addseminarslabel" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="addseminarslabel">Add seminars</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								<div class="form-group form-row">
+									<div class="col-md-8">
+										<label for="seminarimage">Seminar's Image</label><br>
+											<div>
+												<img id="seminarimage" src="#" alt="your image" class="float-right img-lg"/>
+											</div>
+											<input type='file' onchange="readURL(this);" class="float-left" name="uploadaddseminars" value="uploadaddseminars"/>
+									</div>
+								</div>
+								<div class="form-group form-row">
+									<div class="col-md-6">
+										<label>Title of Seminar:</label><br>
+										<input class="form-control" type="text" name="seminartitle" value="seminartitle" placeholder="title" required>
+									</div>
+								</div>
+								<div class="form-group form-row">
+									<div class="col-md-6">
+										<label>Seminar's Description:</label><br>
+										<textarea class="form-control" name="seminardescription" value="seminardescription"></textarea>
+									</div>
+								</div>
+								<div class="form-group form-row">
+									<div class="col-md-6">
+										<label>Seminar's url:</label><br>
+										<input class="form-control" type="url" name="seminarurl" value="seminarurl" placeholder="yourwebsite.com" required>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+								<button type="submit" class="btn btn-primary">Save seminars</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+			<!-- ================================================================ -->
+			<!-- Model for Update seminar here ===================================== -->
+			<form class="block-register" action="/institutionAdmin/yourpage" method="POST" enctype="multipart/form-data">
+				<div class="modal fade" id="updatesemin" tabindex="-1" role="dialog" aria-labelledby="updateseminarlabel" aria-hidden="false">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="updateseminarlabel">Update your seminars/events</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							</div>
+							<div class="modal-body">
+								<label>Choose the seminars/events you wish to update</label>
+								<br>
+								<label class="col-md-7">Event 1</label>
+								<br>
+								<div class="form-group form-row">
+									<br>
+									<img class="img-md rounded-circle mx-auto" src=""/>
+								</div>
+								<div class="form-group form-row">
+									<p><a href="#" data-toggle="modal" class="btn btn-primary mx-auto button" data-target="#upload-seminar1"><span class="col-md-1">Update</span></a> </p>
+								</div>
+								<br><br>
+								<!-- second model for update social medida -->
+								<div class="modal fade" id="upload-seminar1" tabindex="-1" role="dialog" aria-labelledby="upload-avatar-title" aria-hidden="true">
+									<div class="modal-dialog">
+										<div class="modal-content">
+											<div class="modal-header">
+												<h4 class="modal-title" id="upload-avatar-title">Update Event 1</h4>
+												<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+											</div>
+											<div class="modal-body">
+												<div class="form-group form-row">
+													<div class="col-md-8">
+														<label for="smpictureimage">Edit any of the followings</label>
+														<br>
+														<label for="seminarimage">Seminar's Image</label><br>
+														<div>
+															<img id="seminarimagepic" src="#" alt="your image" class="float-right img-lg"/>
+														</div>
+														<input type='file' onchange="readURL(this);" class="float-left" name="uploadupdateseminar" value="uploadupdateseminar"/>
+													</div>
+												</div>
+												<div class="form-group form-row">
+													<div class="col-md-6">
+														<label>Title of Seminar:</label><br>
+														<input class="form-control" type="text" name="seminartitle" value="seminartitle" placeholder="title" required>
+													</div>
+												</div>
+												<div class="form-group form-row">
+													<div class="col-md-6">
+														<label>Seminar's Description:</label><br>
+														<textarea class="form-control" name="seminardescription" value="seminardescription"></textarea>
+													</div>
+												</div>
+												<div class="form-group form-row">
+													<div class="col-md-6">
+														<label>Seminar's url:</label><br>
+														<input class="form-control" type="url" name="seminarurl" value="seminarurl" placeholder="yourwebsite.com" required>
+													</div>
+												</div>
+											</div>
+											<div class="modal-footer">
+												<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+												<button type="submit" class="btn btn-primary">Save changes</button>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div id="push"></div>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+			<!-- ===================================================================== -->
+			<!-- delete seminar/event here ========================================= -->
+			<form class="block-register" action="/institutionAdmin/yourpage" method="POST" enctype="multipart/form-data">
+				<div class="modal fade" id="deletesemin" tabindex="-1" role="dialog" aria-labelledby="deleteseminarlabel" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="deleteseminarlabel">Select a seminar/event to remove</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							</div>
+							<div class="modal-body">
+								<br>
+								<br>
+								<div class="form-group form-row">
+									<br>
+									<img class="img-sm rounded-circle mx-auto" src=""/>
+									<br>
+									<label class="col-md-7">Event 1</label>
+									<br>
+									<button class="btn btn-primary mx-auto" type="submit" name="removecourse" value="removecourse"><span class="col-md-1">Delete</span></button>
+								</div>
+								<br><br>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+			<!-- =========================================================== -->
+			
+		</div>
+	</article> <!-- filter-group  .// -->
+</div> <!-- card.// -->
+</output>
+<!-- COMPONENTS SIDEBAR END .// -->
+	</aside>
+
+
+
+<main class="col-md-9">
+
+
+<!-- ============================ COMPONENT 1  ================================= -->
+<article class="card card-product-list">
+	<div class="row no-gutters">
+
+<!-- ========================= SECTION INTRO ========================= -->
+<section class="section-intro">
+
+{{#ifEquals bannerarray.length 0}}
+
+<div id="carousel1_indicator" class="carousel slide" data-ride="carousel">
+  <ol class="carousel-indicators">
+    <li data-target="#carousel1_indicator" data-slide-to="0" class="active"></li>
+    <li data-target="#carousel1_indicator" data-slide-to="1"></li>
+    <li data-target="#carousel1_indicator" data-slide-to="2"></li>
+  </ol>
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <img class="d-block w-100 " style="height: 420px" src="/images/banners/1.jpg" alt="First slide">
+    </div>
+    <div class="carousel-item">
+      <img class="d-block w-100 " style="height: 420px" src="/images/banners/2.jpg" alt="Second slide">
+    </div>
+    <div class="carousel-item">
+      <img class="d-block w-100 " style="height: 420px" src="/images/banners/3.jpg" alt="Third slide">
+    </div>
+  </div>
+  <a class="carousel-control-prev" href="#carousel1_indicator" role="button" data-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="carousel-control-next" href="#carousel1_indicator" role="button" data-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div>
+
+{{else}}
+
+<div id="carousel1_indicator" class="carousel slide" data-ride="carousel">
+  <ol class="carousel-indicators">
+	  {{#forloop 0 bannerarray.length 1}}
+	  		{{#ifEquals (forloop 0 bannerarray.length 1) 0}}
+				<li data-target="#carousel1_indicator" data-slide-to="{{this}}" class="active"></li>
+			{{else}}
+				<li data-target="#carousel1_indicator" data-slide-to="{{this}}"></li>
+			{{/ifEquals}}
+	{{!-- <li data-target="#carousel1_indicator" data-slide-to="2"></li> --}}
+	  {{/forloop}}
+  </ol>
+  <div class="carousel-inner">
+	  {{#each bannerarray}}
+	  	{{#ifEquals (forloop 0 bannerarray.length 1) 0}}
+		<div class="carousel-item active">
+		<img class="d-block w-100 " style="height: 420px" src="/images/Institutionpictures/banner/{{bannerpicture}}" alt="slide">
+		</div>
+		{{else}}
+		<div class="carousel-item">
+		<img class="d-block w-100 " style="height: 420px" src="/images/Institutionpictures/banner/{{bannerpicture}}" alt="slide">
+		</div>
+		{{/ifEquals}}
+    {{!-- <div class="carousel-item">
+      <img class="d-block w-100 " style="height: 420px" src="/images/banners/2.jpg" alt="Second slide">
+    </div>
+    <div class="carousel-item">
+      <img class="d-block w-100 " style="height: 420px" src="/images/banners/3.jpg" alt="Third slide">
+    </div> --}}
+	{{/each}}
+  </div>
+  <a class="carousel-control-prev" href="#carousel1_indicator" role="button" data-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="carousel-control-next" href="#carousel1_indicator" role="button" data-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div>
+
+{{/ifEquals}}
+	<!-- ========================= SECTION SPECIAL END// ========================= -->
+
+<section class="padding-y-sm">
+<div class="container">
+<article class="card card-body">
+
+
+<div class="row">
+	<div class="col-md-4">	
+		<figure class="item-feature">
+			<span class="text-primary"><i class="fa fa-2x fa-graduation-cap"></i></span>
+			<figcaption class="pt-3">
+				<h5 class="title">About Us</h5>
+				<p>smt abt the institution</p>
+			</figcaption>
+		</figure> <!-- iconbox // -->
+	</div><!-- col // -->
+	<div class="col-md-4">
+		<figure  class="item-feature">
+			<span class="text-primary"><i class="fa fa-2x fa-book"></i></span>	
+			<figcaption class="pt-3">
+				<h5 class="title">Courses we offer</h5>
+				<p>Programming, digital
+				 </p>
+			</figcaption>
+		</figure> <!-- iconbox // -->
+	</div><!-- col // -->
+    <div class="col-md-4">
+		<figure  class="item-feature">
+			<span class="text-primary"><i class="fa fa-2x fa-users"></i></span>
+			<figcaption class="pt-3">
+				<h5 class="title">Check out our tutors</h5>
+				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+				 </p>
+			</figcaption>
+		</figure> <!-- iconbox // -->
+	</div> <!-- col // -->
+</div>
+</article>
+
+</div> <!-- container .//  -->
+</section>
+
+	<!-- social media -->
+	<footer class="section-footer">
+		<div class="container">
+			<br><br>
+			<div class="d-flex justify-content-center">
+				<h3>Connect with Us!</h3>
+			</div>
+
+			<br><br>
+			<center>
+				<div class="d-flex justify-content-center">
+					<ul>
+					<ul class="list-inline media-body">
+					<div class="list-inline-item">
+						<a href="https://www.nyp.edu.sg/"><img class="d-block img-sm rounded-circle" src="/images/Institutionpictures/socialmedia/2.jpg"></a>
+					</div>
+					</ul>
+				</div>
+			</center>
+		</div><!-- //container -->
+	</footer>
+	<!-- end of social media -->
+	<br><br><br><br>
+	<!-- ========================= SECTION  ========================= -->
+	<section>
+		<br>
+		<h4 class="card-title mb-4" style="width: 100%; text-align: center; border-bottom: 1px solid #000; line-height: 0.1em; margin: 10px 0 20px;"><span style="background:#fff; padding: 0 50px;">Featured Tutors</span></h4>
+		<br><br>
+		<!-- tutors here -->
+		<center>
+			<div class="row  d-flex justify-content-center">
+				<div class="d-flex justify-content-center">
+					<ul>
+								<li class="list-inline-item">
+									<img class="img-md rounded-circle mx-auto" src="/images/Institutionpictures/socialmedia/2.jpg">
+									<br>
+									<label></label>
+								</li>
+					</ul>
+				</div>
+			</div>
+		</center>
+		<!-- end of tutors -->
+		<br><br><br>
+	</section>
+	<br><br>
+	<section>
+		<br>
+		<h5 class="card-title mb-4" style="width: 100%; text-align: center; border-bottom: 1px solid #000; line-height: 0.1em; margin: 10px 0 20px;"><span style="background:#fff; padding: 0 50px;">Top Courses</span></h5>
+		<br><br>
+		<!-- Top courses-->
+		<div class="row d-flex justify-content-center">
+			<div class="col-sm-4 mt-3">
+				<div class="card">
+					<div class="card-body">
+						<img class="card-img-top" src="/images/banners/banner9.jpg" alt="Card image cap">
+						<h5 class="card-title">Digital Business</h5>
+						<p class="card-text">Students will learn the goals and essentials of business operations and the various industries that businesses operate in.</p>
+						<a href="#" class="btn btn-primary">Learn More</a>
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-4 mt-3">
+				<div class="card">
+					<div class="card-body">
+						<img class="card-img-top" src="/images/banners/banner8.jpg" alt="Card image cap">
+						<h5 class="card-title">UX Design</h5>
+						<p class="card-text">Students will appreciate the concepts of User Experience (UX) and UX design.</p>
+						<a href="#" class="btn btn-primary">Learn More</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- end of top courses-->
+		<br><br>
+	</section>
+	<br>
+	<section>
+		<h5 class="card-title mb-4" style="width: 100%; text-align: center; border-bottom: 1px solid #000; line-height: 0.1em; margin: 10px 0 20px;"><span style="background:#fff; padding: 0 50px;">Seminars / Events</span></h5>
+		<br><br>
+		<!-- seminar / Events-->
+
+				<div class="row d-flex justify-content-center">
+					<div class="col-sm-4 mt-3">
+						<div class="card">
+							<div class="card-body">
+								<img class="card-img-top" src="">
+								<h5 class="card-title"></h5>
+								<p class="card-text"></p>
+								<a href="" class="btn btn-primary">Learn more!</a>
+							</div>
+						</div>
+					</div>
+				</div>
+		<!-- end of seminar/ events-->
+		<br><br>
+	</section>
+</section>
+
+<!-- ========================= SECTION  END// ========================= -->
+
+<!-- ========================= FOOTER ========================= -->
+
+<!-- ========================= FOOTER END // ========================= -->
+
+	</div> <!-- row.// -->
+</article> <!-- card-product .// -->
+<!-- ============================ COMPONENT 1  END .// ================================= -->
+
+<!-- ============================ COMPONENT 3 .//END ================================= -->
+</main> <!-- col.// -->
+</div> <!-- row.// -->
+
+
+</div> <!-- container .//  -->
+</section>
+<script>
+	function readURL(input) {
+		if (input.files && input.file[0]) {
+			var reader = new FileReader();
+
+			reader.onload = function (e) {
+				$('#socalmediaimage')
+					.attr('src', e.target.result)
+					.width(150)
+					.height(150);
+				
+				$('#smupdate')
+					.attr('src', e.target.result)
+					.width(150)
+					.height(150);
+				
+				$('#tutorimage')
+					.attr('src', e.target.result)
+					.width(150)
+					.height(150);
+				
+				$('#seminarimage')
+					.attr('src', e.target.result)
+					.width(150)
+					.height(150);
+				
+				$('#smpictureimage')
+					.attr('src', e.target.result)
+					.width(150)
+					.height(150);
+				
+				$('institutiontutorimagepic')
+					.attr('src', e.target.result)
+					.width(150)
+					.height(150);
+				
+				$('smupdate')
+					.attr('src', e.target.result)
+					.width(150)
+					.height(150);
+				
+				$('#seminarimagepic')
+                    .attr('src', e.target.result)
+                    .width(150)
+                    .height(150);
+					
+			};
+
+			reader.readAsDataURL(input.files[0]);
+		}
+	}
+
+
+	$('#institutionBannerUpload').on('change', function() {
+		var file = $("#institutionBannerUpload")[0].files[0];
+		var formdata = new FormData();
+		formdata.append('institutionBannerUpload', file);
+		//alert(file.name)
+		//document.getElementById("imgFilename") = file.name;
+		//$('#imgFilename') = "XCoder";
+		//$('#imgFilename').attr('value', file.name);
+
+		$.ajax({
+			url: '/institution_admin/institutionBannerUpload',
+			data: formdata,
+			contentType: false,
+			processData: false,
+			type: 'POST',
+			'success': (data) => {
+				console.log(data);
+				console.log(data.path);
+				$('#bannerThumbnail').attr('src', data.path);
+				$('#trueFileInstitutionName').attr('value', data.file);
+				
+				if (data.err) {
+					$('#bannerErr').show();
+					$('#bannerErr').text(data.err.message);
+				}
+				else {
+					$('#bannerErr').hide();
+				}
+			},
+			error: function (xhr,errorType,exception) {
+               //responseText = jQuery.parseJSON(xhr.responseText);
+               alert(" Can't do because: ", errorType);
+            }
+
+
+		});
+	});
+</script>

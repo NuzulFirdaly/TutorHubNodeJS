@@ -9,6 +9,13 @@ const Calendar = require('../models/Calendar');
 
 const RateReview = require('../models/RateReview');
 
+const PendingInstitution = require('../models/PendingInstitution');
+const Institution = require('../models/Institution');
+const Banners = require('../models/banners');
+const Descriptions = require('../models/descriptions');
+const Widgets = require('../models/widgets');
+const SeminarEvents = require('../models/seminarevents');
+
 // const user = require('../models/User');
 // const video = require('../models/Video');
 
@@ -38,6 +45,18 @@ const setUpDB = (drop) => {
             RateReview.belongsTo(User, { foreignKey: "TutorId" });
             User.hasMany(RateReview, { foreignKey: "UserId" });
             RateReview.belongsTo(User, { foreignKey: "UserId" });
+
+            // institution --------
+            User.hasOne(Institution, { foreignKey: { type: Sequelize.UUID, allowNull: false } });
+            Institution.belongsTo(User);
+            Institution.hasMany(Banners, { foreignKey: { type: Sequelize.UUID, allowNull: false } });
+            Banners.belongsTo(Institution);
+            Institution.hasMany(Descriptions, { foreignKey: { type: Sequelize.UUID, allowNull: false } });
+            Descriptions.belongsTo(Institution);
+            Institution.hasMany(Widgets, { foreignKey: { type: Sequelize.UUID, allowNull: false } });
+            Widgets.belongsTo(Institution);
+            Institution.hasMany(SeminarEvents, { foreignKey: { type: Sequelize.UUID, allowNull: false } });
+            SeminarEvents.belongsTo(Institution);
             // user.hasMany(video);
             mySQLDB.sync({ // Creates table if none exists
                 force: drop
