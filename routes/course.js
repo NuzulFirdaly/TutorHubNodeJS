@@ -21,12 +21,12 @@ const RateReview = require('../models/RateReview');
 
 //change this to database where admin can add
 categories = {
-    'GRAPHIC DESIGN': ['LOGO DESIGN', 'BRAND STYLE GUIDES', 'GAME ART', 'RESUME DESIGN'],
-    'DIGITAL MARKETING': ['SOCIAL MEDIA ADVERTISING', 'SEO', 'PODCAST MARKETING', 'SURVEY', 'WEB TRAFFIC'],
-    'WRITING & TRANSLATION': ['ARTICLES & BLOG POSTS'],
-    'PROGRAMMING & TECH': ['WEB PROGRAMMING', 'E-COMMERCE DEVELOPMENT', 'MOBILE APPLS', 'DESKTOP APPLICATIONS', 'DATABASES', 'USER TESTING']
-}
-//a route so that our createcourse select field can fetch the data
+        'GRAPHIC DESIGN': ['LOGO DESIGN', 'BRAND STYLE GUIDES', 'GAME ART', 'RESUME DESIGN'],
+        'DIGITAL MARKETING': ['SOCIAL MEDIA ADVERTISING', 'SEO', 'PODCAST MARKETING', 'SURVEY', 'WEB TRAFFIC'],
+        'WRITING & TRANSLATION': ['ARTICLES & BLOG POSTS'],
+        'PROGRAMMING & TECH': ['WEB PROGRAMMING', 'E-COMMERCE DEVELOPMENT', 'MOBILE APPLS', 'DESKTOP APPLICATIONS', 'DATABASES', 'USER TESTING']
+    }
+    //a route so that our createcourse select field can fetch the data
 router.get("/category/:category", (req, res) => {
     choicesArray = categories[req.params.category]
     res.end(JSON.stringify({ "subcategories": choicesArray }));
@@ -37,15 +37,14 @@ router.get("/CreateCourse", (req, res) => {
         res.render("course/coursecreation", {
             user: req.user.dataValues, //have to do this for all pages
         })
-    }
-    else {
+    } else {
         res.redirect("/")
     };
 
 });
 
 router.post("/courseThumbnailUpload", (req, res) => {
-    courseThumbnailUpload(req, res, async (err) => {
+    courseThumbnailUpload(req, res, async(err) => {
         console.log("profile picture upload printing req.file.filename")
         console.log(req.file)
         if (err) {
@@ -63,59 +62,58 @@ router.post("/courseThumbnailUpload", (req, res) => {
         }
     });
 })
-router.post("/CreateCourse",
-    [
-        body('coursetitle').not().isEmpty().trim().escape().withMessage("Course Title is invalid"),
-        body('courseThumbnailUpload').not().isEmpty().trim().escape().withMessage("please select a course thumbnail"),
-        body('trueFileName').not().isEmpty().trim().escape().withMessage("please select a course thumbnail"),
-        body('short_description').not().isEmpty().trim().escape().withMessage("Short description is invalid"),
-        body('description').not().isEmpty().trim().escape().withMessage("description is invalid"),
-        body('category').not().isEmpty().trim().escape().withMessage("please select a category"),
-        body('subcategory').not().isEmpty().trim().escape().withMessage("subcategory is invalid")
-    ]
-    , (req, res) => {
-        console.log(req.body);
-        let { coursetitle, category, subcategory, short_description, description, courseThumbnailUpload, trueFileName } = req.body;
-        let errors = [];
-        const validatorErrors = validationResult(req);
-        if (!validatorErrors.isEmpty()) { //if isEmpty is false
-            console.log("There are errors")
-            validatorErrors.array().forEach(error => {
-                console.log(error);
-                errors.push({ text: error.msg })
+router.post("/CreateCourse", [
+    body('coursetitle').not().isEmpty().trim().escape().withMessage("Course Title is invalid"),
+    body('courseThumbnailUpload').not().isEmpty().trim().escape().withMessage("please select a course thumbnail"),
+    body('trueFileName').not().isEmpty().trim().escape().withMessage("please select a course thumbnail"),
+    body('short_description').not().isEmpty().trim().escape().withMessage("Short description is invalid"),
+    body('description').not().isEmpty().trim().escape().withMessage("description is invalid"),
+    body('category').not().isEmpty().trim().escape().withMessage("please select a category"),
+    body('subcategory').not().isEmpty().trim().escape().withMessage("subcategory is invalid")
+], (req, res) => {
+    console.log(req.body);
+    let { coursetitle, category, subcategory, short_description, description, courseThumbnailUpload, trueFileName } = req.body;
+    let errors = [];
+    const validatorErrors = validationResult(req);
+    if (!validatorErrors.isEmpty()) { //if isEmpty is false
+        console.log("There are errors")
+        validatorErrors.array().forEach(error => {
+            console.log(error);
+            errors.push({ text: error.msg })
+        })
+        res.render("course/coursecreation", {
+            user: req.user.dataValues, //have to do this for all pages
+            errors
+        })
+    } else {
+        userid = req.user.dataValues.user_id;
+        console.log(userid)
+        Course.create({ Title: coursetitle, Category: category, Subcategory: subcategory, Short_description: short_description, Description: description, userUserId: userid, Course_thumbnail: trueFileName })
+            .then(course => {
+                alertMessage(res, 'success', course.Title + ' added.', 'fas fa-sign-in-alt', true);
+                res.redirect('/course/CreateSession/' + course.course_id);
             })
-            res.render("course/coursecreation", {
-                user: req.user.dataValues, //have to do this for all pages
-                errors
-            })
-        } else {
-            userid = req.user.dataValues.user_id;
-            console.log(userid)
-            Course.create({ Title: coursetitle, Category: category, Subcategory: subcategory, Short_description: short_description, Description: description, userUserId: userid, Course_thumbnail: trueFileName })
-                .then(course => {
-                    alertMessage(res, 'success', course.Title + ' added.', 'fas fa-sign-in-alt', true);
-                    res.redirect('/course/CreateSession/' + course.course_id);
-                })
-                .catch(err => console.log(err));
-        }
-    });
+            .catch(err => console.log(err));
+    }
+});
 
 router.get("/CreateSession/:courseid", (req, res) => {
     if ((req.user != null) && (req.user.AccountTypeID == 1)) {
         course_id = req.params.courseid
-        //raw: true need because we dont want other attributes like _previousdatavalue
-        Lessons.findAll({ where: { courseListingCourseId: course_id }, raw: true, order: [['session_no', 'ASC']] })
+            //raw: true need because we dont want other attributes like _previousdatavalue
+        Lessons.findAll({ where: { courseListingCourseId: course_id }, raw: true, order: [
+                ['session_no', 'ASC']
+            ] })
 
-            //lessons are all the lessons from the course id(return multiple lessons)
-            .then((lessons) => {
-                res.render("course/sessioncreation", {
-                    sessionarray: lessons,
-                    course_id: course_id,
-                    user: req.user.dataValues,
-                })
-            });
-    }
-    else {
+        //lessons are all the lessons from the course id(return multiple lessons)
+        .then((lessons) => {
+            res.render("course/sessioncreation", {
+                sessionarray: lessons,
+                course_id: course_id,
+                user: req.user.dataValues,
+            })
+        });
+    } else {
         res.redirect("/")
     };
 })
@@ -138,8 +136,10 @@ router.get("/CreateSession/:courseid", (req, res) => {
 //     }
 // })
 
-router.post("/CreateSession/:courseid", async (req, res) => {
-    await Lessons.findAll({ where: { courseListingCourseId: req.params.courseid }, raw: true, order: [['session_no', 'ASC']] })
+router.post("/CreateSession/:courseid", async(req, res) => {
+    await Lessons.findAll({ where: { courseListingCourseId: req.params.courseid }, raw: true, order: [
+                ['session_no', 'ASC']
+            ] })
         //lessons are all the lessons from the course id(return multiple lessons)
         .then((lessons) => {
             let errors = [];
@@ -156,8 +156,7 @@ router.post("/CreateSession/:courseid", async (req, res) => {
             } else {
                 if ((req.user) && (req.user.AccountTypeID == 1)) {
                     res.redirect(301, '/course/addpricing/' + req.params.courseid)
-                }
-                else {
+                } else {
                     res.redirect("/")
                 }
                 //render session and push error saying need to have 1 cost
@@ -193,56 +192,56 @@ router.get("/addnewlesson/:courseid", (req, res) => {
             course_id: req.params.courseid,
             user: req.user.dataValues,
         })
-    }
-    else {
+    } else {
         res.redirect("/")
     };
 
 })
-router.post("/addnewlesson/:courseid",
-    [
-        body('title').not().isEmpty().trim().escape().withMessage("Session Title is invalid"),
-        body('session_description').not().isEmpty().trim().escape().withMessage("Session Title is invalid"),
-        body('time_approx').not().isEmpty().trim().escape().withMessage("Session Title is invalid")
-    ]
-    , (req, res) => {
-        let { title, session_description, time_approx } = req.body
-        let errors = [];
-        sessioncount = 0
-        const validatorErrors = validationResult(req);
-        if (!validatorErrors.isEmpty()) { //if isEmpty is false
-            console.log("There are errors")
-            validatorErrors.array().forEach(error => {
-                console.log(error);
-                errors.push({ text: error.msg })
+router.post("/addnewlesson/:courseid", [
+    body('title').not().isEmpty().trim().escape().withMessage("Session Title is invalid"),
+    body('session_description').not().isEmpty().trim().escape().withMessage("Session Title is invalid"),
+    body('time_approx').not().isEmpty().trim().escape().withMessage("Session Title is invalid")
+], (req, res) => {
+    let { title, session_description, time_approx } = req.body
+    let errors = [];
+    sessioncount = 0
+    const validatorErrors = validationResult(req);
+    if (!validatorErrors.isEmpty()) { //if isEmpty is false
+        console.log("There are errors")
+        validatorErrors.array().forEach(error => {
+            console.log(error);
+            errors.push({ text: error.msg })
+        })
+        res.render(`course/addnewlesson/${req.params.courseid}`, {
+            user: req.user.dataValues, //have to do this for all pages
+            errors
+        })
+    } else {
+        //to get the current count
+        Lessons.findAll({
+                where: { courseListingCourseId: req.params.courseid },
+                raw: true,
+                order: [
+                    ['session_no', 'ASC']
+                ]
             })
-            res.render(`course/addnewlesson/${req.params.courseid}`, {
-                user: req.user.dataValues, //have to do this for all pages
-                errors
-            })
-        } else {
-            //to get the current count
-            Lessons.findAll({
-                where: { courseListingCourseId: req.params.courseid }, raw: true, order: [
-                    ['session_no', 'ASC']]
-            })
-                //lessons are all the lessons from the course id(return multiple lessons)
-                .then((lessons) => {
-                    console.log(lessons)
-                    sessioncount = lessons.length
-                    console.log("printing session count")
-                    console.log(sessioncount)
-                    console.log("Going to create session now")
-                    Lessons.create({ session_no: sessioncount + 1, session_title: title, session_description: session_description, time_approx: time_approx, courseListingCourseId: req.params.courseid })
-                        .then(lesson => {
-                            console.log("succesfully create session redirecting now")
-                            alertMessage(res, 'success', lesson.session_title + ' added.', 'fas fa-sign-in-alt', true);
-                            res.redirect(301, '/course/CreateSession/' + req.params.courseid)
-                        })
-                });
-        }
+            //lessons are all the lessons from the course id(return multiple lessons)
+            .then((lessons) => {
+                console.log(lessons)
+                sessioncount = lessons.length
+                console.log("printing session count")
+                console.log(sessioncount)
+                console.log("Going to create session now")
+                Lessons.create({ session_no: sessioncount + 1, session_title: title, session_description: session_description, time_approx: time_approx, courseListingCourseId: req.params.courseid })
+                    .then(lesson => {
+                        console.log("succesfully create session redirecting now")
+                        alertMessage(res, 'success', lesson.session_title + ' added.', 'fas fa-sign-in-alt', true);
+                        res.redirect(301, '/course/CreateSession/' + req.params.courseid)
+                    })
+            });
+    }
 
-    })
+})
 
 function* enumerate(it, start = 1) {
     let i = start
@@ -252,13 +251,17 @@ function* enumerate(it, start = 1) {
 }
 
 router.post("/deletelesson/:courseid/:sessionno", (req, res) => {
-    Lessons.findAll({ where: { courseListingCourseId: req.params.courseid }, raw: true, order: [['session_no', 'ASC']] })
+    Lessons.findAll({ where: { courseListingCourseId: req.params.courseid }, raw: true, order: [
+                ['session_no', 'ASC']
+            ] })
         .then(lessons => {
             //deleting lesson with session no
             console.log(lessons)
-            Lessons.destroy({ where: { session_no: req.params.sessionno } }).then(function () {
+            Lessons.destroy({ where: { session_no: req.params.sessionno } }).then(function() {
                 //updating all lessons number
-                Lessons.findAll({ where: { courseListingCourseId: req.params.courseid }, raw: true, order: [['session_no', 'ASC']] })
+                Lessons.findAll({ where: { courseListingCourseId: req.params.courseid }, raw: true, order: [
+                            ['session_no', 'ASC']
+                        ] })
                     .then(lessons => {
 
                         console.log("========== after delet ===========")
@@ -281,7 +284,9 @@ router.get("/addpricing/:courseid", (req, res) => {
     if ((req.user != null) && (req.user.AccountTypeID == 1)) {
         course_id = req.params.courseid
         console.log(course_id)
-        Lessons.findAll({ where: { courseListingCourseId: course_id }, raw: true, order: [['session_no', 'ASC']] })
+        Lessons.findAll({ where: { courseListingCourseId: course_id }, raw: true, order: [
+                    ['session_no', 'ASC']
+                ] })
             //lessons are all the lessons from the course id(return multiple lessons)
             .then((lessons) => {
                 sessioncount = lessons.length;
@@ -296,8 +301,7 @@ router.get("/addpricing/:courseid", (req, res) => {
                     sessioncount: sessioncount
                 })
             });
-    }
-    else {
+    } else {
         res.redirect("/")
     };
 })
@@ -305,11 +309,10 @@ router.get("/addpricing/:courseid", (req, res) => {
 router.post("/addnewpricing/:courseid", (req, res) => {
     let { hourlyrate, minimumdays, maximumdays } = req.body;
     CourseListing.update({
-        Hourlyrate: hourlyrate,
-        Maximumdays: maximumdays,
-        Minimumdays: minimumdays,
-    },
-        { where: { course_id: req.params.courseid } })
+            Hourlyrate: hourlyrate,
+            Maximumdays: maximumdays,
+            Minimumdays: minimumdays,
+        }, { where: { course_id: req.params.courseid } })
         .then(course => {
             console.log(course)
             res.redirect(301, "/course/mycourses")
@@ -320,8 +323,9 @@ router.get("/mycourses", (req, res) => {
     if ((req.user != null) && (req.user.AccountTypeID == 1)) {
         tutor_id = req.user.dataValues.user_id;
         CourseListing.findAll({
-            where: { userUserId: tutor_id }, raw: true
-        })
+                where: { userUserId: tutor_id },
+                raw: true
+            })
             .then((courses) => {
 
                 console.log(courses);
@@ -331,8 +335,7 @@ router.get("/mycourses", (req, res) => {
                     coursesarray: courses
                 })
             });
-    }
-    else {
+    } else {
         res.redirect("/")
     };
 });
@@ -344,84 +347,93 @@ router.get("/viewcourse/:courseid", (req, res) => {
 
     courseid = req.params.courseid;
     CourseListing.findAll({
-        where: { course_id: courseid }, include: [Lessons, User], order: [[Lessons, 'session_no', 'ASC']]
-    })
+            where: { course_id: courseid },
+            include: [Lessons, User],
+            order: [
+                [Lessons, 'session_no', 'ASC']
+            ]
+        })
         .then(course => {
             console.log("THIS IS COURSE NUZULLLLLLLL")
             console.log(course)
             RateReview.findAll({ where: { CourseId: courseid }, include: [User] })
 
-                .then(ratereviews => {
-                    RateReview.findAll({
-                        attributes: [[Sequelize.fn('avg', Sequelize.col('Rating')), 'avgRating']],
+            .then(ratereviews => {
+                RateReview.findAll({
+                        where: { CourseId: courseid },
+                        attributes: [
+                            [Sequelize.fn('avg', Sequelize.col('Rating')), 'avgRating']
+                        ],
                         raw: true,
                     })
-                        .then(async function (avgRating) {
-                            if (!avgRating) {
-                                avgRating = 0;
-                            }
+                    .then(async function(avgRating) {
+                        if (!avgRating) {
+                            avgRating = 0;
+                        }
 
-                            if (req.user) {
-                                console.log("ymca")
-                                console.log(req.user.user_id)
-                                await RateReview.findOne({ where: { UserId: req.user.user_id }, include: [User] })
-                                    .then(yourRateReview => {
-                                        console.log('gjfdjgjldfgj')
-                                        course = JSON.parse(JSON.stringify(course, null, 2))[0]
-                                        yourRateReview = yourRateReview
-                                        if (yourRateReview) {
-                                            console.log("kms")
-                                            console.log(JSON.parse(JSON.stringify(ratereviews, null, 2)))
-                                            res.render("course/viewcourse", {
-                                                users: req.user.dataValues, //have to do this for all pages
-                                                course,
-                                                avgRating: avgRating[0].avgRating,
-                                                yourRateReview: yourRateReview.dataValues,
-                                                ratereviews: JSON.parse(JSON.stringify(ratereviews, null, 2))
-                                            })
-                                        }
-                                        else {
-                                            console.log(JSON.parse(JSON.stringify(ratereviews, null, 2)))
-                                            console.log(ratereviews)
-                                            console.log(avgRating)
-                                            console.log("yopopropr")
-                                            res.render("course/viewcourse", {
-                                                users: req.user.dataValues, //have to do this for all pages
-                                                course,
-                                                avgRating: avgRating[0].avgRating,
-                                                ratereviews: JSON.parse(JSON.stringify(ratereviews, null, 2))
-                                            })
-                                        }
-                                    })
-                                    .catch(error => console.log(error));
-                            }
-                            else { // console.log(course);
-                                console.log("================")
-                                // console.log(JSON.stringify(course, null, 2))
-                                console.log("================")
-                                course = JSON.parse(JSON.stringify(course, null, 2))[0]
-                                res.render("course/viewcourse", {
-                                    course: course,
-                                    avgRating: avgRating[0].avgRating,
-                                    ratereviews: JSON.parse(JSON.stringify(ratereviews, null, 2))
+                        if (req.user) {
+                            console.log("ymca")
+                            console.log(req.user.user_id)
+                            await RateReview.findOne({ where: { CourseId: courseid, UserId: req.user.user_id }, include: [User] })
+                                .then(yourRateReview => {
+                                    console.log('gjfdjgjldfgj')
+                                    course = JSON.parse(JSON.stringify(course, null, 2))[0]
+                                    yourRateReview = yourRateReview
+                                    if (yourRateReview) {
+                                        console.log("kms")
+                                        console.log(JSON.parse(JSON.stringify(ratereviews, null, 2)))
+                                        res.render("course/viewcourse", {
+                                            users: req.user.dataValues, //have to do this for all pages
+                                            course,
+                                            avgRating: avgRating[0].avgRating,
+                                            yourRateReview: yourRateReview.dataValues,
+                                            ratereviews: JSON.parse(JSON.stringify(ratereviews, null, 2))
+                                        })
+                                    } else {
+                                        console.log(JSON.parse(JSON.stringify(ratereviews, null, 2)))
+                                        console.log(ratereviews)
+                                        console.log(avgRating)
+                                        console.log("yopopropr")
+                                        res.render("course/viewcourse", {
+                                            users: req.user.dataValues, //have to do this for all pages
+                                            course,
+                                            avgRating: avgRating[0].avgRating,
+                                            ratereviews: JSON.parse(JSON.stringify(ratereviews, null, 2))
+                                        })
+                                    }
                                 })
+                                .catch(error => console.log(error));
+                        } else { // console.log(course);
+                            console.log("================")
+                                // console.log(JSON.stringify(course, null, 2))
+                            console.log("================")
+                            course = JSON.parse(JSON.stringify(course, null, 2))[0]
+                            res.render("course/viewcourse", {
+                                course: course,
+                                avgRating: avgRating[0].avgRating,
+                                ratereviews: JSON.parse(JSON.stringify(ratereviews, null, 2))
+                            })
 
-                            }
+                        }
 
-                        });
-                })
+                    });
+            })
         }).catch(error => console.log(error));
 })
 
 router.get("/updatecourse/:courseid", (req, res) => {
     courseid = req.params.courseid
     CourseListing.findAll({
-        where: { course_id: courseid }, include: [Lessons, User], order: [[Lessons, 'session_no', 'ASC']]
-    })
+            where: { course_id: courseid },
+            include: [Lessons, User],
+            order: [
+                [Lessons, 'session_no', 'ASC']
+            ]
+        })
         .then(course => {
             // console.log(course);
             console.log("================")
-            // console.log(JSON.stringify(course, null, 2))
+                // console.log(JSON.stringify(course, null, 2))
             course = JSON.parse(JSON.stringify(course, null, 2))[0]
             console.log(course)
             console.log("================")
@@ -430,8 +442,7 @@ router.get("/updatecourse/:courseid", (req, res) => {
                     user: req.user.dataValues, //have to do this for all pages
                     course
                 })
-            }
-            else {
+            } else {
                 res.redirect("/")
             };
 
@@ -447,8 +458,7 @@ router.get("/editcourse/:courseid", (req, res) => {
                     user: req.user.dataValues, //have to do this for all pages
                     course: course
                 })
-            }
-            else {
+            } else {
                 res.render("/")
             };
         })
@@ -467,86 +477,89 @@ router.post("/editcourse/:courseid", (req, res) => {
 
 //get editaddnewsession
 router.get('/editaddnewlesson/:courseid', (req, res) => {
-    if ((req.user != null) && (req.user.AccountTypeID == 1)) {
-        res.render("course/editaddnewlesson", {
-            course_id: req.params.courseid,
-            user: req.user.dataValues,
-        })
-    }
-    else {
-        res.redirect("/")
-    };
-})
-//post editaddnewsession
-router.post('/editaddnewlesson/:courseid',
-    [
-        body('title').not().isEmpty().trim().escape().withMessage("Session Title is invalid"),
-        body('session_description').not().isEmpty().trim().escape().withMessage("Session Title is invalid"),
-        body('time_approx').not().isEmpty().trim().escape().withMessage("Session Title is invalid")
-    ]
-    , (req, res) => {
-        let { title, session_description, time_approx } = req.body
-        let errors = [];
-        sessioncount = 0
-        const validatorErrors = validationResult(req);
-        if (!validatorErrors.isEmpty()) { //if isEmpty is false
-            console.log("There are errors")
-            validatorErrors.array().forEach(error => {
-                console.log(error);
-                errors.push({ text: error.msg })
-            })
-            res.render(`course/editaddnewlesson/${req.params.courseid}`, {
-                user: req.user.dataValues, //have to do this for all pages
-                errors
+        if ((req.user != null) && (req.user.AccountTypeID == 1)) {
+            res.render("course/editaddnewlesson", {
+                course_id: req.params.courseid,
+                user: req.user.dataValues,
             })
         } else {
-            //to get the current count
-            Lessons.findAll({
-                where: { courseListingCourseId: req.params.courseid }, raw: true, order: [
-                    ['session_no', 'ASC']]
-            })
-                //lessons are all the lessons from the course id(return multiple lessons)
-                .then((lessons) => {
-                    console.log(lessons)
-                    sessioncount = lessons.length
-                    console.log("printing session count")
-                    console.log(sessioncount)
-                    console.log("Going to create session now")
-                    Lessons.create({ session_no: sessioncount + 1, session_title: title, session_description: session_description, time_approx: time_approx, courseListingCourseId: req.params.courseid })
-                        .then(lesson => {
-                            console.log("succesfully create session redirecting now")
-                            alertMessage(res, 'success', lesson.session_title + ' added.', 'fas fa-sign-in-alt', true);
-                            res.redirect(301, '/course/editlesson/' + req.params.courseid)
-                        })
-                });
-        }
-
+            res.redirect("/")
+        };
     })
+    //post editaddnewsession
+router.post('/editaddnewlesson/:courseid', [
+    body('title').not().isEmpty().trim().escape().withMessage("Session Title is invalid"),
+    body('session_description').not().isEmpty().trim().escape().withMessage("Session Title is invalid"),
+    body('time_approx').not().isEmpty().trim().escape().withMessage("Session Title is invalid")
+], (req, res) => {
+    let { title, session_description, time_approx } = req.body
+    let errors = [];
+    sessioncount = 0
+    const validatorErrors = validationResult(req);
+    if (!validatorErrors.isEmpty()) { //if isEmpty is false
+        console.log("There are errors")
+        validatorErrors.array().forEach(error => {
+            console.log(error);
+            errors.push({ text: error.msg })
+        })
+        res.render(`course/editaddnewlesson/${req.params.courseid}`, {
+            user: req.user.dataValues, //have to do this for all pages
+            errors
+        })
+    } else {
+        //to get the current count
+        Lessons.findAll({
+                where: { courseListingCourseId: req.params.courseid },
+                raw: true,
+                order: [
+                    ['session_no', 'ASC']
+                ]
+            })
+            //lessons are all the lessons from the course id(return multiple lessons)
+            .then((lessons) => {
+                console.log(lessons)
+                sessioncount = lessons.length
+                console.log("printing session count")
+                console.log(sessioncount)
+                console.log("Going to create session now")
+                Lessons.create({ session_no: sessioncount + 1, session_title: title, session_description: session_description, time_approx: time_approx, courseListingCourseId: req.params.courseid })
+                    .then(lesson => {
+                        console.log("succesfully create session redirecting now")
+                        alertMessage(res, 'success', lesson.session_title + ' added.', 'fas fa-sign-in-alt', true);
+                        res.redirect(301, '/course/editlesson/' + req.params.courseid)
+                    })
+            });
+    }
+
+})
 
 router.get("/editlesson/:courseid", (req, res) => {
     if ((req.user != null) && (req.user.AccountTypeID == 1)) {
         course_id = req.params.courseid
         console.log(course_id)
-        //raw: true need because we dont want other attributes like _previousdatavalue
-        Lessons.findAll({ where: { courseListingCourseId: course_id }, raw: true, order: [['session_no', 'ASC']] })
+            //raw: true need because we dont want other attributes like _previousdatavalue
+        Lessons.findAll({ where: { courseListingCourseId: course_id }, raw: true, order: [
+                ['session_no', 'ASC']
+            ] })
 
-            //lessons are all the lessons from the course id(return multiple lessons)
-            .then((lessons) => {
-                console.log(lessons)
-                res.render("course/editlesson", {
-                    lessons,
-                    course_id: course_id,
-                    user: req.user.dataValues,
-                })
-            });
-    }
-    else {
+        //lessons are all the lessons from the course id(return multiple lessons)
+        .then((lessons) => {
+            console.log(lessons)
+            res.render("course/editlesson", {
+                lessons,
+                course_id: course_id,
+                user: req.user.dataValues,
+            })
+        });
+    } else {
         res.redirect("/")
     };
 });
 
-router.post("/editlesson/:courseid", async (req, res) => {
-    await Lessons.findAll({ where: { courseListingCourseId: req.params.courseid }, raw: true, order: [['session_no', 'ASC']] })
+router.post("/editlesson/:courseid", async(req, res) => {
+    await Lessons.findAll({ where: { courseListingCourseId: req.params.courseid }, raw: true, order: [
+                ['session_no', 'ASC']
+            ] })
         //lessons are all the lessons from the course id(return multiple lessons)
         .then((lessons) => {
             let errors = [];
@@ -563,8 +576,7 @@ router.post("/editlesson/:courseid", async (req, res) => {
             } else {
                 if ((req.user) && (req.user.AccountTypeID == 1)) {
                     res.redirect(301, '/course/editpricing/' + req.params.courseid)
-                }
-                else {
+                } else {
                     res.redirect("/")
                 }
                 //render session and push error saying need to have 1 cost
@@ -575,7 +587,9 @@ router.get("/editpricing/:courseid", (req, res) => {
     if ((req.user != null) && (req.user.AccountTypeID == 1)) {
         course_id = req.params.courseid
         console.log(course_id)
-        Lessons.findAll({ where: { courseListingCourseId: course_id }, raw: true, order: [['session_no', 'ASC']] })
+        Lessons.findAll({ where: { courseListingCourseId: course_id }, raw: true, order: [
+                    ['session_no', 'ASC']
+                ] })
             //lessons are all the lessons from the course id(return multiple lessons)
             .then((lessons) => {
                 sessioncount = lessons.length;
@@ -591,20 +605,23 @@ router.get("/editpricing/:courseid", (req, res) => {
                     totalhours
                 })
             });
-    }
-    else {
+    } else {
         res.redirect("/")
     };
 })
 
 router.post("/editdeletesession/:courseid/:sessionno", (req, res) => {
-    Lessons.findAll({ where: { courseListingCourseId: req.params.courseid }, raw: true, order: [['session_no', 'ASC']] })
+    Lessons.findAll({ where: { courseListingCourseId: req.params.courseid }, raw: true, order: [
+                ['session_no', 'ASC']
+            ] })
         .then(lessons => {
             //deleting lesson with session no
             console.log(lessons)
-            Lessons.destroy({ where: { session_no: req.params.sessionno } }).then(function () {
+            Lessons.destroy({ where: { session_no: req.params.sessionno } }).then(function() {
                 //updating all lessons number
-                Lessons.findAll({ where: { courseListingCourseId: req.params.courseid }, raw: true, order: [['session_no', 'ASC']] })
+                Lessons.findAll({ where: { courseListingCourseId: req.params.courseid }, raw: true, order: [
+                            ['session_no', 'ASC']
+                        ] })
                     .then(lessons => {
 
                         console.log("========== after delet ===========")
@@ -624,7 +641,7 @@ router.post("/editdeletesession/:courseid/:sessionno", (req, res) => {
 router.post("/deletecourse/:courseid", (req, res) => {
     console.log("deleting course")
     CourseListing.destroy({ where: { course_id: req.params.courseid } })
-        .then(function () {
+        .then(function() {
             res.redirect(301, '/course/mycourses')
         })
 })
@@ -642,8 +659,7 @@ router.get("/editupdatesession/:sessionid", (req, res) => {
                 })
             })
 
-    }
-    else {
+    } else {
         res.redirect("/")
     };
 
