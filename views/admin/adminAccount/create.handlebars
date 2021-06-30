@@ -1,0 +1,41 @@
+<div class="container bg-white shadow rounded overflow-hidden"
+    style="width: 75%; padding-top: 50px; margin-top: 50px; margin-bottom: 50px; padding-left: 50px; padding-right: 50px;">
+
+    <h2 class="display-4">Create</h2>
+
+    <section class="ftco-section">
+
+        <h2 class="heading-section mb-5 pb-md-4">Admin List</h2>
+
+        <table id="" class="table display responsive nowrap" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>User ID</th>
+                    <th>Position</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each userlist}}
+                {{#if (ifInBetween this.AccountTypeID 3 7)}}
+                <tr>
+                    <td>{{this.FirstName}} {{this.LastName}}</td>
+                    <td>{{this.user_id}}</td>
+                    <td>
+                        {{#if (ifSame this.AccountTypeID 3)}}
+                        Admin
+                        {{/if}}
+                        {{#if (ifSame this.AccountTypeID 7)}}
+                        SuperUser Admin
+                        {{/if}}
+                    </td>
+                    <td>{{this.Email}}</td>
+                </tr>
+                {{/if}}
+                {{/each}}
+            </tbody>
+        </table>
+
+    </section>
+</div>

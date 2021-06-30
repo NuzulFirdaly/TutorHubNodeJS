@@ -16,6 +16,8 @@ const Descriptions = require('../models/descriptions');
 const Widgets = require('../models/widgets');
 const SeminarEvents = require('../models/seminarevents');
 
+const Admin = require('../models/Admin');
+
 // const user = require('../models/User');
 // const video = require('../models/Video');
 
@@ -58,6 +60,10 @@ const setUpDB = (drop) => {
             Institution.hasMany(SeminarEvents, { foreignKey: { type: Sequelize.UUID, allowNull: false } });
             SeminarEvents.belongsTo(Institution);
             // user.hasMany(video);
+
+            User.hasOne(Admin);
+            Admin.belongsTo(User, { foreignKey: "userUserId" });
+
             mySQLDB.sync({ // Creates table if none exists
                 force: drop
             }).then(() => {

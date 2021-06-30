@@ -30,6 +30,7 @@ const shopRoute = require("./routes/shop");
 const rateRoute = require("./routes/ratereview");
 const mainInstitutionRoute = require('./routes/maininstitution');
 const institutionAdminRoute = require('./routes/institutionadmin');
+const adminRoute = require("./routes/admin");
 
 
 
@@ -90,6 +91,9 @@ app.engine('handlebars', exphbs({
                 accum += block.fn(i)
             }
             return accum;
+        },
+        ifInBetween(a, b, c) {
+            return a >= b && a <= c;
         }
 
     },
@@ -169,6 +173,8 @@ app.use("/rate", rateRoute);
 
 app.use("/institution", mainInstitutionRoute)
 app.use("/institution_admin", institutionAdminRoute);
+
+app.use("/admin", adminRoute)
 
 
 // // Method override middleware to use other HTTP methods such as PUT and DELETE

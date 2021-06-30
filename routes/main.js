@@ -68,7 +68,10 @@ router.post('/loginPost', [body('email').trim().isEmail().normalizeEmail().toLow
                 redirecturl = "/institution_admin/showyourpage"
                 break;
             case 3: //admin
-                redirecturl = "/Admin"
+                redirecturl = "/admin"
+                break;
+            case 7: //SuperAdmin
+                redirecturl = "/admin"
                 break;
             default:
                 console.log("user does not exist")
