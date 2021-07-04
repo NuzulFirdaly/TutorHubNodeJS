@@ -113,7 +113,7 @@ router.get('/showyourpage', async (req, res) => {
                     await User.findAll({
                         where: {
                             AccountTypeID: 1,
-                            InstitutionName: institute.name
+                            institutionInstitutionId: institutionid
                         },
                         raw: true
                     })
