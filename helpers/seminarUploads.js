@@ -2,7 +2,7 @@ const multer = require("multer");
 const path = require('path');
 
 const storageForUploads = multer.diskStorage({
-    destination: './public/images/Institutionpictures/',
+    destination: './public/images/Institutionpictures/seminar',
     filename: function(req, file, cb) {
         cb(null, req.user.user_id + '-' + file.fieldname + '-' + Date.now() + path.extname(file.originalname))
     }
@@ -14,7 +14,7 @@ const upload = multer({
     fileFilter: function(req, file, cb) {
         checkFileType(file, cb);
     }
-}).single('institutionMainLogoUpload')
+}).single('institutionSeminarUpload')
 
 function checkFileType(file, cb) {
 

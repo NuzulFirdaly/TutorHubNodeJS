@@ -38,7 +38,7 @@
 					&nbsp;&nbsp;
 
 			</div> <!-- card-body.// -->
-			<form class="block-register" action="/institution_admin/yourpage/addbanner" method="POST" enctype="multipart/form-data">
+			<form class="block-register" action="/institution_admin/editmainlogo/editlogo" method="POST">
 				<!-- Modal for addbanners -->
 				<div class="modal fade" id="editmainlogo" tabindex="-1" role="dialog" aria-labelledby="editmainlogolabel" aria-hidden="true">
 					<div class="modal-dialog" role="document">
@@ -91,9 +91,9 @@
 	<div class="row no-gutters">
 		<br><br>
 		<center>
-			<div class="col-md-5" style="height: 70%;">
+			<div class="col-md-5" style="height: 100%;">
 				<a href="#" class="img-wrap"> 
-					<img src="/images/Institutionpictures/{{mainlogo}}"> 
+					<img src="/images/Institutionpictures/{{mainlogo}}" style="height: 300px; width: 1000px;"> 
 				</a>
 			</div>
 		</center>
@@ -113,7 +113,7 @@
 		<center>
 			<div class="col-md-4">
 				<div href="#" class="card card-product-grid">
-					<a href="/institution/showinstitutionpage" class="img-wrap"> <img src="/images/Institutionpictures/{{mainlogo}}"> </a>
+					<a href="/institution/showinstitutionpage" class="img-wrap"> <img src="/images/Institutionpictures/{{mainlogo}}" style="width: 1000px;"> </a>
 					<figcaption class="info-wrap">
 						<a href="/institution/showinstitutionpage" class="title">{{name}}</a>
 					</figcaption>
@@ -135,10 +135,11 @@
 <script>
 	$('#institutionMainLogoUpload').on('change', function() {
 		var file = $("#institutionMainLogoUpload")[0].files[0];
-		var formdata.append('institutionMainLogoUpload', file);
+		var formdata = new FormData();
+		formdata.append('institutionMainLogoUpload', file);
 		
 		$.ajax({
-			url: 'institution_admin/institutionMainLogoUpload',
+			url: '/institution_admin/institutionMainLogoUpload',
 			data: formdata,
 			contentType: false,
 			processData: false,
