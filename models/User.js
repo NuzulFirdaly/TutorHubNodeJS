@@ -6,43 +6,39 @@ Note that Sequelize automatically pleuralizes the entity name as the table name
 */
 const User = db.define('user', { //Creates a table called user
     //the reason why in mysql there is a id column because we never define a primarykey!!
-    user_id:{
+    user_id: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         primaryKey: true,
         allowNull: false
 
     },
-    Username:{
+    Username: {
         type: Sequelize.STRING
     },
     FirstName: {
-    type: Sequelize.STRING
+        type: Sequelize.STRING
     },
     LastName: {
-    type: Sequelize.STRING
+        type: Sequelize.STRING
     },
     Email: {
-    type: Sequelize.STRING,
-    unique: true
+        type: Sequelize.STRING,
+        unique: true
     },
     Password: {
-    type: Sequelize.STRING
+        type: Sequelize.STRING
     },
     Profile_pic: {
-    type: Sequelize.STRING,
-    defaultValue: "avatar2.jpg"
+        type: Sequelize.STRING,
+        defaultValue: "avatar2.jpg"
     },
     description: {
-    type: Sequelize.STRING
+        type: Sequelize.STRING
     },
-    AccountTypeID:{
+    AccountTypeID: {
         type: Sequelize.INTEGER,
         defaultValue: 0
-    },
-    InstitutionName:{
-        type: Sequelize.STRING,
-        defaultValue: "NIL"
     }
     // accountType
 });

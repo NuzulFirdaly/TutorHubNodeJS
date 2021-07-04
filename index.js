@@ -36,7 +36,7 @@ const adminRoute = require("./routes/admin");
 
 //mysql init
 const tutorhubDB = require('./config/DBConnection');
-tutorhubDB.setUpDB(false) //notice that to use setupDB we need to type vidjotDB and access its methods, we get this by exporting the module with {}
+tutorhubDB.setUpDB(true) //notice that to use setupDB we need to type vidjotDB and access its methods, we get this by exporting the module with {}
 const MySQLStore = require('express-mysql-session');
 const db = require('./config/db'); // db.js config file for session
 

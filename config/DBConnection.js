@@ -31,10 +31,18 @@ const setUpDB = (drop) => {
             In this case the primary key from user will be a foreign key
             in video.
             */
+            //if user belongs to an institution
+            User.belongsTo(Institution)
+            Institution.hasMany(User)
+
             User.hasMany(CourseListing, { foreignKey: { type: Sequelize.UUID, allowNull: false } });
+
+            // Course
             CourseListing.belongsTo(User);
             CourseListing.hasMany(Lessons, { foreignKey: { type: Sequelize.UUID, allowNull: false } });
             Lessons.belongsTo(CourseListing);
+            CourseListing.belongsTo(Institution);
+            Institution.hasMany(CourseListing);
             User.hasOne(PendingTutor, { foreignKey: { type: Sequelize.UUID, allowNull: false } });
             PendingTutor.belongsTo(User);
             User.hasMany(ItemListing);
@@ -49,8 +57,10 @@ const setUpDB = (drop) => {
             RateReview.belongsTo(User, { foreignKey: "UserId" });
 
             // institution --------
-            User.hasOne(Institution, { foreignKey: { type: Sequelize.UUID, allowNull: false } });
-            Institution.belongsTo(User);
+            //for admin
+            User.hasOne(Institution, { foreignKey: "AdminUserID", constraints: false });
+            Institution.belongsTo(User, { foreignKey: "AdminUserID", constraints: false });
+
             Institution.hasMany(Banners, { foreignKey: { type: Sequelize.UUID, allowNull: false } });
             Banners.belongsTo(Institution);
             Institution.hasMany(Descriptions, { foreignKey: { type: Sequelize.UUID, allowNull: false } });

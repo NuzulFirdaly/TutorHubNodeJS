@@ -12,15 +12,15 @@
   <div class="form-group form-row">
     <label class="col-md-3 col-form-label">Your Occupation </label>
     <div class="col">
-      <input class="form-control" type="text" id="occupation "name="occupation" placeholder ="Current occupation" required> 
+      <input class="form-control" type="text" id="occupation "name="occupation" placeholder ="Current occupation" value="{{occupation}}" required> 
     </div>
     <div class="col-s-1 col-form-label"><label>From</label></div>
     <div class="col">
-        <input class="form-control" type="text" id="fromyear"name="fromyear" placeholder ="year" required> 
+        <input class="form-control" type="text" id="fromyear"name="fromyear" placeholder ="YYYY" value="{{fromyear}}" required> 
     </div>
     <div class="col-s-1 col-form-label"><label>To</label></div>
     <div class="col">
-      <input class="form-control" type="text" id="toyear" name="toyear" placeholder ="year" required> 
+      <input class="form-control" type="text" id="toyear" name="toyear" placeholder ="YYYY" value="{{toyear}}" required> 
     </div>
   </div>
   <div class="form-group form-row">
@@ -277,16 +277,16 @@
         </select>
       </div>
       <div class="col">
-        <input class="form-control" type="text" name="college_name" placeholder ="College/University Name" required> 
+        <input class="form-control" type="text" name="college_name" placeholder ="College/University Name" value="{{college_name}}" required> 
       </div>
   </div>
   <div class="form-group form-row">
     <label class="col-md-3 col-form-label"></label>
     <div class="col">
-      <input class="form-control" type="text" name="major" placeholder ="Major" required> 
+      <input class="form-control" type="text" name="major" placeholder ="Major" value="{{major}}" required> 
     </div>
     <div class="col-md-1">
-        <input class="form-control" type="text" name="graduateyear" placeholder ="year" required> 
+        <input class="form-control" type="text" name="graduateyear" placeholder ="YYYY" value="{{graduateyear}}" required> 
     </div>
   </div>
    <div class="form-group form-row">
@@ -298,11 +298,11 @@
     </div>
       <div class="col-s-1 col-form-label"><label>Date of Birth</label></div>
       <div class="col">
-          <input type="date" name="dateofbirth" required/>
+          <input type="date" id="dateofbirth" name="dateofbirth" value="{{dateofbirth}}" required/>
       </div>
       <div class="col-s-1 col-form-label"><label>NRIC</label></div>
        <div class="col">
-        <input class="form-control" type="text" name="nric" placeholder ="nric" required> 
+        <input class="form-control" type="text" name="nric" placeholder ="nric" value="{{nric}}" required> 
       </div>
 
   </div>
@@ -314,6 +314,20 @@
 <!-- ============================ COMPONENT SIGNUP 2 END.// ================================= -->
  </div>
  <script>
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth()+1; //January is 0!
+    var yyyy = today.getFullYear();
+    if(dd<10){
+          dd='0'+dd
+      } 
+      if(mm<10){
+          mm='0'+mm
+      } 
+
+  today = yyyy+'-'+mm+'-'+dd;
+  document.getElementById("dateofbirth").setAttribute("max", today);
+
   $('#datepicker').datepicker({
     format: 'dd/mm/yyyy',
     value: new Date().toLocaleDateString(),

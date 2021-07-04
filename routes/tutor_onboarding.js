@@ -17,18 +17,24 @@ const ensureAuthenticated = require('../helpers/auth');
 /// mfff https://stackoverflow.com/questions/53165658/what-findone-returns-when-there-is-no-match
 // User -> Tutor Onboarding
 router.get('/becometutor', async(req, res) => { //check if user is logged in here
-    // let o = await PendingTutor.findOne({where:{ userUserId: req.user.user_id}}) threads it is because of the limit 1 in the query
-    await PendingTutor.findOne({ where: { userUserId: req.user.user_id } }).then(pendingticket => {
-        if (pendingticket !== null) {
-            res.redirect('/tutor_onboarding/finish')
-        } else {
-            if ((req.user) && (req.user.AccountTypeID == 0)) {
-                res.render('tutor_onboarding/tutor_onboarding', { title: "Become A Tutor!", layout: 'tutor_onboarding_base', user: req.user.dataValues })
+    if ((req.user != null) && (req.user.AccountTypeID == 0)) {
+        await PendingTutor.findOne({ where: { userUserId: req.user.user_id } }).then(pendingticket => {
+            if (pendingticket !== null) {
+                res.redirect('/tutor_onboarding/finish')
             } else {
-                res.redirect("/")
-            };
-        }
-    })
+                if ((req.user) && (req.user.AccountTypeID == 0)) {
+                    res.render('tutor_onboarding/tutor_onboarding', { title: "Become A Tutor!", layout: 'tutor_onboarding_base', user: req.user.dataValues })
+                } else {
+                    res.redirect("/")
+                };
+            }
+        })
+
+    } else {
+        res.redirect("/")
+    };
+    // let o = await PendingTutor.findOne({where:{ userUserId: req.user.user_id}}) threads it is because of the limit 1 in the query
+
 
     // PendingTutor.count({where:{ userUserId: req.user.user_id}}).then(count => {
     //     console.log("becometutot rdasdas")
@@ -45,8 +51,6 @@ router.get('/becometutor', async(req, res) => { //check if user is logged in her
 
     // }) //so somehow i fixed it by changing from findOne to findAll, sequelize is weird
     // res.render('tutor_onboarding/tutor_onboarding', {title: "Become A Tutor!", layout: 'tutor_onboarding_base' })
-
-
 });
 
 router.post("/profilePictureUpload", (req, res) => {
@@ -70,22 +74,26 @@ router.post("/profilePictureUpload", (req, res) => {
 })
 
 router.get('/personal_info', async(req, res) => {
-    //checking to see whether theres already a pending ticket
-    //checking to see whether theres already a pending ticket
-    await PendingTutor.findOne({ where: { userUserId: req.user.user_id } }).then(pendingticket => {
-        if (pendingticket !== null) {
-            res.redirect('/tutor_onboarding/finish')
+    if ((req.user != null) && (req.user.AccountTypeID == 0)) {
+        await PendingTutor.findOne({ where: { userUserId: req.user.user_id } }).then(pendingticket => {
+            if (pendingticket !== null) {
+                res.redirect('/tutor_onboarding/finish')
 
-        } else {
-            if ((req.user) && (req.user.AccountTypeID == 0)) {
-                res.render('tutor_onboarding/personal_info', {
-                    layout: 'tutor_onboarding_base'
-                });
             } else {
-                res.redirect("/")
-            };
-        }
-    })
+                if ((req.user) && (req.user.AccountTypeID == 0)) {
+                    res.render('tutor_onboarding/personal_info', {
+                        layout: 'tutor_onboarding_base'
+                    });
+                } else {
+                    res.redirect("/")
+                };
+            }
+        })
+    } else {
+        res.redirect("/")
+    };
+
+    //checking to see whether theres already a pending ticket
 
 });
 
@@ -110,7 +118,7 @@ router.post('/pendingcertUpload', (req, res) => {
 router.post('/personal_info_upload', [
     body('first_name').not().isEmpty().trim().escape().withMessage("First name is invalid"),
     body('last_name').not().isEmpty().trim().escape().withMessage("Last name is invalid"),
-    body('description').not().isEmpty().trim().escape().withMessage("description is invalid"),
+    body('description').not().isEmpty().withMessage("description is invalid"),
 
 ], ensureAuthenticated, (req, res) => {
     //retrieve input
@@ -143,20 +151,26 @@ router.post('/personal_info_upload', [
 
 router.get('/professional_info', async(req, res) => {
     //checking to see whether theres already a pending ticket
-    await PendingTutor.findOne({ where: { userUserId: req.user.user_id } }).then(pendingticket => {
-        if (pendingticket !== null) {
-            res.redirect('/tutor_onboarding/finish')
+    if ((req.user != null) && (req.user.AccountTypeID == 0)) {
+        await PendingTutor.findOne({ where: { userUserId: req.user.user_id } }).then(pendingticket => {
+            if (pendingticket !== null) {
+                res.redirect('/tutor_onboarding/finish')
 
-        } else {
-            if ((req.user) && (req.user.AccountTypeID == 0)) {
-                res.render('tutor_onboarding/professional_info', {
-                    layout: 'tutor_onboarding_base'
-                });
             } else {
-                res.redirect("/")
-            };
-        }
-    })
+                if ((req.user) && (req.user.AccountTypeID == 0)) {
+                    res.render('tutor_onboarding/professional_info', {
+                        layout: 'tutor_onboarding_base'
+                    });
+                } else {
+                    res.redirect("/")
+                };
+            }
+        })
+
+    } else {
+        res.redirect("/")
+    };
+
 });
 
 
@@ -204,6 +218,16 @@ router.post('/professional_info', [
         res.render('tutor_onboarding/professional_info', {
             layout: 'tutor_onboarding_base',
             user: req.user.dataValues,
+            occupation,
+            fromyear,
+            toyear,
+            college_country,
+            college_name,
+            major,
+            graduateyear,
+            dateofbirth,
+            nric,
+            trueFileName,
             errors
 
         });

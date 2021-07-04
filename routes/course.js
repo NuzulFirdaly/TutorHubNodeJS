@@ -17,6 +17,7 @@ const { body, validationResult } = require('express-validator');
 
 const courseThumbnailUpload = require('../helpers/thumbnailUploads');
 const RateReview = require('../models/RateReview');
+const ensureAuthenticated = require('../helpers/auth');
 
 
 //change this to database where admin can add
@@ -66,11 +67,11 @@ router.post("/CreateCourse", [
     body('coursetitle').not().isEmpty().trim().escape().withMessage("Course Title is invalid"),
     body('courseThumbnailUpload').not().isEmpty().trim().escape().withMessage("please select a course thumbnail"),
     body('trueFileName').not().isEmpty().trim().escape().withMessage("please select a course thumbnail"),
-    body('short_description').not().isEmpty().trim().escape().withMessage("Short description is invalid"),
-    body('description').not().isEmpty().trim().escape().withMessage("description is invalid"),
+    body('short_description').not().isEmpty().withMessage("Short description is invalid").isLength({ max: 100 }).withMessage("Short description too long, Must be below 100 characters"),
+    body('description').not().isEmpty().withMessage("description is invalid").isLength({ min: 100, max: 2500 }).withMessage("Description must be between 100 to 2500 characters"),
     body('category').not().isEmpty().trim().escape().withMessage("please select a category"),
     body('subcategory').not().isEmpty().trim().escape().withMessage("subcategory is invalid")
-], (req, res) => {
+], async(req, res) => {
     console.log(req.body);
     let { coursetitle, category, subcategory, short_description, description, courseThumbnailUpload, trueFileName } = req.body;
     let errors = [];
@@ -88,12 +89,24 @@ router.post("/CreateCourse", [
     } else {
         userid = req.user.dataValues.user_id;
         console.log(userid)
-        Course.create({ Title: coursetitle, Category: category, Subcategory: subcategory, Short_description: short_description, Description: description, userUserId: userid, Course_thumbnail: trueFileName })
-            .then(course => {
-                alertMessage(res, 'success', course.Title + ' added.', 'fas fa-sign-in-alt', true);
-                res.redirect('/course/CreateSession/' + course.course_id);
-            })
-            .catch(err => console.log(err));
+            //check if course with the same name has been created
+        Course.findOne({ where: { title: coursetitle } }).then(course => {
+            if (course !== null) {
+                errors.push({ text: "There already exists a course with the same name, please think of unique title!" })
+                res.render("course/coursecreation", {
+                    user: req.user.dataValues, //have to do this for all pages
+                    errors
+                })
+
+            } else {
+                Course.create({ Title: coursetitle, Category: category, Subcategory: subcategory, Short_description: short_description, Description: description, userUserId: userid, Course_thumbnail: trueFileName })
+                    .then(course => {
+                        alertMessage(res, 'success', course.Title + ' added.', 'fas fa-sign-in-alt', true);
+                        res.redirect('/course/CreateSession/' + course.course_id);
+                    })
+                    .catch(err => console.log(err));
+            }
+        })
     }
 });
 
@@ -101,9 +114,13 @@ router.get("/CreateSession/:courseid", (req, res) => {
     if ((req.user != null) && (req.user.AccountTypeID == 1)) {
         course_id = req.params.courseid
             //raw: true need because we dont want other attributes like _previousdatavalue
-        Lessons.findAll({ where: { courseListingCourseId: course_id }, raw: true, order: [
+        Lessons.findAll({
+            where: { courseListingCourseId: course_id },
+            raw: true,
+            order: [
                 ['session_no', 'ASC']
-            ] })
+            ]
+        })
 
         //lessons are all the lessons from the course id(return multiple lessons)
         .then((lessons) => {
@@ -137,9 +154,13 @@ router.get("/CreateSession/:courseid", (req, res) => {
 // })
 
 router.post("/CreateSession/:courseid", async(req, res) => {
-    await Lessons.findAll({ where: { courseListingCourseId: req.params.courseid }, raw: true, order: [
+    await Lessons.findAll({
+            where: { courseListingCourseId: req.params.courseid },
+            raw: true,
+            order: [
                 ['session_no', 'ASC']
-            ] })
+            ]
+        })
         //lessons are all the lessons from the course id(return multiple lessons)
         .then((lessons) => {
             let errors = [];
@@ -198,9 +219,9 @@ router.get("/addnewlesson/:courseid", (req, res) => {
 
 })
 router.post("/addnewlesson/:courseid", [
-    body('title').not().isEmpty().trim().escape().withMessage("Session Title is invalid"),
-    body('session_description').not().isEmpty().trim().escape().withMessage("Session Title is invalid"),
-    body('time_approx').not().isEmpty().trim().escape().withMessage("Session Title is invalid")
+    body('title').not().isEmpty().withMessage("Session Title is invalid"),
+    body('session_description').not().isEmpty().withMessage("Session Title is invalid"),
+    body('time_approx').not().isEmpty().withMessage("Session Title is invalid")
 ], (req, res) => {
     let { title, session_description, time_approx } = req.body
     let errors = [];
@@ -251,17 +272,25 @@ function* enumerate(it, start = 1) {
 }
 
 router.post("/deletelesson/:courseid/:sessionno", (req, res) => {
-    Lessons.findAll({ where: { courseListingCourseId: req.params.courseid }, raw: true, order: [
+    Lessons.findAll({
+            where: { courseListingCourseId: req.params.courseid },
+            raw: true,
+            order: [
                 ['session_no', 'ASC']
-            ] })
+            ]
+        })
         .then(lessons => {
             //deleting lesson with session no
             console.log(lessons)
             Lessons.destroy({ where: { session_no: req.params.sessionno } }).then(function() {
                 //updating all lessons number
-                Lessons.findAll({ where: { courseListingCourseId: req.params.courseid }, raw: true, order: [
+                Lessons.findAll({
+                        where: { courseListingCourseId: req.params.courseid },
+                        raw: true,
+                        order: [
                             ['session_no', 'ASC']
-                        ] })
+                        ]
+                    })
                     .then(lessons => {
 
                         console.log("========== after delet ===========")
@@ -284,9 +313,13 @@ router.get("/addpricing/:courseid", (req, res) => {
     if ((req.user != null) && (req.user.AccountTypeID == 1)) {
         course_id = req.params.courseid
         console.log(course_id)
-        Lessons.findAll({ where: { courseListingCourseId: course_id }, raw: true, order: [
+        Lessons.findAll({
+                where: { courseListingCourseId: course_id },
+                raw: true,
+                order: [
                     ['session_no', 'ASC']
-                ] })
+                ]
+            })
             //lessons are all the lessons from the course id(return multiple lessons)
             .then((lessons) => {
                 sessioncount = lessons.length;
@@ -298,7 +331,8 @@ router.get("/addpricing/:courseid", (req, res) => {
                     sessionarray: lessons,
                     course_id: course_id,
                     user: req.user.dataValues,
-                    sessioncount: sessioncount
+                    sessioncount: sessioncount,
+                    totalhours
                 })
             });
     } else {
@@ -421,7 +455,7 @@ router.get("/viewcourse/:courseid", (req, res) => {
         }).catch(error => console.log(error));
 })
 
-router.get("/updatecourse/:courseid", (req, res) => {
+router.get("/updatecourse/:courseid", ensureAuthenticated, (req, res) => {
     courseid = req.params.courseid
     CourseListing.findAll({
             where: { course_id: courseid },
@@ -488,9 +522,9 @@ router.get('/editaddnewlesson/:courseid', (req, res) => {
     })
     //post editaddnewsession
 router.post('/editaddnewlesson/:courseid', [
-    body('title').not().isEmpty().trim().escape().withMessage("Session Title is invalid"),
-    body('session_description').not().isEmpty().trim().escape().withMessage("Session Title is invalid"),
-    body('time_approx').not().isEmpty().trim().escape().withMessage("Session Title is invalid")
+    body('title').not().isEmpty().withMessage("Session Title is invalid"),
+    body('session_description').not().isEmpty().withMessage("Session Title is invalid"),
+    body('time_approx').not().isEmpty().withMessage("Session Title is invalid")
 ], (req, res) => {
     let { title, session_description, time_approx } = req.body
     let errors = [];
@@ -538,9 +572,13 @@ router.get("/editlesson/:courseid", (req, res) => {
         course_id = req.params.courseid
         console.log(course_id)
             //raw: true need because we dont want other attributes like _previousdatavalue
-        Lessons.findAll({ where: { courseListingCourseId: course_id }, raw: true, order: [
+        Lessons.findAll({
+            where: { courseListingCourseId: course_id },
+            raw: true,
+            order: [
                 ['session_no', 'ASC']
-            ] })
+            ]
+        })
 
         //lessons are all the lessons from the course id(return multiple lessons)
         .then((lessons) => {
@@ -557,9 +595,13 @@ router.get("/editlesson/:courseid", (req, res) => {
 });
 
 router.post("/editlesson/:courseid", async(req, res) => {
-    await Lessons.findAll({ where: { courseListingCourseId: req.params.courseid }, raw: true, order: [
+    await Lessons.findAll({
+            where: { courseListingCourseId: req.params.courseid },
+            raw: true,
+            order: [
                 ['session_no', 'ASC']
-            ] })
+            ]
+        })
         //lessons are all the lessons from the course id(return multiple lessons)
         .then((lessons) => {
             let errors = [];
@@ -587,9 +629,13 @@ router.get("/editpricing/:courseid", (req, res) => {
     if ((req.user != null) && (req.user.AccountTypeID == 1)) {
         course_id = req.params.courseid
         console.log(course_id)
-        Lessons.findAll({ where: { courseListingCourseId: course_id }, raw: true, order: [
+        Lessons.findAll({
+                where: { courseListingCourseId: course_id },
+                raw: true,
+                order: [
                     ['session_no', 'ASC']
-                ] })
+                ]
+            })
             //lessons are all the lessons from the course id(return multiple lessons)
             .then((lessons) => {
                 sessioncount = lessons.length;
@@ -611,17 +657,25 @@ router.get("/editpricing/:courseid", (req, res) => {
 })
 
 router.post("/editdeletesession/:courseid/:sessionno", (req, res) => {
-    Lessons.findAll({ where: { courseListingCourseId: req.params.courseid }, raw: true, order: [
+    Lessons.findAll({
+            where: { courseListingCourseId: req.params.courseid },
+            raw: true,
+            order: [
                 ['session_no', 'ASC']
-            ] })
+            ]
+        })
         .then(lessons => {
             //deleting lesson with session no
             console.log(lessons)
             Lessons.destroy({ where: { session_no: req.params.sessionno } }).then(function() {
                 //updating all lessons number
-                Lessons.findAll({ where: { courseListingCourseId: req.params.courseid }, raw: true, order: [
+                Lessons.findAll({
+                        where: { courseListingCourseId: req.params.courseid },
+                        raw: true,
+                        order: [
                             ['session_no', 'ASC']
-                        ] })
+                        ]
+                    })
                     .then(lessons => {
 
                         console.log("========== after delet ===========")
@@ -646,7 +700,32 @@ router.post("/deletecourse/:courseid", (req, res) => {
         })
 })
 
+router.get("/updatelesson/:sessionid", (req, res) => {
+    if ((req.user != null) && (req.user.AccountTypeID == 1)) {
+        Lessons.findOne({ where: { session_id: req.params.sessionid }, raw: true })
+            .then(lesson => {
+                console.log(lesson)
+                res.render("course/updatesession", {
+                    user: req.user.dataValues,
+                    lesson
 
+                })
+            })
+
+    } else {
+        res.redirect("/")
+    };
+
+})
+
+router.post("/updatelesson/:sessionid", (req, res) => {
+    let { title, session_description, time_approx } = req.body;
+    Lessons.findOne({ where: { session_id: req.params.sessionid } })
+        .then(lesson => {
+            lesson.update({ session_title: title, session_description, time_approx })
+            res.redirect(301, "/course/CreateSession/" + lesson.courseListingCourseId)
+        })
+})
 router.get("/editupdatesession/:sessionid", (req, res) => {
     if ((req.user != null) && (req.user.AccountTypeID == 1)) {
         Lessons.findOne({ where: { session_id: req.params.sessionid }, raw: true })
