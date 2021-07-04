@@ -15,8 +15,10 @@ const Banners = require('../models/banners');
 const Descriptions = require('../models/descriptions');
 const Widgets = require('../models/widgets');
 const SeminarEvents = require('../models/seminarevents');
+const FeaturedTutor = require('../models/featuredinstitutiontutor');
 
 const Admin = require('../models/Admin');
+const FeaturedInstitutionTutor = require('../models/featuredinstitutiontutor');
 
 // const user = require('../models/User');
 // const video = require('../models/Video');
@@ -69,6 +71,8 @@ const setUpDB = (drop) => {
             Widgets.belongsTo(Institution);
             Institution.hasMany(SeminarEvents, { foreignKey: { type: Sequelize.UUID, allowNull: false } });
             SeminarEvents.belongsTo(Institution);
+            Institution.hasMany(FeaturedInstitutionTutor, { foreignKey: { type: Sequelize.UUID, allowNull: false } });
+            FeaturedInstitutionTutor.belongsTo(Institution);
             // user.hasMany(video);
 
             User.hasOne(Admin);

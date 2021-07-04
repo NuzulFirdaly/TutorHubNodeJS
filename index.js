@@ -88,12 +88,16 @@ app.engine('handlebars', exphbs({
         forloop(from, to, incr, block) {
             var accum = ''
             for (var i = from; i < to; i += incr) {
-                accum += block.fn(i)
+                block.data.index = i;
+                accum += block.fn(i);
             }
             return accum;
         },
         ifInBetween(a, b, c) {
             return a >= b && a <= c;
+        },
+        ifGreater(a,b){
+            return a>b;
         }
 
     },
