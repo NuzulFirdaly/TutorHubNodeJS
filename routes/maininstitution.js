@@ -1,9 +1,16 @@
 const express = require('express');
 const router = express.Router();
 // models
-const User = require('../models/User');
 const PendingInstitution = require('../models/PendingInstitution');
+const User = require('../models/User');
 const Institution = require("../models/Institution");
+const Banner = require("../models/banners");
+const Description = require("../models/descriptions");
+const SeminarEvent = require("../models/seminarevents");
+const Widget = require("../models/widgets");
+const FeaturedTutor = require("../models/featuredinstitutiontutor");
+const CourseListing = require("../models/CoursesListing");
+const FeaturedCourse = require("../models/featuredinstitutioncourses");
 
 console.log("Retrieve messenger helper flash");
 const alertMessage = require('../helpers/messenger');
@@ -23,6 +30,9 @@ var crypto = require('crypto');
 //express validator
 const { body, validationResult } = require('express-validator');
 
+// helpers
+const institutionDocumentUpload = require('../helpers/DocumentUpload');
+const ensureAuthenticated = require('../helpers/auth');
 
 // ---------------------------------------------
 router.use(express.urlencoded({
@@ -50,177 +60,112 @@ router.get('/showregistration', (req, res) => {
     res.render('institution/registration')
 });
 
-var upload = multer({ dest: 'public/pendingdocs/' })
-router.post('/registration', upload.single('instituteDoc'), (req, res) => {
-    let errors = [];
-    let { instituteName, instituteAddress, institutePC, instituteEmail, instituteUrl, instituteNo, instituteDoc, IAFname, IALname, IANo, IAEmail } = req.body;
-
-    // check for errors
-    if (req.body.instituteName.length < 5) {
-        errors.push({ text: 'Institution Name must be at least 5 characters long' });
-    }
-    if (req.body.instituteAddress.length < 10) {
-        errors.push({ text: 'Address must be at least 10 characters long' });
-    }
-    User.findOne({ where: { Email: IAEmail } })
-        .then(checkcheck => {
-            if (checkcheck) {
-                console.log("it's working");
+router.post('/institutionDocumentUpload', (req, res) => {
+    console.log(req.file);
+    institutionDocumentUpload(req, res, async(err) => {
+        console.log("Institution's document upload printing req.file.filename");
+        console.log(req.file);
+        if (err) {
+            res.json({err: err});
+        }
+        else {
+            if (req.file === undefined) {
+                res.json({err: err});
             } else {
-                console.log("it's not working");
+                res.json({path: `/pendingdocs/${req.file.filename}`, file: `${req.file.filename}`});
             }
+        }
+    });
+});
+
+var uploadnone = multer()
+router.post('/institutionregistration', [
+    body('instituteName').not().isEmpty().trim().escape().withMessage("Institution Name is invalid"),
+    body('instituteAddress').not().isEmpty().trim().escape().withMessage("Address is invalid"),
+    body('institutePC').not().isEmpty().trim().escape().withMessage("Postal code is invalid"),
+    body('instituteEmail').trim().isEmail().withMessage("Email must be a valid email").normalizeEmail().toLowerCase(),
+    body('instituteNo').not().isEmpty().trim().escape().withMessage("Phone number is invalid"),
+    body('instituteUrl').not().isEmpty().withMessage("Please enter url"),
+    body('trueFileDocumentName').not().isEmpty().trim().escape().withMessage("Please upload a document"),
+    body('IAFname').not().isEmpty().trim().escape().withMessage("First name is invalid"),
+    body('IALname').not().isEmpty().trim().escape().withMessage("last name is invalid"),
+    body('IANo').not().isEmpty().trim().escape().withMessage("Phone number is invalid"),
+    body('IAEmail').trim().isEmail().withMessage("Email must be a valid email").normalizeEmail().toLowerCase()
+],uploadnone.none(), (req, res) => {
+    let {instituteName, instituteAddress, institutePC, instituteNo, instituteEmail, instituteUrl, trueFileDocumentName, IAFname, IALname, IANo, IAEmail} = req.body;
+    let errors = [];
+    const validatorErrors = validationResult(req);
+    if (!validatorErrors.isEmpty()) { //if isEmpty is false
+        console.log("There are errors")
+        validatorErrors.array().forEach(error => {
+            console.log(error);
+            errors.push({ text: error.msg })
         })
 
-    //console.log("Checking if admin email to be registered exist......")
-
-    // User.findOne({
-    //     where: {
-    //         Email: IAEmail
-    //     }
-    // })
-    // .then((checkemail) => {
-    //     if (checkemail) {
-    //         console.log("Email is already taken");
-    //         errors.push({text: "Admin email is already taken. Please choose another email."});
-    //     }
-    //     else {
-    //         console.log("Email to be used for admin is available");
-    //     }
-    // });
-
-    // if there are errors
-    if (errors.length > 0) {
-        res.render('institution/registration', {
-            errors: errors,
-            // institution
-            instituteName: req.body.instituteName,
-            instituteAddress: req.body.instituteAddress,
-            institutePC: req.body.institutePC,
-            instituteEmail: req.body.InstituteEmail,
-            instituteUrl: req.body.instituteUrl,
-            instituteNo: req.body.instituteNo,
-            instituteDoc: req.body.instituteDoc,
-            // institution admin
-            IAFname: req.body.IAFname,
-            IALname: req.body.IALname,
-            IANo: req.body.IANo,
-            IAEmail: req.body.IAEmail,
-        });
-    }
-    // if there are no errors
-    else {
-        // check if the institution name exist
-        Institution.findOne({ where: { name: req.body.instituteName } })
-            // if institution name is found, there's error
-            .then(institutions => {
-                if (institutions) {
-                    res.render("institution/registration", {
-                        error: institutions.name + ' has been taken. Please try another name.',
-                        instituteName,
-                        instituteAddress,
-                        institutePC,
-                        instituteEmail,
-                        instituteUrl,
-                        instituteNo,
-                        instituteDoc,
-                        IAFname,
-                        IALname,
-                        IANo,
-                        IAEmail
-                    });
-                }
-                // if it's a new institution
-                else {
-                    // creates a new pending institution
-                    console.log("Uploading to pending institution...........");
-                    PendingInstitution.create({ name: instituteName, address: instituteAddress, postalcode: institutePC, iemail: instituteEmail, website: instituteUrl, officeno: instituteNo, document: instituteDoc, fname: IAFname, lname: IALname, phoneno: IANo, aemail: IAEmail })
+    } else {
+        console.log("Validating if the institution has already been registered.");
+        Institution.findOne({
+            where: {
+                name: instituteName
+            }
+        }).then(institution => {
+            if (institution) {
+                res.render('institution/registration', {
+                    error: instituteName + ' already been registered.',
+                    instituteName,
+                    instituteAddress,
+                    institutePC,
+                    instituteEmail,
+                    instituteUrl,
+                    IAFname,
+                    IALname,
+                    IANo,
+                    IAEmail,
+                    instituteNo
+                });
+            } else {
+                User.findOne({
+                    where: {
+                        Email: IAEmail
+                    }
+                }).then(user => {
+                    if (user) {
+                        res.render('institution/registration', {
+                            error: IAEmail + ' already been registered.',
+                            instituteName,
+                            instituteAddress,
+                            institutePC,
+                            instituteEmail,
+                            instituteUrl,
+                            IAFname,
+                            IALname,
+                            IANo,
+                            instituteEmail,
+                            instituteNo
+                        });
+                    } else {
+                        // Create pending institution
+                        console.log("Uploading to pending institution...........");
+                        PendingInstitution.create({ 
+                            name: instituteName, 
+                            address: instituteAddress, 
+                            postalcode: institutePC, 
+                            iemail: instituteEmail, 
+                            website: instituteUrl, 
+                            officeno: instituteNo, 
+                            document: trueFileDocumentName, 
+                            fname: IAFname, 
+                            lname: IALname, 
+                            phoneno: IANo, 
+                            aemail: IAEmail 
+                        })
                         .catch(err => console.log(err));
-                    console.log("Upload to pending institution completed.");
-                    // sending email for confirmation of registration
-
-                    // if it's already been confirmed - chris part
-
-                    // admin account created; creation of username and random-password
-                    // console.log("Creating admin account..................");
-                    // var APassword = crypto.randomBytes(20).toString('hex');
-                    // var AUsername = IAFname + IALname;
-                    // console.log("Admin account details: ---------------------------------------------- ")
-                    // console.log("Username: ", AUsername);
-                    // console.log("Email: ", IAEmail);
-                    // console.log("Password: ", APassword);
-
-                    // bcrypt.genSalt(10, function (err, salt) {
-                    //     bcrypt.hash(APassword, salt, function (err, hash) {
-                    //         // Store hash in your password DB.
-                    //         if (err) {
-                    //             throw err;
-                    //         } else {
-                    //             hashedpassword = hash;
-                    //             console.log("This is hashed pasword \n", hashedpassword);
-                    //             // Create new user record
-                    //             User.create({ FirstName: IAFname, LastName: IALname, Username: AUsername, Email: IAEmail, Password: hashedpassword, AccountTypeID: 2, InstitutionName: instituteName })
-                    //             .catch(err => console.log(err));
-                    //             console.log("Admin user has been created ------------------------------------------");
-                    //         }
-                    //     });
-                    // });
-                    // console.log("Approving institution.......");
-                    // User.findOne({where: {Email: IAEmail}})
-                    // .then(adminemail => {
-                    //     console.log(adminemail);
-                    //     console.log(IAEmail);
-                    //     //console.log("admin id here: ", adminemail);
-                    //     if(adminemail){
-                    //         console.log("User for institution was found....");
-                    //         Institution.create({
-                    //             name: instituteName, 
-                    //             email: instituteEmail, 
-                    //             userUserId: adminemail.user_id
-                    //         })
-                    //         .catch(err => console.log(err));
-                    //         console.log("Institution has been approved and created. -----------------------------------");
-                    //     }
-                    //     else {
-                    //         // console.log(adminemail.Email);
-                    //         console.log("There was a problem approving the institution. ------------------------");
-                    //     }
-                    // });
-
-                    // Sending email of complettion of registration
-                    MailConfig.ViewOption(gmailTransport, hbs);
-                    let HelperOptions = {
-                        from: '"TutorHub" <Iamtestingtutorhub@gmail.com>',
-                        to: IAEmail,
-                        subject: 'Your institution is now under approval.',
-                        template: 'TutorhubEmail',
-                        context: {
-                            name: instituteName,
-                            address: instituteAddress,
-                            postalcode: institutePC,
-                            iemail: instituteEmail,
-                            url: instituteUrl,
-                            officeno: instituteNo,
-                            Fname: IAFname,
-                            Lname: IALname,
-                            phoneno: IANo,
-                            aemail: IAEmail
-                        }
-                    };
-                    gmailTransport.sendMail(HelperOptions, (error, info) => {
-                        if (error) {
-                            console.log("There is an error sending the email");
-                            console.log(error);
-                            res.json(error);
-                        }
-                        console.log("Email is successfully sent.");
-                        console.log(info);
-                        res.json(info);
-                    });
-
-                    res.redirect('/institution/showcompletion');
-
-                }
-            });
+                        console.log("Upload to pending institution completed.");
+                        res.redirect('/institution/showcompletion');
+                    }
+                }).catch(err => console.log(err));
+            }
+        }).catch(err => console.log(err));
     }
 });
 
@@ -230,8 +175,154 @@ router.get('/showcompletion', (req, res) => {
 });
 
 // institution's page
-router.get('/showinstitutionpage', (req, res) => {
-    res.render('institution/institutionpage')
+router.get('/showinstitutionpage/:institutionid', async (req, res) => {
+    console.log("Finding institution...........");
+    var banneritems;
+    var alloftutors;
+    var bothdescriptions;
+    var allwidgets;
+    var allseminars;
+    var allfeaturetutors;
+    var allcourselistings;
+    var allfeaturedcourse;
+
+    // getting all banners
+    console.log("Fetching all institution banners.........");
+    await Banner.findAll({
+        where: {
+            institutionInstitutionId: req.params.institutionid
+        },
+        raw: true
+    })
+        .then((banners) => {
+            console.log("Putting banners into bannerarray....");
+            console.log(banners);
+            // res.render('institution_admin/yourpage', {
+            //     title: "Your institution",
+            //     layout: 'institution_admin_base',
+            //     user: req.user.dataValues,
+            //     bannerarray: banners
+            // });
+            banneritems = banners
+            console.log("successfully put banners into bannerarray..");
+        }).catch(err => console.log(err));
+
+    // getting all institution tutors
+    console.log("Fetching all institution's tutors");
+    await User.findAll({
+        where: {
+            AccountTypeID: 1,
+            institutionInstitutionId: req.params.institutionid
+        },
+        raw: true
+    })
+        .then(foundtutor => {
+            console.log("Putting tutors into an array.....");
+            console.log(foundtutor);
+            alloftutors = foundtutor
+            console.log("Successfully put tutors into institutiontutorarray...");
+        }).catch(err => console.log(err));
+
+    // getting institution's description
+    console.log("Fetching institution's descriptions")
+    await Description.findAll({
+        where: {
+            institutionInstitutionId: req.params.institutionid
+        },
+        raw: true
+    })
+        .then(founddescription => {
+            console.log("Putting descriptions into descriptionarray");
+            console.log(founddescription);
+            bothdescriptions = founddescription
+            console.log("successfully put descriptions into descriptionarray...");
+        }).catch(err => console.log(err));
+
+    // getting institution's widgets
+    console.log("Fetching institution's widget");
+    await Widget.findAll({
+        where: {
+            institutionInstitutionId: req.params.institutionid
+        },
+        raw: true
+    })
+        .then(foundwidget => {
+            console.log("putting widget into widgetarray");
+            console.log(foundwidget);
+            allwidgets = foundwidget
+            console.log("successfully put widgets into widgetsarray..");
+        }).catch(err => console.log(err));
+
+    // getting institution's seminar
+    console.log("Fetching institution's seminars");
+    await SeminarEvent.findAll({
+        where: {
+            institutionInstitutionId: req.params.institutionid
+        },
+        raw: true
+    })
+        .then(foundseminar => {
+            console.log("putting seminar into seminaraaray");
+            console.log(foundseminar);
+            allseminars = foundseminar
+            console.log("successfully put seminar into seminararray");
+        }).catch(err => console.log(err));
+
+    // getting institution's featured tutors
+    await FeaturedTutor.findAll({
+        where: {
+            institutionInstitutionId: req.params.institutionid
+        },
+        raw: true
+    })
+        .then(foundfeaturetutor => {
+            console.log("Putting featured tutors into array");
+            console.log(foundfeaturetutor);
+            allfeaturetutors = foundfeaturetutor
+            console.log("successfully put featured tutor in array");
+        }).catch(err => console.log(err));
+
+    // getting institution's courses
+    await CourseListing.findAll({
+        where: {
+            institutionInstitutionId: req.params.institutionid
+        },
+        include: {model: User}
+    })
+    .then(foundcourse => {
+        console.log("Putting course into courselistingarray");
+        console.log(foundcourse);
+        allcourselistings = foundcourse;
+        console.log("Successfully put courses into array.");
+    }).catch(err => console.log(err));
+
+    // getting institution featured courses
+    await FeaturedCourse.findAll({
+        where: {
+            institutionInstitutionId: req.params.institutionid,
+        },
+        raw: true
+    })
+    .then(foundfeaturecourse => {
+        console.log("Putting course into allfeaturedcoursearray");
+        console.log(foundfeaturecourse);
+        allfeaturedcourse = foundfeaturecourse;
+        console.log("Successfully put courses into array.");
+    });
+
+    // render page
+    res.render('institution/institutionpage', {
+        title: "Your institution",
+        layout: 'institution_admin_base',
+        bannerarray: banneritems,
+        institutiontutorarray: alloftutors,
+        descriptionarray: bothdescriptions,
+        widgetarray: allwidgets,
+        seminararray: allseminars,
+        featuretutorarray: allfeaturetutors,
+        allinstcoursearray: allcourselistings,
+        allfeaturedcoursearray: allfeaturedcourse
+    });
 });
 
 // show institution courses

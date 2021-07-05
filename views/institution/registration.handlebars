@@ -3,6 +3,7 @@
 <section class="padding-y bg">
   <section class="container-fluid" style="min-height: 84vh; width: 90%">
     <br>
+    {{>_errors}}
     <!-- ==================== form content ============ -->
     <center><h2>Institution Registration Form</h2></center>
     <br>
@@ -23,7 +24,7 @@
     </div>
 
     <br>
-    <form class="block-register" action="/institution/registration" method="POST" enctype="multipart/form-data">
+    <form class="block-register" action="/institution/institutionregistration" method="POST">
       <div class="card mx-auto">
         <div class="card-body">
           <h5 class="card-title mb-4">Institution Details</h5>
@@ -45,7 +46,7 @@
               </div>
               <label class="col-md-2 col-form-label text-left">Institution's Email Address</label>
               <div class="col-md-4">
-                <input class="form-control"  type="email" name="InstituteEmail" value="{{InstituteEmail}}" placeholder="school@gmail.com" required>
+                <input class="form-control"  type="email" name="instituteEmail" value="{{instituteEmail}}" placeholder="school@gmail.com" required>
               </div>
             </div>
             <div class="form-group form-row">
@@ -60,7 +61,9 @@
             </div>
             <div class="form-group form-row">
               <label class="col-md-2 col-form-label text-left">Submit relevant documentation here</label>
-              <input type="file" name="instituteDoc" value="{{instituteDoc}}" required>
+              <input type="file" name="institutionDocumentUpload" id="institutionDocumentUpload" required>
+              <input type="hidden" id="trueFileDocumentName" name="trueFileDocumentName">
+              <div class="font-weight-bold text-danger small" id="documentErr" style="display: none"></div>
             </div>
             <br><br>
             <h5 class="card-title mb-4">Administrator details</h5>
@@ -94,3 +97,35 @@
   </section>
 </section>
 <!-- ========================= SECTION CONTENT END// ========================= -->
+<script>
+  $('#institutionDocumentUpload').on('change', function () {
+    //alert("hello");
+    let file = $("#institutionDocumentUpload")[0].files[0];
+    let formdata = new FormData();
+    formdata.append('institutionDocumentUpload', file);
+    //alert(file);
+    //alert("hello");
+    $.ajax({
+      url: '/institution/institutionDocumentUpload',
+      data: formdata,
+      contentType: false,
+      processData: false,
+      type: 'POST',
+      'success': (data) => {
+        console.log(data);
+        //$('#profilePictureUpload').attr('src', data.path);
+        $('#trueFileDocumentName').attr('value', data.file)
+        if (data.err) {
+          $('#documentErr').show();
+          $('#documentErr').text(data.err.message);
+        } else {
+          $('#documentErr').hide();
+        }
+      },
+      error: function (xhr,errorType,exception) {
+        responseText = jQuery.parseJSON(xhr.responseText);
+        alert(" Can't do because: ", errorType);
+      }
+    });
+  });
+</script>

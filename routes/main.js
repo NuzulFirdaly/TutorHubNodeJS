@@ -19,7 +19,7 @@ router.get('/', (req, res) => {
     // console.log("Printing user object from res.locals")
     CourseListing.findAll({ include: { model: User } }).then((courseArray) => {
         courseArray = JSON.parse(JSON.stringify(courseArray, null, 2))
-            // console.log(courseArray);
+            //console.log(courseArray);
         if (req.user != null) {
             res.render('home', {
                 user: req.user.dataValues,

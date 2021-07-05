@@ -9,6 +9,8 @@ const Description = require("../models/descriptions");
 const SeminarEvent = require("../models/seminarevents");
 const Widget = require("../models/widgets");
 const FeaturedTutor = require("../models/featuredinstitutiontutor");
+const CourseListing = require("../models/CoursesListing");
+const FeaturedCourse = require("../models/featuredinstitutioncourses");
 
 console.log("Retrieve messenger helper flash");
 const alertMessage = require('../helpers/messenger');
@@ -87,6 +89,8 @@ router.get('/showyourpage', async (req, res) => {
                     var allwidgets;
                     var allseminars;
                     var allfeaturetutors;
+                    var allcourselistings;
+                    var allfeaturedcourse;
                     // getting all banners
                     console.log("Fetching all institution banners.........");
                     await Banner.findAll({
@@ -183,6 +187,34 @@ router.get('/showyourpage', async (req, res) => {
                             console.log("successfully put featured tutor in array");
                         }).catch(err => console.log(err));
 
+                    // getting institution's courses
+                    await CourseListing.findAll({
+                        where: {
+                            institutionInstitutionId: institutionid
+                        },
+                        include: {model: User}
+                    })
+                    .then(foundcourse => {
+                        console.log("Putting course into courselistingarray");
+                        console.log(foundcourse);
+                        allcourselistings = foundcourse;
+                        console.log("Successfully put courses into array.");
+                    }).catch(err => console.log(err));
+
+                    // getting institution featured courses
+                    await FeaturedCourse.findAll({
+                        where: {
+                            institutionInstitutionId: institutionid,
+                        },
+                        raw: true
+                    })
+                    .then(foundfeaturecourse => {
+                        console.log("Putting course into allfeaturedcoursearray");
+                        console.log(foundfeaturecourse);
+                        allfeaturedcourse = foundfeaturecourse;
+                        console.log("Successfully put courses into array.");
+                    });
+
                     // render page
                     res.render('institution_admin/yourpage', {
                         title: "Your institution",
@@ -193,7 +225,9 @@ router.get('/showyourpage', async (req, res) => {
                         descriptionarray: bothdescriptions,
                         widgetarray: allwidgets,
                         seminararray: allseminars,
-                        featuretutorarray: allfeaturetutors
+                        featuretutorarray: allfeaturetutors,
+                        allinstcoursearray: allcourselistings,
+                        allfeaturedcoursearray: allfeaturedcourse
                     });
                 } else {
                     console.log("Unable to find institution");
@@ -323,27 +357,27 @@ router.get('/showregistertutor', (req, res) => {
     };
 });
 
-router.post("/profilePictureUpload", (req, res) => {
-    profilePictureUpload(req, res, async (err) => {
-        console.log("profile picture upload printing req.file.filename")
-        console.log(req.file)
-        if (err) {
-            res.json({ err: err });
-        } else {
-            if (req.file === undefined) {
-                res.json({ err: err });
-            } else {
-                res.json({ file: `${req.file.filename}`, path: '/images/profilepictures/' + `${req.file.filename}` });
-                //check to see if the course record exist or not if so just update it with the new picture
-                // await User.findOne({where: {user_id:  req.user.user_id } }).then(user => {
-                //     user.update({Profile_pic:req.file.filename})
-                // })
-            }
-        }
-    });
-})
+// router.post("/profilePictureUpload", (req, res) => {
+//     profilePictureUpload(req, res, async (err) => {
+//         console.log("profile picture upload printing req.file.filename")
+//         console.log(req.file)
+//         if (err) {
+//             res.json({ err: err });
+//         } else {
+//             if (req.file === undefined) {
+//                 res.json({ err: err });
+//             } else {
+//                 res.json({ file: `${req.file.filename}`, path: '/images/profilepictures/' + `${req.file.filename}` });
+//                 //check to see if the course record exist or not if so just update it with the new picture
+//                 // await User.findOne({where: {user_id:  req.user.user_id } }).then(user => {
+//                 //     user.update({Profile_pic:req.file.filename})
+//                 // })
+//             }
+//         }
+//     });
+// })
 
-router.post('/pendingcertUpload', (req, res) => {
+router.post('/pendingcertUpload2', (req, res) => {
     pendingcertsUpload(req, res, async (err) => {
         console.log("profile picture upload printing req.file.filename")
         console.log(req.file)
@@ -393,10 +427,15 @@ router.post('/registertutor', [
         }
         return true;
     }),
-    body('profilePictureUpload').not().isEmpty().trim().escape().withMessage("Please upload a cert"),
-], ensureAuthenticated, (req, res) => {
+    body('profilePictureUpload2').not().isEmpty().trim().escape().withMessage("Please upload a cert"),
+    body('username').not().isEmpty().trim().escape().withMessage("Username is invalid"),
+    body('password').isLength({ min: 8 }).withMessage("Password must be at least 8 Character").matches(
+        /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[a-zA-Z\d@$.!%*#?&]/
+    ).withMessage("Password must contain at least 1 uppercase letter, 1 lowercase letter and 1 special character"),
+    body('email').trim().isEmail().withMessage("Email must be a valid email").normalizeEmail().toLowerCase()
+    ], ensureAuthenticated, (req, res) => {
     console.log("retrieving the institution tutor forms......")
-    let { firstname, lastname, description, trueFileCertName, username, password, email } = req.body;
+    let { firstname, lastname, description, occupation, college_country, collegename, major, nric, fromyear, toyear, graduateyear, trueFileCertName, username, password, email } = req.body;
     let errors = [];
     const validatorErrors = validationResult(req);
     if (!validatorErrors.isEmpty()) { //if isEmpty is false
@@ -409,20 +448,55 @@ router.post('/registertutor', [
     } else {
         console.log("Creating instititution tutor...........");
         console.log("This is the institution: ", req.user.user_id);
-        Institution.findOne({
-            where: {
-                AdminUserID: req.user.user_id
-            },
-            order: [
-                ['name', 'ASC']
-            ],
-            raw: true
-        }).then(createnewtutor => {
-            User.create({ FirstName: firstname, LastName: lastname, description: description, Email: email, Username: username, Password: password, AccountTypeID: 1, institutionInstitutionId: createnewtutor.institution_id })
-            .catch(err => console.log(err));
-        });
-
-        res.redirect('/institution_admin/tutorcompletion');
+        User.findOne({where: {Email: email}})
+        .then(user => {
+            if (user) {
+                res.render('institution_admin/registertutor', {
+                    error: email + ' already registered.',
+                    firstname,
+                    lastname,
+                    description,
+                    username,
+                    password,
+                    email,
+                    occupation,
+                    college_country,
+                    collegename,
+                    major,
+                    nric,
+                    toyear,
+                    fromyear,
+                    graduateyear
+                });
+            } else {
+                bcrypt.genSalt(10, function(err, salt) {
+                    bcrypt.hash(password, salt, function(err, hash) {
+                        // Store hash in your password DB.
+                        if (err) {
+                            throw err;
+                        } else {
+                            hashedpassword = hash;
+                            console.log("This is hashed pasword \n", hashedpassword);
+                            // Create new user record
+                            Institution.findOne({
+                                where: {
+                                    AdminUserID: req.user.user_id
+                                },
+                                order: [
+                                    ['name', 'ASC']
+                                ],
+                                raw: true
+                            }).then(createnewtutor => {
+                                User.create({ FirstName: firstname, LastName: lastname, description: description, Email: email, Username: username, Password: hashedpassword, AccountTypeID: 1, institutionInstitutionId: createnewtutor.institution_id })
+                                .catch(err => console.log(err));
+                            });
+                    
+                            res.redirect('/institution_admin/tutorcompletion');
+                        }
+                    });
+                });
+            }
+        })
     }
 })
 
@@ -897,6 +971,99 @@ router.post('/yourpage/removefeaturetutor', uploadnone.none(), [body('removefeat
 
 
 // CRUD for featured courses ---------------------------------------------------------
+router.post('/yourpage/featurecourses', uploadnone.none(), [body('featurecourse').not().isEmpty().escape().withMessage("Please select a course")], (req, res) => {
+    console.log("Requesting feature courses");
+    let {featurecourse} = req.body;
+    let errors = [];
+    const validatorErrors = validationResult(req);
+    if (!validatorErrors.isEmpty()) {
+        console.log("There are errors when featuring the course.");
+        validatorErrors.array().forEach(error => {
+            console.log(error);
+            errors.push({ text: error.msg });
+        });
+        res.render('institution_admin/showyourpage',
+            {
+                user: req.user.dataValues,
+                errors
+            });
+    } else { 
+        userid = req.user.dataValues.user_id;
+        Institution.findOne({
+            where: {
+                AdminUserID: userid
+            }
+        })
+        .then(fic => {
+            CourseListing.findOne({
+                where: {
+                    course_id: featurecourse
+                },
+                raw: true
+            }).then(addfeaturecourse => {
+                // console.log(addfeaturecourse);
+                // console.log("name: ", addfeaturecourse.FirstName);
+                User.findOne({
+                    where: {
+                        user_id: addfeaturecourse.userUserId
+                    }
+                }).then(courseuser => {
+                    FeaturedCourse.create({
+                        course_id: featurecourse, 
+                        Title: addfeaturecourse.Title, 
+                        Short_description: addfeaturecourse.short_description, 
+                        Description: addfeaturecourse.Description, 
+                        Hourlyrate: addfeaturecourse.Hourlyrate,
+                        FirstName: courseuser.FirstName,
+                        LastName: courseuser.LastName,
+                        Profile_pic: courseuser.Profile_pic,
+                        institutionInstitutionId: fic.institution_id}).catch(err => console.log(err));
+                    console.log("Successfully created feature courses");
+                    res.redirect('/institution_admin/showyourpage');
+                })
+               // res.redirect('/institution_admin/showyourpage');
+            }).catch(err => console.log(err));
+        }).catch(err => console.log(err));
+    }
+});
+
+router.post('/yourpage/deletefeaturecourse', uploadnone.none(), [body('removefeaturedcourse').not().isEmpty().escape().withMessage("Please select a course")], (req, res) => {
+    console.log("Requesting feature courses");
+    let {removefeaturedcourse} = req.body;
+    let errors = [];
+    const validatorErrors = validationResult(req);
+    if (!validatorErrors.isEmpty()) {
+        console.log("There are errors when removing the course.");
+        validatorErrors.array().forEach(error => {
+            console.log(error);
+            errors.push({ text: error.msg });
+        });
+        res.render('/institution_admin/showyourpage',
+            {
+                user: req.user.dataValues,
+                errors
+            });
+    } else { 
+        userid = req.user.dataValues.user_id;
+        Institution.findOne({
+            where: {
+                AdminUserID: userid
+            }
+        })
+        .then(fic => {
+            FeaturedCourse.destroy({
+                where: {
+                    featuredcourse_id: removefeaturedcourse,
+                    institutionInstitutionId: fic.institution_id
+                }
+            }).catch(err => console.log(err));
+            console.log("Successfully created feature courses");
+            res.redirect('/institution_admin/showyourpage');
+
+               // res.redirect('/institution_admin/showyourpage');
+        }).catch(err => console.log(err));
+    }
+});
 // -----------------------------------------------------------------------------------
 
 

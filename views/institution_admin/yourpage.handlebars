@@ -615,40 +615,67 @@
 							</header>
 							<div class="filter-content collapse show" id="collapse_aside4">
 								<div class="card-body">
-									<button type="button" class="btn btn-primary" data-toggle="modal"
-										data-target="#addtopcourses" name="addtopcourse"
-										value="addtopcourse">Feature</button>
-									<button type="button" class="btn btn-primary" data-toggle="modal"
-										data-target="#deletetopcourses" name="deletetopcourse"
-										value="deletetopcourse">Remove</button>
+									<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addfeaturecourses" name="addfeaturecourses" value="addfeaturecourses">Feature</button>
+									<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#deletefeaturecourses" name="deletefeaturecourses" value="deletefeaturecourses">Remove</button>
 								</div> <!-- card-body.// -->
 								<!-- add feature course here ========================================= -->
-								<form class="block-register" action="/institutionAdmin/yourpage" method="POST"
-									enctype="multipart/form-data">
-									<div class="modal fade" id="addtopcourses" tabindex="-1" role="dialog"
+								<form class="block-register" action="/institution_admin/yourpage/featurecourses" method="POST">
+									<div class="modal fade" id="addfeaturecourses" tabindex="-1" role="dialog"
 										aria-labelledby="addtopcourseslabel" aria-hidden="true">
-										<div class="modal-dialog" role="document">
+										<div class="modal-dialog modal-lg" role="document">
 											<div class="modal-content">
 												<div class="modal-header">
-													<h5 class="modal-title" id="addtopcourseslabel">Select a course to
-														feature</h5>
-													<button type="button" class="close" data-dismiss="modal"
-														aria-label="Close"><span
-															aria-hidden="true">&times;</span></button>
+													<h5 class="modal-title" id="addtopcourseslabel">Select a course to feature</h5>
+													<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 												</div>
 												<div class="modal-body">
-													<br>
-													<br>
+													{{#if allinstcoursearray}}
 													<div class="form-group form-row">
-														<br>
-														<img class="img-sm rounded-circle mx-auto" src="" />
-														<br>
-														<label class="col-md-7">Erika Sampang</label>
-														<br>
-														<button class="btn btn-primary mx-auto" type="submit"
-															name="featurecourse" value="featurecourse"><span
-																class="col-md-1">feature</span></button>
+														<input type="text" id="myInput2" onkeyup="mySecondFunction()"
+															placeholder="Search for courses..">
 													</div>
+													<Table id="myTable2" style="border-collapse: collapse; width: 100%; font-size: 18px;">
+													{{#each allinstcoursearray}}
+													<tr>
+														<td>
+															<img class="card-img-top img-lf" style="height: 100px; width: 200px;" src="/images/coursethumbnails/{{Course_thumbnail}}">
+														</td>
+														<td>
+															{{Title}}
+														</td>
+														<td>
+															{{user.Username}}
+														</td>
+														<td>
+															<button type="submit" class="btn btn-primary float-right" name="featurecourse" value="{{course_id}}"><span class="col-md-1">feature</span></button>
+														</td>
+													</tr>
+													{{/each}}
+													</Table>
+													{{else}}
+													<h3>There are currently no courses under your institution.</h3>
+													{{/if}}
+													{{!-- <figure class="card card-product-grid" style="width: 18rem;">
+														<img class="card-img-top" src="/images/coursethumbnails/{{Course_thumbnail}}"height="140" width="240">
+														<div class="widget-header">
+																<a href="#" class="ml-3 icontext" data-toggle="dropdown" data-offset="20,10">
+																	<div class="icon"><img class="icon icon-xs rounded-circle" src="/images/profilepictures/{{../user.Profile_pic}}"></div>
+																	<div class="text" >
+																		<small class="text-muted">{{../user.FirstName}} {{../user.LastName}}</small> <br>
+																	</div>
+																</a>
+														</div>
+														<figcaption class="info-wrap">
+															<h4 class="title"><a href="/course/updatecourse/{{course_id}}">{{Title}}</a></h4>
+															<p class="text-muted" style="font-size:0.9em; height:58px">{{Short_description}}</p>
+															<br>
+															<h5>${{Hourlyrate}}/Hour</h5>
+														</figcaption>
+													</figure> <!-- card // --> --}}
+													{{!-- <div class="form-group form-row">
+														<img class="card-img-top img-md" style="height: 100px; width: 200px;" src="/images/coursethumbnails/{{Course_thumbnail}}">
+
+													</div> --}}
 													<br><br>
 												</div>
 												<div class="modal-footer">
@@ -661,33 +688,39 @@
 								</form>
 								<!-- =========================================================== -->
 								<!-- delete feature course here ========================================= -->
-								<form class="block-register" action="/institutionAdmin/yourpage" method="POST"
-									enctype="multipart/form-data">
-									<div class="modal fade" id="deletetopcourses" tabindex="-1" role="dialog"
-										aria-labelledby="deletetopcourseslabel" aria-hidden="true">
+								<form class="block-register" action="/institution_admin/yourpage/deletefeaturecourse" method="POST">
+									<div class="modal fade" id="deletefeaturecourses" tabindex="-1" role="dialog" aria-labelledby="deletetopcourseslabel" aria-hidden="true">
 										<div class="modal-dialog" role="document">
 											<div class="modal-content">
 												<div class="modal-header">
-													<h5 class="modal-title" id="deletetopcourseslabel">Select a course
-														to remove</h5>
+													<h5 class="modal-title" id="deletetopcourseslabel">Select a featured course to remove.</h5>
 													<button type="button" class="close" data-dismiss="modal"
 														aria-label="Close"><span
 															aria-hidden="true">&times;</span></button>
 												</div>
 												<div class="modal-body">
-													<br>
-													<br>
-													<div class="form-group form-row">
-														<br>
-														<img class="img-sm rounded-circle mx-auto" src="" />
-														<br>
-														<label class="col-md-7">Erika Sampang</label>
-														<br>
-														<button class="btn btn-primary mx-auto" type="submit"
-															name="removecourse" value="removecourse"><span
-																class="col-md-1">feature</span></button>
-													</div>
-													<br><br>
+													{{#if allfeaturedcoursearray}}
+													<Table style="border-collapse: collapse; width: 100%; font-size: 18px;">
+													{{#each allfeaturedcoursearray}}
+													<tr>
+														<td>
+															<img class="card-img-top img-lf" style="height: 100px; width: 200px;" src="/images/coursethumbnails/{{Course_thumbnail}}">
+														</td>
+														<td>
+															{{Title}}
+														</td>
+														<td>
+															{{FIrstName}} {{LastName}}
+														</td>
+														<td>
+															<button type="submit" class="btn btn-primary float-right" name="removefeaturedcourse" value="{{featuredcourse_id}}"><span class="col-md-1">remove</span></button>
+														</td>
+													</tr>
+													{{/each}}
+													</Table>
+													{{else}}
+													<h3>There are currently no featured courses.</h3>
+													{{/if}}
 												</div>
 												<div class="modal-footer">
 													<button type="button" class="btn btn-secondary"
@@ -1095,7 +1128,7 @@
 												{{#if widgetarray}}
 												{{#each widgetarray}}
 												<div class="list-inline-item">
-													<a href="{{widgeturl}}"><img class="d-block img-sm rounded-circle"
+													<a href="{{widgeturl}}" target="_blank"><img class="d-block img-sm rounded-circle"
 															src="/images/Institutionpictures/socialmedia/{{widgetimage}}"></a>
 												</div>
 												{{/each}}
@@ -1159,31 +1192,45 @@
 								<br><br>
 								<!-- Top courses-->
 								<div class="row d-flex justify-content-center">
-									<div class="col-sm-4 mt-3">
-										<div class="card">
-											<div class="card-body">
-												<img class="card-img-top" src="/images/banners/banner9.jpg"
-													alt="Card image cap">
-												<h5 class="card-title">Digital Business</h5>
-												<p class="card-text">Students will learn the goals and essentials of
-													business operations and the various industries that businesses
-													operate in.</p>
-												<a href="#" class="btn btn-primary">Learn More</a>
-											</div>
+									{{#if allfeaturedcoursearray}}
+									{{#each allfeaturedcoursearray}}
+									<figure class="card card-product-grid" style="width: 18rem; height: 21rem; margin-right: 20px;">
+										<img class="card-img-top" src="/images/coursethumbnails/{{Course_thumbnail}}"height="140" width="240">
+										<div class="widget-header">
+												<a href="#" class="ml-3 icontext" data-toggle="dropdown" data-offset="20,10">
+													<div class="icon"><img class="icon icon-xs rounded-circle" src="/images/profilepictures/{{Profile_pic}}"></div>
+													<div class="text" >
+														<small class="text-muted">{{FirstName}} {{LastName}}</small> <br>
+													</div>
+												</a>
 										</div>
-									</div>
-									<div class="col-sm-4 mt-3">
-										<div class="card">
-											<div class="card-body">
-												<img class="card-img-top" src="/images/banners/banner8.jpg"
-													alt="Card image cap">
-												<h5 class="card-title">UX Design</h5>
-												<p class="card-text">Students will appreciate the concepts of User
-													Experience (UX) and UX design.</p>
-												<a href="#" class="btn btn-primary">Learn More</a>
-											</div>
+										<figcaption class="info-wrap">
+											<h4 class="title"><a href="/course/viewcourse/{{course_id}}">{{Title}}</a></h4>
+											<p class="text-muted" style="font-size:0.9em;">{{Short_description}}</p>
+											<br>
+											<h5>{{Hourlyrate}}/Hour</h5>
+										</figcaption>
+									</figure>
+									{{/each}}
+									{{else}}
+									<figure class="card card-product-grid" style="width: 18rem; height: 21rem; margin-right: 20px;">
+										<img class="card-img-top" src="/images/coursethumbnails/avatar2.jpg"height="140" width="240">
+										<div class="widget-header">
+												<a href="#" class="ml-3 icontext" data-toggle="dropdown" data-offset="20,10">
+													<div class="icon"><img class="icon icon-xs rounded-circle" src="/images/profilepictures/2.jpg"></div>
+													<div class="text" >
+														<small class="text-muted">Feature your courses here!</small> <br>
+													</div>
+												</a>
 										</div>
-									</div>
+										<figcaption class="info-wrap">
+											<h4 class="title"><a href="#">CHoose your favourite/top courses</a></h4>
+											<p class="text-muted" style="font-size:0.9em; height:58px">Let everyone see it here!</p>
+											<br>
+											<h5>1/Hour</h5>
+										</figcaption>
+									</figure> <!-- card // -->
+									{{/if}}
 								</div>
 								<!-- end of top courses-->
 								<br><br>
@@ -1258,6 +1305,28 @@
 		input = document.getElementById("myInput");
 		filter = input.value.toUpperCase();
 		table = document.getElementById("myTable");
+		tr = table.getElementsByTagName("tr");
+
+		// Loop through all table rows, and hide those who don't match the search query
+		for (i = 0; i < tr.length; i++) {
+			td = tr[i].getElementsByTagName("td")[1];
+			if (td) {
+				txtValue = td.textContent || td.innerText;
+				if (txtValue.toUpperCase().indexOf(filter) > -1) {
+					tr[i].style.display = "";
+				} else {
+					tr[i].style.display = "none";
+				}
+			}
+		}
+	}
+
+	function mySecondFunction() {
+		// Declare variables
+		var input, filter, table, tr, td, i, txtValue;
+		input = document.getElementById("myInput2");
+		filter = input.value.toUpperCase();
+		table = document.getElementById("myTable2");
 		tr = table.getElementsByTagName("tr");
 
 		// Loop through all table rows, and hide those who don't match the search query

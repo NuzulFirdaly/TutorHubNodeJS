@@ -375,9 +375,9 @@
                 <div class="form-group form-row">
                     <label class="col-md-3 col-form-label">Certification <br> <p class="text-muted" style="max-width:200px;">For verification purposes, this will remain private</p>  </label>
                     <div class="col">
-                        <input type="file" name="profilePictureUpload" id="profilePictureUpload">
-                        <input type="hidden" id='trueFileCertName' name="trueFileCertName">
-                        <div class="font-weight-bold text-danger small" id="certErr" style="display:none"></div>
+                        <input type="file" name="profilePictureUpload2" id="profilePictureUpload2">
+                        <input type="hidden" id='trueFileCertName2' name="trueFileCertName2">
+                        <div class="font-weight-bold text-danger small" id="certErr2" style="display:none"></div>
                     </div>
                     <div class="col-s-1 col-form-label"><label>Date of Birth</label></div>
                     <div class="col">
@@ -404,7 +404,7 @@
                         <label>Password</label>
                     </div>
                     <div class="col">
-                        <input class="form-control"  id="password" name="password" placeholder="password">
+                        <input class="form-control" type="password" id="password" name="password" placeholder="password">
                     </div>
                     </div>
                 </div>
@@ -425,45 +425,20 @@
 </section>
 </section>
 <script>
-    //$('#profilePictureUpload').on('change', function () {
-        //let image = $("#profilePictureUpload")[0].files[0];
-        //let formdata = new FormData();
-        //formdata.append('profilePictureUpload', image);
-        //$.ajax({
-            //url: '/institution_admin/profilePictureUpload',
-            //data: formdata,
-            //contentType: false,
-            //processData: false,
-            //type: 'POST',
-            //'success': (data) => {
-                //console.log(data);
-                //$('#profilePicture').attr('src', data.path);
-                //$('#trueFileName').attr('value', data.file);
-                //if (data.err) {
-                    //$('#profilePictureErr').show();
-                    //$('#profilePictureErr').text(data.err.message);
-                //} else {
-                    //$('#profilePictureErr').hide();
-                //}
-            //},
-            //error: function (xhr,errorType,exception) {
-                //responseText = jQuery.parseJSON(xhr.responseText);
-                //alert(" Can't do because: ", errorType);
-            //}
-        //});
-    //});
-
     $('#datepicker').datepicker({
         format: 'dd/mm/yyyy',
         value: new Date().toLocaleDateString(),
         uiLibrary: 'bootstrap4',
     });
-    $('#profilePictureUpload').on('change', function () {
-        let file = $("#cert")[0].files[0];
+
+    $('#profilePictureUpload2').on('change', function () {
+        alert("hello");
+        let file = $("#profilePictureUpload2")[0].files[0];
         let formdata = new FormData();
-        formdata.append('cert', file);
+        formdata.append('profilePictureUpload', file);
+        alert("are you working");
         $.ajax({
-            url: '/institution_admin/pendingcertUpload',
+            url: '/institution_admin/pendingcertUpload2',
             data: formdata,
             contentType: false,
             processData: false,
@@ -471,12 +446,12 @@
             'success': (data) => {
                 console.log(data);
                 //$('#profilePictureUpload').attr('src', data.path);
-                $('#trueFileCertName').attr('value', data.file)
+                $('#trueFileCertName2').attr('value', data.file)
                 if (data.err) {
-                    $('#certErr').show();
-                    $('#certErr').text(data.err.message);
+                    $('#certErr2').show();
+                    $('#certErr2').text(data.err.message);
                 } else {
-                    $('#certErr').hide();
+                    $('#certErr2').hide();
                 }
             },
             error: function (xhr,errorType,exception) {
