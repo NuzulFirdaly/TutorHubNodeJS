@@ -39,6 +39,7 @@ router.get("/CreateCourse", (req, res) => {
             user: req.user.dataValues, //have to do this for all pages
         })
     } else {
+        alertMessage(res, 'danger', 'You dont have access to that page!', 'fas fa-exclamation-triangle', true)
         res.redirect("/")
     };
 
@@ -83,6 +84,13 @@ router.post("/CreateCourse", [
             errors.push({ text: error.msg })
         })
         res.render("course/coursecreation", {
+            coursetitle,
+            category,
+            subcategory,
+            short_description,
+            description,
+            courseThumbnailUpload,
+            trueFileName,
             user: req.user.dataValues, //have to do this for all pages
             errors
         })
@@ -131,6 +139,7 @@ router.get("/CreateSession/:courseid", (req, res) => {
             })
         });
     } else {
+        alertMessage(res, 'danger', 'You dont have access to that page!', 'fas fa-exclamation-triangle', true)
         res.redirect("/")
     };
 })
@@ -214,6 +223,7 @@ router.get("/addnewlesson/:courseid", (req, res) => {
             user: req.user.dataValues,
         })
     } else {
+        alertMessage(res, 'danger', 'You dont have access to that page!', 'fas fa-exclamation-triangle', true)
         res.redirect("/")
     };
 
@@ -336,6 +346,7 @@ router.get("/addpricing/:courseid", (req, res) => {
                 })
             });
     } else {
+        alertMessage(res, 'danger', 'You dont have access to that page!', 'fas fa-exclamation-triangle', true)
         res.redirect("/")
     };
 })
@@ -370,6 +381,7 @@ router.get("/mycourses", (req, res) => {
                 })
             });
     } else {
+        alertMessage(res, 'danger', 'You dont have access to that page!', 'fas fa-exclamation-triangle', true)
         res.redirect("/")
     };
 });
@@ -477,6 +489,7 @@ router.get("/updatecourse/:courseid", ensureAuthenticated, (req, res) => {
                     course
                 })
             } else {
+                alertMessage(res, 'danger', 'You dont have access to that page!', 'fas fa-exclamation-triangle', true)
                 res.redirect("/")
             };
 
@@ -493,6 +506,7 @@ router.get("/editcourse/:courseid", (req, res) => {
                     course: course
                 })
             } else {
+                alertMessage(res, 'danger', 'You dont have access to that page!', 'fas fa-exclamation-triangle', true)
                 res.render("/")
             };
         })
@@ -517,6 +531,7 @@ router.get('/editaddnewlesson/:courseid', (req, res) => {
                 user: req.user.dataValues,
             })
         } else {
+            alertMessage(res, 'danger', 'You dont have access to that page!', 'fas fa-exclamation-triangle', true)
             res.redirect("/")
         };
     })
@@ -590,6 +605,7 @@ router.get("/editlesson/:courseid", (req, res) => {
             })
         });
     } else {
+        alertMessage(res, 'danger', 'You dont have access to that page!', 'fas fa-exclamation-triangle', true)
         res.redirect("/")
     };
 });
@@ -619,6 +635,7 @@ router.post("/editlesson/:courseid", async(req, res) => {
                 if ((req.user) && (req.user.AccountTypeID == 1)) {
                     res.redirect(301, '/course/editpricing/' + req.params.courseid)
                 } else {
+                    alertMessage(res, 'danger', 'You dont have access to that page!', 'fas fa-exclamation-triangle', true)
                     res.redirect("/")
                 }
                 //render session and push error saying need to have 1 cost
@@ -652,6 +669,7 @@ router.get("/editpricing/:courseid", (req, res) => {
                 })
             });
     } else {
+        alertMessage(res, 'danger', 'You dont have access to that page!', 'fas fa-exclamation-triangle', true)
         res.redirect("/")
     };
 })
@@ -713,6 +731,7 @@ router.get("/updatelesson/:sessionid", (req, res) => {
             })
 
     } else {
+        alertMessage(res, 'danger', 'You dont have access to that page!', 'fas fa-exclamation-triangle', true)
         res.redirect("/")
     };
 
@@ -739,6 +758,7 @@ router.get("/editupdatesession/:sessionid", (req, res) => {
             })
 
     } else {
+        alertMessage(res, 'danger', 'You dont have access to that page!', 'fas fa-exclamation-triangle', true)
         res.redirect("/")
     };
 

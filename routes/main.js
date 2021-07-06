@@ -98,6 +98,7 @@ router.post('/loginPost', [body('email').trim().isEmail().normalizeEmail().toLow
 // Logout User
 router.get('/logout', (req, res) => {
     req.logout();
+    alertMessage(res, 'success', 'You haved logged out! See you again...', 'fas fa-door-open', true)
     res.redirect('/');
 });
 

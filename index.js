@@ -96,8 +96,22 @@ app.engine('handlebars', exphbs({
         ifInBetween(a, b, c) {
             return a >= b && a <= c;
         },
-        ifGreater(a,b){
-            return a>b;
+        ifGreater(a, b) {
+            return a > b;
+        },
+        lengthMoreThan(a, b, options) {
+            // console.log("this is a", a)
+            // console.log("this is b", b)
+            if (a) {
+                if (a.length >= b) {
+                    return options.fn(this)
+                }
+                return options.inverse(this)
+            }
+            return options.inverse(this)
+        },
+        printToConsole(a) {
+            console.log("this is print to console", a)
         }
 
     },

@@ -25,12 +25,14 @@ router.get('/becometutor', async(req, res) => { //check if user is logged in her
                 if ((req.user) && (req.user.AccountTypeID == 0)) {
                     res.render('tutor_onboarding/tutor_onboarding', { title: "Become A Tutor!", layout: 'tutor_onboarding_base', user: req.user.dataValues })
                 } else {
+                    alertMessage(res, 'danger', 'You dont have access to that page!', 'fas fa-exclamation-triangle', true)
                     res.redirect("/")
                 };
             }
         })
 
     } else {
+        alertMessage(res, 'danger', 'You dont have access to that page!', 'fas fa-exclamation-triangle', true)
         res.redirect("/")
     };
     // let o = await PendingTutor.findOne({where:{ userUserId: req.user.user_id}}) threads it is because of the limit 1 in the query
@@ -85,11 +87,13 @@ router.get('/personal_info', async(req, res) => {
                         layout: 'tutor_onboarding_base'
                     });
                 } else {
+                    alertMessage(res, 'danger', 'You dont have access to that page!', 'fas fa-exclamation-triangle', true)
                     res.redirect("/")
                 };
             }
         })
     } else {
+        alertMessage(res, 'danger', 'You dont have access to that page!', 'fas fa-exclamation-triangle', true)
         res.redirect("/")
     };
 
@@ -162,12 +166,14 @@ router.get('/professional_info', async(req, res) => {
                         layout: 'tutor_onboarding_base'
                     });
                 } else {
+                    alertMessage(res, 'danger', 'You dont have access to that page!', 'fas fa-exclamation-triangle', true)
                     res.redirect("/")
                 };
             }
         })
 
     } else {
+        alertMessage(res, 'error', 'You dont have access to that page!', 'fas fa-exclamation-triangle', true)
         res.redirect("/")
     };
 
