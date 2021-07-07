@@ -528,9 +528,8 @@
 												</div>
 												<div class="modal-body">
 													{{#if institutiontutorarray}}
-													<div class="form-group form-row">
-														<input type="text" id="myInput" onkeyup="myFunction()"
-															placeholder="Search for your Tutor..">
+													<div class="row">
+														<input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for your Tutor..">
 													</div>
 													<Table id="myTable"
 														style="border-collapse: collapse; width: 100%; font-size: 18px;">
@@ -550,10 +549,10 @@
 															</td>
 														</tr>
 														{{/each}}
-														{{else}}
-														<h3>You currently have no tutor under your institution. Please register your tutor</h3>
-														{{/if}}
 													</Table>
+													{{else}}
+														<h3>You currently have no tutor under your institution. Please register your tutor</h3>
+													{{/if}}
 													<br><br>
 												</div>
 												<div class="modal-footer">

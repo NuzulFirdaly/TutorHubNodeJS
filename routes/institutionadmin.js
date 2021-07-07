@@ -44,11 +44,67 @@ const { body, validationResult } = require('express-validator');
 //const { ValidationError } = require('sequelize/types');
 const { error } = require('console');
 
+// Email
+const nodemailer = require('nodemailer');
+const {google} = require('googleapis');
+const CLIENT_ID = '993285737810-tfpuqq5vhfdjk5s5ng5v6vcbc3cht53s.apps.googleusercontent.com';
+const CLIENT_SECRET = 'uvWjFqdiAgVK_sFq_uaYcbGV';
+const REDIRECT_URI = 'https://developers.google.com/oauthplayground';
+const REFRESH_TOKEN = '1//04NJ-IXlwUJ_7CgYIARAAGAQSNgF-L9Irvecmxx12BMYyPKTIrSjhEroQErhaG49HwPEugWn5nSq3MJAb9py5_yEVmIwNd6gj5A';
+const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
+oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
+
+async function sendMailRegisterTutor(custom_mailemail, 
+    custom_mailsubject, email, username, password) {
+    try {
+        const accessToken = await oAuth2Client.getAccessToken();
+
+        const transport = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                type: 'OAuth2',
+                user: 'adm.tutorhub@gmail.com',
+                clientId: CLIENT_ID,
+                clientSecret: CLIENT_SECRET,
+                refreshToken: REFRESH_TOKEN,
+                accessToken: accessToken,
+            },
+        });
+
+        const mailOptions = {
+            from: 'TutorHub Administrator 👨‍🏫<adm.tutorhub@gmail.com>',
+            to: custom_mailemail,
+            subject: custom_mailsubject,
+            html: "<h1> Congratulations. Your account is ready to be used.</h1> \
+            <br> <p>Your institution has registered your account and you are now able to login and start using!. Below are the details of your account.</p> \
+            <br><h4>It is highly recommended to immediately change your password once you've logged in.</h4> \
+            <br><p>Your email: </p>" + email + "\
+            <p>Username: </p>" + username + " \
+            <p>Password: </p>" + password 
+        };
+
+        const result = await transport.sendMail(mailOptions)
+        return result;
+
+    } catch (error) {
+        return error;
+    }
+}
+
 
 // ---------------------------------------------
 router.use(express.urlencoded({
     extended: true
 }));
+
+var banneritems;
+var alloftutors;
+var bothdescriptions;
+var allwidgets;
+var allseminars;
+var allfeaturetutors;
+var allcourselistings;
+var allfeaturedcourse;
 
 // show edit home page  -- Main overall page
 router.get('/showyourpage', async (req, res) => {
@@ -83,14 +139,6 @@ router.get('/showyourpage', async (req, res) => {
                 console.log("Institution id: ", institutionid);
                 console.log("Fetching institutionid complete...");
                 if (institute) {
-                    var banneritems;
-                    var alloftutors;
-                    var bothdescriptions;
-                    var allwidgets;
-                    var allseminars;
-                    var allfeaturetutors;
-                    var allcourselistings;
-                    var allfeaturedcourse;
                     // getting all banners
                     console.log("Fetching all institution banners.........");
                     await Banner.findAll({
@@ -290,10 +338,29 @@ router.post('/editmainlogo/editlogo', [body('trueFileLogoName').not().isEmpty().
             console.log(error);
             errors.push({ text: error.msg })
         })
-        res.render('/institution_admin/showeditmainlogo', {
-            user: req.user.dataValues,
-            errors
-        });
+        Institution.findOne({
+            where: {
+                AdminUserID: institutionadminid
+            },
+            raw: true
+        })
+            .then((foundinstitution) => {
+                console.log("fetching institution id........");
+                institutionid = foundinstitution.institution_id;
+                console.log("Institution id: ", institutionid)
+                console.log("Fetching institutionid complete...");
+
+                if (foundinstitution) {
+                    console.log("fetching main logo of institution and putting it into an array..");
+                    res.render('institution_admin/editmainlogo', {
+                        title: "Your institution",
+                        layout: 'institution_admin_base',
+                        user: req.user.dataValues,
+                        mainlogoarray: foundinstitution,
+                        errors
+                    });
+                }
+            });
     }
     else {
         console.log("There are no errors found.");
@@ -429,13 +496,10 @@ router.post('/registertutor', [
     }),
     body('profilePictureUpload2').not().isEmpty().trim().escape().withMessage("Please upload a cert"),
     body('username').not().isEmpty().trim().escape().withMessage("Username is invalid"),
-    body('password').isLength({ min: 8 }).withMessage("Password must be at least 8 Character").matches(
-        /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[a-zA-Z\d@$.!%*#?&]/
-    ).withMessage("Password must contain at least 1 uppercase letter, 1 lowercase letter and 1 special character"),
     body('email').trim().isEmail().withMessage("Email must be a valid email").normalizeEmail().toLowerCase()
     ], ensureAuthenticated, (req, res) => {
     console.log("retrieving the institution tutor forms......")
-    let { firstname, lastname, description, occupation, college_country, collegename, major, nric, fromyear, toyear, graduateyear, trueFileCertName, username, password, email } = req.body;
+    let { firstname, lastname, description, occupation, college_country, collegename, major, nric, fromyear, toyear, graduateyear, trueFileCertName, username, email } = req.body;
     let errors = [];
     const validatorErrors = validationResult(req);
     if (!validatorErrors.isEmpty()) { //if isEmpty is false
@@ -457,7 +521,6 @@ router.post('/registertutor', [
                     lastname,
                     description,
                     username,
-                    password,
                     email,
                     occupation,
                     college_country,
@@ -469,13 +532,15 @@ router.post('/registertutor', [
                     graduateyear
                 });
             } else {
+                var APassword = crypto.randomBytes(20).toString('hex');
                 bcrypt.genSalt(10, function(err, salt) {
-                    bcrypt.hash(password, salt, function(err, hash) {
+                    bcrypt.hash(APassword, salt, function(err, hash) {
                         // Store hash in your password DB.
                         if (err) {
                             throw err;
                         } else {
                             hashedpassword = hash;
+                            console.log("this is the password before it is hashed: ", APassword);
                             console.log("This is hashed pasword \n", hashedpassword);
                             // Create new user record
                             Institution.findOne({
@@ -490,7 +555,11 @@ router.post('/registertutor', [
                                 User.create({ FirstName: firstname, LastName: lastname, description: description, Email: email, Username: username, Password: hashedpassword, AccountTypeID: 1, institutionInstitutionId: createnewtutor.institution_id })
                                 .catch(err => console.log(err));
                             });
-                    
+                            
+                            // send email to tutor
+                            sendMailRegisterTutor(email, 'Your TutorHub Account is ready!', email, username, APassword)
+                            .then((result) => console.log("Email sent...", result))
+                            .catch((error) => console.log(error.message));
                             res.redirect('/institution_admin/tutorcompletion');
                         }
                     });
@@ -515,18 +584,132 @@ router.get('/tutorcompletion', (req, res) => {
 
 
 
+var uploadnone = multer();
 
-
-// show your tutor page ------------------------------------------------------
+// show your tutor page CRUD ------------------------------------------------------
 router.get('/showyourtutors', (req, res) => {
     if ((req.user) && (req.user.AccountTypeID == 2)) {
-        res.render('institution_admin/yourtutor', {
-            title: "Your institution",
-            layout: 'institution_admin_base'
-        });
+        console.log("Fetching admin id.....");
+        institutionadminid = req.user.dataValues.user_id;
+        console.log(institutionadminid);
+        console.log("Fetching adminid successful");
+        // Institution.findOne({
+        // 	where: {
+        // 		user_id: req.params.institutionadminid
+        // 	},
+        // 	raw: true,
+        // 	// order: [[]]
+        // })
+        // .then(institutionadmin => {
+        // 	if(institutionadmin.user_id == req.user.user_id) {
+        // 		res.render('institution_admin/yourpage', {title: "Your institution", layout: 'institution_admin_base'})
+        // 	}
+        // });,
+        // ----
+        console.log("Finding institution.........");
+        Institution.findOne({
+            where: {
+                AdminUserID: institutionadminid
+            },
+            raw: true
+        }).then(async (institute) => { 
+            console.log("fetching institution id........");
+                institutionid = institute.institution_id;
+                console.log("Institution id: ", institutionid);
+                console.log("Fetching institutionid complete...");
+                if (institute) { 
+                    // getting all institution tutors
+                    console.log("Fetching all institution's tutors");
+                    await User.findAll({
+                        where: {
+                            AccountTypeID: 1,
+                            institutionInstitutionId: institutionid
+                        },
+                        raw: true
+                    })
+                        .then(foundtutor => {
+                            console.log("Putting tutors into an array.....");
+                            console.log(foundtutor);
+                            alloftutors = foundtutor
+                            console.log("Successfully put tutors into institutiontutorarray...");
+                        }).catch(err => console.log(err));
+                    
+                    res.render('institution_admin/yourtutor', {
+                        title: "Your institution",
+                        layout: 'institution_admin_base',
+                        user: req.user.dataValues,
+                        institutiontutorarray: alloftutors
+                    });
+                }
+        }).catch(err => console.log(err));
     } else {
         res.redirect("/");
     };
+});
+
+router.post('/profilePictureUpload4', (req, res) => {
+    profilePictureUpload(req, res, async (err) => {
+        console.log("profile picture upload printing req.file.filename")
+        console.log(req.file)
+        if (err) {
+            res.json({ err: err });
+        } else {
+            if (req.file === undefined) {
+                res.json({ err: err });
+            } else {
+                res.json({ path: `/images/profilepictures/${req.file.filename}`, file: `${req.file.filename}` });
+                // await Pending.findOne({where: {user_id:  req.user.user_id } }).then(user => {
+                //     user.update({cert:req.file.filename})
+                // })
+            }
+        }
+    });
+})
+
+router.post('/yourtutor/deletetutortable', uploadnone.none(), 
+[body('removetutortable').not().isEmpty().escape().withMessage("Pleas select a tutor")], (req, res) => {
+    console.log("request delete tutor table form......");
+    let { removetutortable } = req.body;
+    console.log(removetutortable);
+    let errors = [];
+    const validatorErrors = validationResult(req);
+    if (!validatorErrors.isEmpty()) {
+        console.log("There are errors when deleting the tutor");
+        validatorErrors.array().forEach(error => {
+            console.log(error);
+            errors.push({ text: error.msg })
+        })
+        res.render('institution_admin/yourtutor', {
+            title: "Your institution",
+            layout: 'institution_admin_base',
+            user: req.user.dataValues,
+            institutiontutorarray: alloftutors,
+            errors
+        });
+    }
+    else {
+        console.log("There are no errors");
+        userid = req.user.dataValues.user_id;
+        Institution.findOne({
+            where: {
+                AdminUserID: userid
+            }
+        })
+            .then(deletebannerinst => {
+                console.log("Attempting to delete tutor chosen.....");
+                console.log("tutor id to be deleted: ", removetutortable);
+                User.destroy({
+                    where: {
+                        institutionInstitutionId: deletebannerinst.institution_id,
+                        user_id: removetutortable
+                    }
+                }).catch(err => console.log(err));
+
+                res.redirect('/institution_admin/yourtutor');
+
+                console.log("Successfully deleted the banner.");
+            })
+    }
 });
 // -----------------------------------------------------------------------
 
@@ -570,9 +753,17 @@ router.post('/yourpage/addbanner', [body('trueFileInstitutionName').not().isEmpt
             console.log(error);
             errors.push({ text: error.msg })
         })
-        res.render('/institution_admin/showyourpage', {
+        res.render('institution_admin/yourpage', {
             user: req.user.dataValues,
-            errors
+            errors,
+            bannerarray: banneritems,
+            institutiontutorarray: alloftutors,
+            descriptionarray: bothdescriptions,
+            widgetarray: allwidgets,
+            seminararray: allseminars,
+            featuretutorarray: allfeaturetutors,
+            allinstcoursearray: allcourselistings,
+            allfeaturedcoursearray: allfeaturedcourse
         });
     } else {
         console.log("There are no erros");
@@ -633,10 +824,18 @@ router.post('/yourpage/deletebanner', uploadnone.none(), [body('uploaddeletebann
             console.log(error);
             errors.push({ text: error.msg })
         })
-        res.render('/institution_admin/showyourpage',
+        res.render('institution_admin/yourpage',
             {
                 user: req.user.dataValues,
-                errors
+                errors,
+                bannerarray: banneritems,
+                institutiontutorarray: alloftutors,
+                descriptionarray: bothdescriptions,
+                widgetarray: allwidgets,
+                seminararray: allseminars,
+                featuretutorarray: allfeaturetutors,
+                allinstcoursearray: allcourselistings,
+                allfeaturedcoursearray: allfeaturedcourse
             });
     }
     else {
@@ -685,10 +884,18 @@ router.post('/yourpage/editdescription',
                 console.log(error);
                 errors.push({ text: error.msg });
             })
-            res.render('/institution_admin/showyourpage',
+            res.render('institution_admin/yourpage',
                 {
                     user: req.user.dataValues,
-                    errors
+                    errors,
+                    bannerarray: banneritems,
+                    institutiontutorarray: alloftutors,
+                    descriptionarray: bothdescriptions,
+                    widgetarray: allwidgets,
+                    seminararray: allseminars,
+                    featuretutorarray: allfeaturetutors,
+                    allinstcoursearray: allcourselistings,
+                    allfeaturedcoursearray: allfeaturedcourse
                 });
         }
         else {
@@ -743,11 +950,19 @@ router.post('/yourpage/addwidget',
             console.log("There are errors uploading the widget. Please try again");
             validatorErrors.array().forEach(error => {
                 console.log(error);
-                errors.push({ text: error_msg })
+                errors.push({ text: error.msg })
             });
-            res.render('/institution_admin/showyourpage', {
+            res.render('institution_admin/yourpage', {
                 user: req.user.dataValues,
-                errors
+                errors,
+                bannerarray: banneritems,
+                institutiontutorarray: alloftutors,
+                descriptionarray: bothdescriptions,
+                widgetarray: allwidgets,
+                seminararray: allseminars,
+                featuretutorarray: allfeaturetutors,
+                allinstcoursearray: allcourselistings,
+                allfeaturedcoursearray: allfeaturedcourse
             });
         } else {
             console.log("There are no errors");
@@ -807,10 +1022,18 @@ router.post("/yourpage/updatewidget",
                 console.log(error);
                 errors.push({ text: error.msg });
             })
-            res.render('/institution_admin/showyourpage',
+            res.render('institution_admin/yourpage',
                 {
                     user: req.user.dataValues,
-                    errors
+                    errors,
+                    bannerarray: banneritems,
+                    institutiontutorarray: alloftutors,
+                    descriptionarray: bothdescriptions,
+                    widgetarray: allwidgets,
+                    seminararray: allseminars,
+                    featuretutorarray: allfeaturetutors,
+                    allinstcoursearray: allcourselistings,
+                    allfeaturedcoursearray: allfeaturedcourse
                 });
         } else {
             console.log("Updating Widget....");
@@ -848,10 +1071,18 @@ router.post('/yourpage/deletewidget', uploadnone.none(), [body('deletewidget').n
             console.log(error);
             errors.push({ text: error.msg });
         });
-        res.render('/institution_admin/showyourpage',
+        res.render('institution_admin/yourpage',
             {
                 user: req.user.dataValues,
-                errors
+                errors,
+                bannerarray: banneritems,
+                institutiontutorarray: alloftutors,
+                descriptionarray: bothdescriptions,
+                widgetarray: allwidgets,
+                seminararray: allseminars,
+                featuretutorarray: allfeaturetutors,
+                allinstcoursearray: allcourselistings,
+                allfeaturedcoursearray: allfeaturedcourse
             });
     } else {
         console.log("THere are no errors uploading.");
@@ -893,10 +1124,18 @@ router.post('/yourpage/featuretutor', uploadnone.none(), [body('featuretutor').n
             console.log(error);
             errors.push({ text: error.msg });
         });
-        res.render('institution_admin/showyourpage',
+        res.render('institution_admin/yourpage',
             {
                 user: req.user.dataValues,
-                errors
+                errors,
+                bannerarray: banneritems,
+                institutiontutorarray: alloftutors,
+                descriptionarray: bothdescriptions,
+                widgetarray: allwidgets,
+                seminararray: allseminars,
+                featuretutorarray: allfeaturetutors,
+                allinstcoursearray: allcourselistings,
+                allfeaturedcoursearray: allfeaturedcourse
             });
     } else {
         console.log("There are no errors.");
@@ -939,10 +1178,18 @@ router.post('/yourpage/removefeaturetutor', uploadnone.none(), [body('removefeat
             console.log(error);
             errors.push({ text: error.msg });
         });
-        res.render('/institution_admin/showyourpage',
+        res.render('institution_admin/yourpage',
             {
                 user: req.user.dataValues,
-                errors
+                errors,
+                bannerarray: banneritems,
+                institutiontutorarray: alloftutors,
+                descriptionarray: bothdescriptions,
+                widgetarray: allwidgets,
+                seminararray: allseminars,
+                featuretutorarray: allfeaturetutors,
+                allinstcoursearray: allcourselistings,
+                allfeaturedcoursearray: allfeaturedcourse
             });
     } else {
         console.log("There are no errors uploading..");
@@ -982,10 +1229,18 @@ router.post('/yourpage/featurecourses', uploadnone.none(), [body('featurecourse'
             console.log(error);
             errors.push({ text: error.msg });
         });
-        res.render('institution_admin/showyourpage',
+        res.render('institution_admin/yourpage',
             {
                 user: req.user.dataValues,
-                errors
+                errors,
+                bannerarray: banneritems,
+                institutiontutorarray: alloftutors,
+                descriptionarray: bothdescriptions,
+                widgetarray: allwidgets,
+                seminararray: allseminars,
+                featuretutorarray: allfeaturetutors,
+                allinstcoursearray: allcourselistings,
+                allfeaturedcoursearray: allfeaturedcourse
             });
     } else { 
         userid = req.user.dataValues.user_id;
@@ -1038,10 +1293,18 @@ router.post('/yourpage/deletefeaturecourse', uploadnone.none(), [body('removefea
             console.log(error);
             errors.push({ text: error.msg });
         });
-        res.render('/institution_admin/showyourpage',
+        res.render('institution_admin/yourpage',
             {
                 user: req.user.dataValues,
-                errors
+                errors,
+                bannerarray: banneritems,
+                institutiontutorarray: alloftutors,
+                descriptionarray: bothdescriptions,
+                widgetarray: allwidgets,
+                seminararray: allseminars,
+                featuretutorarray: allfeaturetutors,
+                allinstcoursearray: allcourselistings,
+                allfeaturedcoursearray: allfeaturedcourse
             });
     } else { 
         userid = req.user.dataValues.user_id;
@@ -1108,9 +1371,17 @@ router.post("/yourpage/addseminar",
                 console.log(error);
                 errors.push({ text: error.msg })
             });
-            res.render('/institution_admin/showyourpage', {
+            res.render('institution_admin/yourpage', {
                 user: req.user.dataValues,
-                errors
+                errors,
+                bannerarray: banneritems,
+                institutiontutorarray: alloftutors,
+                descriptionarray: bothdescriptions,
+                widgetarray: allwidgets,
+                seminararray: allseminars,
+                featuretutorarray: allfeaturetutors,
+                allinstcoursearray: allcourselistings,
+                allfeaturedcoursearray: allfeaturedcourse
             });
         } else {
             console.log("There are no errors");
@@ -1155,10 +1426,18 @@ router.post("/yourpage/updateseminar",
                 console.log(error);
                 errors.push({ text: error.msg });
             })
-            res.render('/institution_admin/showyourpage',
+            res.render('institution_admin/yourpage',
                 {
                     user: req.user.dataValues,
-                    errors
+                    errors,
+                    bannerarray: banneritems,
+                    institutiontutorarray: alloftutors,
+                    descriptionarray: bothdescriptions,
+                    widgetarray: allwidgets,
+                    seminararray: allseminars,
+                    featuretutorarray: allfeaturetutors,
+                    allinstcoursearray: allcourselistings,
+                    allfeaturedcoursearray: allfeaturedcourse
                 });
         } else {
             console.log("updating seminar....");
@@ -1196,10 +1475,18 @@ router.post("/yourpage/deleteseminar", uploadnone.none(), [body('deleteseminar')
             console.log(error);
             errors.push({ text: error.msg });
         });
-        res.render('/institution_admin/showyourpage',
+        res.render('institution_admin/yourpage',
             {
                 user: req.user.dataValues,
-                errors
+                errors,
+                bannerarray: banneritems,
+                institutiontutorarray: alloftutors,
+                descriptionarray: bothdescriptions,
+                widgetarray: allwidgets,
+                seminararray: allseminars,
+                featuretutorarray: allfeaturetutors,
+                allinstcoursearray: allcourselistings,
+                allfeaturedcoursearray: allfeaturedcourse
             });
     } else {
         console.log("There are no errors deleting.");

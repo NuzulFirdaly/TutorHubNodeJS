@@ -1,21 +1,31 @@
+<style>
+  tfoot input {
+    width: 100%;
+    padding: 3px;
+    box-sizing: border-box;
+  }
 
+  .ignore-css {
+    all: unset;
+  }
+</style>
 <section class="padding-y bg">
-<div class="container">
-<div class="row">
-    <div class="col-md-12">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
         <!-- ============================ COMPONENT BANNER 7 ================================= -->
         <div class="card-banner text-center" style="min-height:200px;">
           <div style="margin-left: 400px;">
-			  <br>
-			  <br>
-			  <h1 class="card-title" style="font-size: 60px;">Your Tutors</h1>
-			  <p>Look at all the tutors under your institution.</p>
+            <br>
+            <br>
+            <h1 class="card-title" style="font-size: 60px;">Your Tutors</h1>
+            <p>Look at all the tutors under your institution.</p>
           </div>
         </div>
         <!-- ============================ COMPONENT BANNER 7  END .// =========================== -->
-    </div> <!-- col.// -->
-</div>
-</div>
+      </div> <!-- col.// -->
+    </div>
+  </div>
 </section>
 
 
@@ -24,94 +34,252 @@
     <i class="fa fa-trash"></i> Delete
   </button>
 </div> --}}
-<table
-  {{!-- data-toolbar ="#toolbar" --}}
-  data-toggle="table"
-  data-search="true"
-  data-show-columns="true"
-  data-show-pagination-switch="true"
-  data-page-list="[10, 25, 50, 100, all]"
-  data-pagination="true">
-  <thead>
-    <tr class="tr-class-1">
-      <th data-field="name" rowspan="2" data-valign="middle">USER_ID</th>
-      <th colspan="7">Tutor's details</th>
-    </tr>
-    <tr class="tr-class-2">
-      <th data-field="email">Email</th>
-      <th data-field="username">Username</th>
-      <th data-field="firstname">firstname</th>
-      <th data-field="lastname">lastname</th>
-      <th data-field="nric">nric</th>
-      <th data-field="dob">dob</th>
-      <th data-field="department">department</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr id="tr-id-1" class="tr-class-1" data-title="bootstrap table" data-object='{"key": "value"}'>
-      <td id="td-id-1" class="td-class-1" data-title="bootstrap table">
-        1
-      </td>
-      <td data-value="526">erika.sampang.c@gmail.com</td>
-      <td data-text="122">erikasampang</td>
-      <td data-i18n="firstname">Erika
-      </td>
-      <td>sampang</td>
-      <td>d1234567A</td>
-      <td>16/01/2003</td>
-      <td>information Technology</td>
-    </tr>
-    <tr id="tr-id-2" class="tr-class-2">
-      <td id="td-id-2" class="td-class-2">
-        2
-      </td>
-      <td>erika.sampang.c@gmail.com</td>
-      <td>erikasampang</td>
-      <td>Erika</td>
-      <td>sampang</td>
-      <td>d1234567A</td>
-      <td>16/01/2003</td>
-      <td>information Technology</td>
-    </tr>
-    <tr id="tr-id-3" class="tr-class-3">
-      <td id="td-id-3" class="td-class-3">
-         3
-      </td>
-      <td>erika.sampang.c@gmail.com</td>
-      <td>erikasampang</td>
-      <td>Erika</td>
-      <td>sampang</td>
-      <td>d1234567A</td>
-      <td>16/01/2003</td>
-      <td>information Technology</td>
-    </tr>
-    <tr id="tr-id-4" class="tr-class-4">
-      <td id="td-id-4" class="td-class-4">
-         4
-      </td>
-      <td>erika.sampang.c@gmail.com</td>
-      <td>erikasampang</td>
-      <td>Erika</td>
-      <td>sampang</td>
-      <td>d1234567A</td>
-      <td>16/01/2003</td>
-      <td>information Technology</td>
-    </tr>
-    <tr id="tr-id-5" class="tr-class-5">
-      <td id="td-id-5" class="td-class-5">
-         5
-      </td>
-      <td>erika.sampang.c@gmail.com</td>
-      <td>erikasampang</td>
-      <td>Erika</td>
-      <td>sampang</td>
-      <td>d1234567A</td>
-      <td>16/01/2003</td>
-      <td>information Technology</td>
-    </tr>
-  </tbody>
-</table>
-<br>
-<br>
-<br>
-<br>
+<section class="padding-y">
+  {{!-- <div class="form-group form-row">
+    <input type="text" id="myInput3" onkeyup="myThirdFunction()" placeholder="Search for your tutor..">
+  </div>
+  <Table id="myTable">
+    {{#if institutiontutorarray}}
+    <thead>
+      <tr class="tr-class-1">
+        <th rowspan="2" data-valign="middle">USER_ID</th>
+        <th colspan="7">Here are your Tutor's details.</th>
+      </tr>
+      <tr class="tr-class-2">
+        <th>First Name</th>
+        <th>Last name</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Description</th>
+        <th>Profile_pic</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each institutiontutorarray}}
+      <tr>
+        <td>{{FirstName}}</td>
+        <td>{{LastName}}</td>
+        <td>{{Username}}</td>
+        <td>{{Email}}</td>
+        <td>{{Description}}</td>
+        <td>{{Profile_pic}}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </Table>
+  {{else}}
+  <h2>There are currently no tutors under your institution.</h2>
+  {{/if}} --}}
+  {{#if institutiontutorarray}}
+  <table id="example" class="display" style="width:100%; display: block; overflow: scroll;">
+    <thead>
+      <tr>
+        <th>First Name</th>
+        <th>Last name</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Description</th>
+        <th>Profile_pic</th>
+        {{!-- <th colspan="2" class="ignore-css">
+          <center>Edit Details</center>
+        </th> --}}
+      </tr>
+    </thead>
+    <tbody>
+      {{#each institutiontutorarray}}
+      <tr>
+        <td>{{FirstName}}</td>
+        <td>{{LastName}}</td>
+        <td>{{Username}}</td>
+        <td>{{Email}}</td>
+        <td>{{Description}}</td>
+        <td>
+          {{Profile_pic}}
+          <br>
+          <br>
+          <span>
+            <button type="button" class="btn btn-primary float-right" name="updatetutor" value="updatetutor"
+              data-toggle="modal" data-target="#updatetutortable{{user_id}}">
+              <span class="col-md-1">Update</span>
+            </button>
+          </span>
+          <br><br>
+          <span>
+            <button type="button" class="btn btn-danger float-right" name="deletetutor" value="deletetutor"
+              data-toggle="modal" data-target="#deletetutortable{{user_id}}">
+              <span class="col-md-1">Delete</span>
+            </button>
+          </span>
+        </td>
+      </tr>
+
+      <form class="block-register" action="/institution_admin/yourtutor/updatetutortable" method="POST">
+        <div class="modal fade" id="updatetutortable{{user_id}}" tabindex="-1" role="dialog"
+          aria-labelledby="updatetutortablelabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="updatetutortablelabel">Update {{FirstName}} {{LastName}}'s Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span
+                    aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="form-group form-row">
+                  <div class="col-md-6">
+                    <label>Tutor's profile</label>
+                    <br>
+                    <img id='profileThumbnail' name="profileThumbnail" src="/images/profilepictures/{{Profile_pic}}"
+                      width="240" height="135" class="border">
+                    <div style="position:relative; "></div>
+                    <input type="file" name="profilePictureUpload4" id="profilePictureUpload4" value="{{Profile_pic}}">
+                    <input type="hidden" id='trueFileInstitutionProfileName' name="trueFileInstitutionProfileName"
+                      value="{{Profile_pic}}">
+                    <input type="hidden" id='deletetutortableid' name="deletetutortableid" value="{{user_id}}">
+                    <div class="font-weight-bold text-danger small" id="profileErr" style="display:none">
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group form-row">
+                  <label>Tutor's info</label>
+                </div>
+                <div class="form-group form-row">
+                  <div class="col-s-1 col-form-label">
+                    <label>First Name: </label>
+                  </div>
+                  <div class="col-s-1">
+                    <input class="form-control" type="text" name="FirstName" placeholder="first name"
+                      value="{{FirstName}}" required>
+                  </div>
+                  <br>
+                </div>
+                <div class="form-group form-row">
+                  <div class="col-s-1 col-form-label">
+                    <label>Last Name: </label>
+                  </div>
+                  <div class="col-s-1">
+                    <input class="form-control" type="text" name="LastName" placeholder="Last name" value="{{LastName}}"
+                      required>
+                  </div>
+                </div>
+                <div class="form-group form-row">
+                  <div class="col-s-1 col-form-label">
+                    <label>Username: </label>
+                  </div>
+                  <div class="col-s-1">
+                    <input class="form-control" type="text" name="Username" placeholder="Username" value="{{Username}}"
+                      required>
+                  </div>
+                </div>
+                <div class="form-group form-row">
+                  <div class="col-s-1 col-form-label">
+                    <label>Email: </label>
+                  </div>
+                  <div class="col-s-1">
+                    <input class="form-control" type="text" name="Email" placeholder="Email" value="{{Email}}" required>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Update Changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <form class="block-register" action="/institution_admin/yourtutor/deletetutortable" method="POST">
+        <div class="modal fade" id="deletetutortable{{user_id}}" tabindex="-1" role="dialog"
+          aria-labelledby="deletetutortablelabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="deletetutortablelabel">Selected {{FirstName}} {{LastName}} to be deleted..
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span
+                    aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <h4>Are you sure you want to remove {{Username}} from your institution?</h4>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-danger" name="removetutortable" value="{{user_id}}">Remove
+                  Tutor</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+      {{/each}}
+    </tbody>
+    <tfoot>
+      <tr>
+        <th>First Name</th>
+        <th>Last name</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Description</th>
+        <th>Profile_pic</th>
+      </tr>
+    </tfoot>
+  </table>
+  {{else}}
+  <h3>There are currently no registered Tutor under your institution.</h3>
+  {{/if}}
+</section>
+<script>
+  $(document).ready(function () {
+    // Setup - add a text input to each footer cell
+    $('#example tfoot th').each(function () {
+      var title = $(this).text();
+      $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+    });
+
+    // DataTable
+    var table = $('#example').DataTable({
+      initComplete: function () {
+        // Apply the search
+        this.api().columns().every(function () {
+          var that = this;
+
+          $('input', this.footer()).on('keyup change clear', function () {
+            if (that.search() !== this.value) {
+              that
+                .search(this.value)
+                .draw();
+            }
+          });
+        });
+      }
+    });
+  });
+
+  $('#profilePictureUpload4').on('change', function () {
+    alert("are you going here?");
+    let image = $("#profilePictureUpload4")[0].files[0];
+    let formdata = new FormData();
+    formdata.append('profilePictureUpload', image);
+    alert("What about here?");
+    $.ajax({
+      url: '/institution_admin/profilePictureUpload4',
+      data: formdata,
+      contentType: false,
+      processData: false,
+      type: 'POST',
+      'success': (data) => {
+        console.log(data);
+        $('#profileThumbnail').attr('src', data.path);
+        $('#trueFileInstitutionProfileName').attr('value', data.file);
+        if (data.err) {
+          $('#profileErr').show();
+          $('#profileErr').text(data.err.message);
+        } else {
+          $('#profileErr').hide();
+        }
+      }
+    });
+  });
+</script>
