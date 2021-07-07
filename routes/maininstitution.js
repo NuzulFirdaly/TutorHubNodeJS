@@ -16,10 +16,67 @@ console.log("Retrieve messenger helper flash");
 const alertMessage = require('../helpers/messenger');
 console.log("Retrieved flash");
 
+// // Email
+// var MailConfig = require('../config/email');
+// var hbs = require("nodemailer-express-handlebars");
+// var gmailTransport = MailConfig.GmailTransport;
+
 // Email
-var MailConfig = require('../config/email');
-var hbs = require("nodemailer-express-handlebars");
-var gmailTransport = MailConfig.GmailTransport;
+const nodemailer = require('nodemailer');
+const {google} = require('googleapis');
+const CLIENT_ID = '993285737810-tfpuqq5vhfdjk5s5ng5v6vcbc3cht53s.apps.googleusercontent.com';
+const CLIENT_SECRET = 'uvWjFqdiAgVK_sFq_uaYcbGV';
+const REDIRECT_URI = 'https://developers.google.com/oauthplayground';
+const REFRESH_TOKEN = '1//04NJ-IXlwUJ_7CgYIARAAGAQSNgF-L9Irvecmxx12BMYyPKTIrSjhEroQErhaG49HwPEugWn5nSq3MJAb9py5_yEVmIwNd6gj5A';
+const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
+oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
+
+async function sendMailinstitution(custom_mailemail, 
+    custom_mailsubject,instituteName, 
+    instituteAddress, institutePC, instituteEmail, instituteUrl, 
+    instituteNo, IAFname, IALname, IANo, IAEmail) {
+    try {
+        const accessToken = await oAuth2Client.getAccessToken();
+
+        const transport = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                type: 'OAuth2',
+                user: 'adm.tutorhub@gmail.com',
+                clientId: CLIENT_ID,
+                clientSecret: CLIENT_SECRET,
+                refreshToken: REFRESH_TOKEN,
+                accessToken: accessToken,
+            },
+        });
+
+        const mailOptions = {
+            from: 'TutorHub Administrator 👨‍🏫<adm.tutorhub@gmail.com>',
+            to: custom_mailemail,
+            subject: custom_mailsubject,
+            html: "<h1> Thank you for registering your institution in TutorHub! </h1> \
+            <br> <p>Below are the details of your registration. Please do note it will take about 2 to 3 business days to approve your registration. Thank you.</p> \
+            <br><h4>Institution Details:</h4> \
+            <br><p>Institution Name: </p>" + instituteName + "\
+            <p>Address: </p>" + instituteAddress + " \
+            <p>Postal Code: </p>" + institutePC + " \
+            <p>Email: </p>" + instituteEmail + " \
+            <p>Your website: </p>" + instituteUrl + "\
+            <p>Office No: </p>" + instituteNo + "\
+            <h4>Administrator details</h4>  \
+            <p>First name: </p>" + IAFname + " \
+            <p>Last name: </p>" + IALname + " \
+            <p>Phone No: </p>" + IANo + " \
+            <p>Email: </p>" + IAEmail
+        };
+
+        const result = await transport.sendMail(mailOptions)
+        return result;
+
+    } catch (error) {
+        return error;
+    }
+}
 
 const passport = require('passport');
 const multer = require('multer');
@@ -91,7 +148,7 @@ router.post('/institutionregistration', [
     body('IALname').not().isEmpty().trim().escape().withMessage("last name is invalid"),
     body('IANo').not().isEmpty().trim().escape().withMessage("Phone number is invalid"),
     body('IAEmail').trim().isEmail().withMessage("Email must be a valid email").normalizeEmail().toLowerCase()
-],uploadnone.none(), (req, res) => {
+],uploadnone.none(), async (req, res) => {
     let {instituteName, instituteAddress, institutePC, instituteNo, instituteEmail, instituteUrl, trueFileDocumentName, IAFname, IALname, IANo, IAEmail} = req.body;
     let errors = [];
     const validatorErrors = validationResult(req);
@@ -161,6 +218,14 @@ router.post('/institutionregistration', [
                         })
                         .catch(err => console.log(err));
                         console.log("Upload to pending institution completed.");
+
+                        // sending registration completion email.
+                        sendMailinstitution(instituteEmail, 'Tutorhub Registration Form.',instituteName, 
+                        instituteAddress, institutePC, instituteEmail, instituteUrl, 
+                        instituteNo, IAFname, IALname, IANo, IAEmail)
+                        .then((result) => console.log("Email sent...", result))
+                        .catch((error) => console.log(error.message));
+
                         res.redirect('/institution/showcompletion');
                     }
                 }).catch(err => console.log(err));
