@@ -6,7 +6,7 @@
 <meta http-equiv="cache-control" content="max-age=604800" />
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-<title>{{title}}</title>
+<title>TutorHub - Onboarding</title>
 
 <link href="/images/favicon.ico" rel="shortcut icon" type="image/x-icon">
 
@@ -48,6 +48,8 @@
 </head>
 
 <body>
+    {{>_flashmsg}} {{!-- views/partials/_flashmsg.handlebars --}}
+      {{>_msg}} {{!-- views/partials/_msg.handlebars --}}
     <!-- jQuery  -->
     <!-- i fixed the weird thingy by moving both this files here and changing back to src tag. idk why it works please explain to me -->
   <script src="/js/jquery-2.0.0.min.js" type="text/javascript"></script>

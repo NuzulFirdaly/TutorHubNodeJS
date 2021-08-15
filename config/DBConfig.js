@@ -8,14 +8,15 @@ const sequelize = new Sequelize(db.database, db.username, db.password, {
     dialect: 'mysql', // Tells squelize that MySQL is used
     operatorsAliases: false,
     define: {
-    timestamps: false // Don't create timestamp fields in database
+        timestamps: false // Don't create timestamp fields in database
     },
     pool: { // Database system params, don't need to know
-    max: 5,
-    min: 0,
-    acquire: 30000,
-    idle: 10000
+        max: 5,
+        min: 0,
+        acquire: 30000,
+        idle: 10000
     },
+    timezone: "+08:00"
 });
 
 // console.log("defining relationships")

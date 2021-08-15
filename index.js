@@ -6,6 +6,13 @@ const methodOverride = require('method-override');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser'); //to retrieve req.body
 const Sequelize = require('sequelize');
+const paypal = require('paypal-rest-sdk');
+
+paypal.configure({
+    'mode': 'sandbox', //sandbox or live
+    'client_id': 'AXO5V1rlutZynF0Ki1rO2imjUeM8bI1RE5duaqKPKaaptEE97kMhkMpu2IIWBZ30H09LCyUheBlDI6dC',
+    'client_secret': 'EDjmtzb5OjJTZBmkEoCea9WykI5XnUTBtqgk57w8RfLcOON_I0G0Y--mXIyQdJodkkM_Z3BUzoDzw9gJ'
+})
 
 const Handlebars = require('handlebars');
 const { allowInsecurePrototypeAccess } = require('@handlebars/allow-prototype-access')
@@ -31,6 +38,7 @@ const rateRoute = require("./routes/ratereview");
 const mainInstitutionRoute = require('./routes/maininstitution');
 const institutionAdminRoute = require('./routes/institutionadmin');
 const adminRoute = require("./routes/admin");
+const paymentRoute = require('./routes/payment');
 
 
 
@@ -193,6 +201,7 @@ app.use("/institution", mainInstitutionRoute)
 app.use("/institution_admin", institutionAdminRoute);
 
 app.use("/admin", adminRoute)
+app.use("/payment", paymentRoute);
 
 
 // // Method override middleware to use other HTTP methods such as PUT and DELETE
