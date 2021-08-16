@@ -28,6 +28,7 @@
     <!-- plugin: owl carousel  -->
     <link href="/plugins/owlcarousel/assets/owl.carousel.css" rel="stylesheet">
     <link href="/plugins/owlcarousel/assets/owl.theme.default.css" rel="stylesheet">
+    <link rel="stylesheet" href="/chat/chatbutton.css">
     
 </head>
 <body>
@@ -54,6 +55,11 @@
       {{!-- {{>_errors}} views/partials/_errors.handlebars --}}
       {{{body}}}
 	  </div>
+    {{#if user}}
+    <div class="chat">
+      {{>_chat}}
+    </div>
+  {{/if}}
 
 
 </body>

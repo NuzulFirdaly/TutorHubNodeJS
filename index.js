@@ -39,6 +39,7 @@ const mainInstitutionRoute = require('./routes/maininstitution');
 const institutionAdminRoute = require('./routes/institutionadmin');
 const adminRoute = require("./routes/admin");
 const paymentRoute = require('./routes/payment');
+const chatRoute = require('./routes/chat');
 
 
 
@@ -120,6 +121,29 @@ app.engine('handlebars', exphbs({
         },
         printToConsole(a) {
             console.log("this is print to console", a)
+        },
+        timestampFormat(date) {
+            var date = new Date(Date.parse(date));
+            console.log('Date', date);
+
+            var year = date.getFullYear();
+            console.log('YEARS', year);
+            var month = date.getMonth();
+            console.log('month', month);
+            var day = date.getDate();
+            console.log('day', day);
+
+            var hours = date.getHours();
+            console.log('HOURS', hours);
+            var minutes = date.getMinutes();
+            console.log('MINUTES', minutes);
+            var ampm = hours >= 12 ? 'pm' : 'am';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            var strTime = day + "/" + month + "/" + year + " " + hours + ':' + minutes + ' ' + ampm;
+            console.log('Date', strTime);
+            return strTime
         }
 
     },
@@ -202,6 +226,9 @@ app.use("/institution_admin", institutionAdminRoute);
 
 app.use("/admin", adminRoute)
 app.use("/payment", paymentRoute);
+app.use("/chat", chatRoute);
+
+
 
 
 // // Method override middleware to use other HTTP methods such as PUT and DELETE
