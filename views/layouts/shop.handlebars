@@ -8,9 +8,7 @@
     <title>Document</title>
     <link rel="shortcut icon" href="/images/favicon.ico">
 
-    <script href="/js/jquery-2.0.0.min.js" type="text/javascript"></script>
-  
-     
+
     <!-- Bootstrap4 files-->
     <link href="/css/bootstrap.css" rel="stylesheet"/>
 
@@ -83,7 +81,7 @@
                             <div class="widget-header  mr-3">
                                 <a href="viewCart" class="icon icon-sm rounded-circle border"><i
                                         class="fa fa-shopping-cart"></i></a>
-                                <span class="badge badge-pill badge-danger notify">0</span>
+                                <span class="badge badge-pill badge-danger notify">{{cart}}</span>
                             </div>
                             <div class="widget-header dropdown">
                                 <a href="#" class="ml-3 icontext" data-toggle="dropdown" data-offset="20,10">
@@ -96,7 +94,7 @@
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right">
                                     <a class="dropdown-item" href="/tutor_onboarding/becometutor">Become A Tutor</a>
-                                    <a class="dropdown-item" href="/user/viewProfile">Profile setting</a>
+                                    <a class="dropdown-item" href="/user/Settings">Profile setting</a>
                                     <a class="dropdown-item" href="#">My Courses</a>
                                     <a class="dropdown-item" href="#">My schedule</a>
                                     <hr class="dropdown-divider">
@@ -127,9 +125,9 @@
     </header> <!-- section-header.// -->
 
     <div class="container">
-        <!-- {{>_flashmsg}} {{!-- views/partials/_flashmsg.handlebars --}}
+    {{>_flashmsg}} {{!-- views/partials/_flashmsg.handlebars --}}
       {{>_msg}} {{!-- views/partials/_msg.handlebars --}}
-      {{>_errors}} {{!-- views/partials/_errors.handlebars --}} -->
+      {{>_errors}} {{!-- views/partials/_errors.handlebars --}}
         {{{body}}}
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>

@@ -32,6 +32,7 @@
     }
 </style>
 <section class="section-content padding-y">
+    {{> _flashmsg}} 
     <div class="container">
         <div class="row">
             {{#with course}}
@@ -40,7 +41,7 @@
                     <h1>{{Title}}</h1>
                     <br>
                     <div class="widget-header">
-                        <a href="{url_for('viewtutor', tutor_id = courseobject.tutor)}" target="_blank"
+                        <a href="/user/viewProfile/{{user.user_id}}"
                             class="ml-3 icontext">
                             <div class="icon"><img class="icon icon-md rounded-circle border"
                                     src="/images/profilepictures/{{user.Profile_pic}}"></div>
@@ -136,7 +137,7 @@
                 {{#if (ifSame this.UserId ../../users.user_id)}}
                 {{else}}
                 <hr>
-                <p><strong>{{ this.users.Username }}</strong><span class="fa fa-star checked">
+                <p><strong>{{ this.user.Username }}</strong><span class="fa fa-star checked">
                         {{ this.Rating }}</span><br></p>
                 <p>{{ this.Review }}</p>
                 <p class="text-muted">{{#format this.Date }}{{/format}}</p>
@@ -161,7 +162,7 @@
             <div>
                 {{#each ../ratereviews}}
                 <hr>
-                <p><strong>{{ this.users.Username }}</strong><span class="fa fa-star checked">
+                <p><strong>{{ this.user.Username }}</strong><span class="fa fa-star checked">
                         {{ this.Rating }}</span><br></p>
                 <p>{{ this.Review }}</p>
                 <p class="text-muted">{{#format this.Date }}{{/format}}</p>
@@ -178,7 +179,7 @@
             {{else}}
             {{#each ../ratereviews}}
             <hr>
-            <p><strong>{{ this.users.Username }}</strong><span class="fa fa-star checked">
+            <p><strong>{{ this.user.Username }}</strong><span class="fa fa-star checked">
                     {{ this.Rating }}</span><br></p>
             <p>{{ this.Review }}</p>
             <p class="text-muted">{{#format this.Date }}{{/format}}</p>
@@ -220,13 +221,17 @@
         // Get percentage
         const starPercentage = (avgRating / starsTotal) * 100;
 
-    // Round to nearest 10
-    const starPercentageRounded = `${Math.round(starPercentage / 10) * 10}%`;
+        // Round to nearest 10
+        const starPercentageRounded = `${Math.round(starPercentage / 10) * 10}%`;
 
-    // Set width of stars-inner to percentage
-    document.querySelector(".stars-inner").style.width = starPercentageRounded;
+        // Set width of stars-inner to percentage
+        document.querySelector(".stars-inner").style.width = starPercentageRounded;
 
-    // Add number rating
-    document.querySelector(".number-rating").innerHTML = avgRating;
+        // Add number rating
+        if (Number.isNaN(avgRating)) {
+            document.querySelector(".number-rating").innerHTML = '0';
+        } else {
+            document.querySelector(".number-rating").innerHTML = avgRating;
+        }
     }
 </script>

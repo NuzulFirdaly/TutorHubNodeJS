@@ -34,7 +34,7 @@
 				</a>
 				<div class="dropdown-menu dropdown-menu-right">
 					<a class="dropdown-item" href="/tutor_onboarding/becometutor">Become A Tutor</a>
-					<a class="dropdown-item" href="/profile/profile_main">Profile setting</a>
+					<a class="dropdown-item" href="/user/Settings">Profile setting</a>
 					<a class="dropdown-item" href="#">My Courses</a>
 					<a class="dropdown-item" href="#">My schedule</a>
 					<hr class="dropdown-divider">
@@ -89,9 +89,30 @@
 					</div>
 				</a>
 				<div class="dropdown-menu dropdown-menu-right">
-					<a class="dropdown-item" href="/profile/profile_main">Profile setting</a>
+					<a class="dropdown-item" href="/user/Settings">Profile setting</a>
 					<a class="dropdown-item" href="/course/mycourses">My Courses</a>
 					<a class="dropdown-item" href="/myschedule/{{user.user_id}}">My schedule</a>
+					<hr class="dropdown-divider">
+					<a class="dropdown-item" href="/logout">Log out</a>
+				</div> <!--  dropdown-menu .// -->
+			</div> <!-- widget  dropdown.// -->
+		</div> <!-- widgets-wrap.// -->
+	</div> <!-- col.// -->
+	{{/ifEquals}}
+
+	{{#ifEquals user.AccountTypeID 2}}
+	<div class="col-lg-4 col-sm-6 col-12">
+		<div class="widgets-wrap float-lg-right">
+			<div class="widget-header dropdown">
+				<a href="#" class="ml-3 icontext" data-toggle="dropdown" data-offset="20,10">
+					<div class="icon"><img class="icon icon-sm rounded-circle" src="/images/logos/222.png"></div>
+					<div class="text">
+						<small class="text-muted">{{user.FirstName}} {{user.LastName}}</small> <br>
+						<span>My account <i class="fa fa-caret-down"></i></span>
+					</div>
+				</a>
+				<div class="dropdown-menu dropdown-menu-right">
+					<a class="dropdown-item" href="/user/Settings">Profile setting</a>
 					<hr class="dropdown-divider">
 					<a class="dropdown-item" href="/logout">Log out</a>
 				</div> <!--  dropdown-menu .// -->

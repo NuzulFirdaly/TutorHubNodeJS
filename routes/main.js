@@ -9,9 +9,11 @@ console.log("Retrieved flash");
 const passport = require('passport');
 const { cookie } = require('express-validator');
 const CourseListing = require('../models/CoursesListing');
+const professionalProfile = require('../models/professionalProfile');
 
 //express validator
 const { body, validationResult } = require('express-validator');
+const { notification } = require('paypal-rest-sdk');
 
 
 //Home
@@ -88,6 +90,7 @@ router.post('/loginPost',[body('email').trim().isEmail().normalizeEmail().toLowe
        message given by the strategy's verify callback, if any. When a failure occur passport passes the message
        object as error */
     })(req, res, next);
+        req.session.cart = {};
     // console.log("printing req usr from login post")
     // console.log(req.user);
 });
@@ -147,49 +150,53 @@ router.post('/registerPost', [
                 });
     } else {
         console.log("There are no errors")
-        //user's model's findOne function, select statement and where clause
-        // If all is well, checks if user is already registered
-        User.findOne({ where: {Email: req.body.Email} })
-        .then(user => { //findOne function returns a promise 
-        if (user) {
-        // If user is found, that means email has already been
-        // registered
-            res.render('user_views/register', {
-                error: user.Email + ' already registered',
-                FirstName,
-                LastName,
-                Username,
-                Email,
-                Password,
-                ConfirmPassword
+            //user's model's findOne function, select statement and where clause
+            // If all is well, checks if user is already registered
+        User.findOne({ where: { Email: req.body.Email } })
+            .then(user => { //findOne function returns a promise 
+                if (user) {
+                    // If user is found, that means email has already been
+                    // registered
+                    res.render('user_views/register', {
+                        error: user.Email + ' already registered',
+                        FirstName,
+                        LastName,
+                        Username,
+                        Email,
+                        Password,
+                        ConfirmPassword
+                    });
+                } else {
+                    bcrypt.genSalt(10, function(err, salt) {
+                        bcrypt.hash(Password, salt, function(err, hash) {
+                            // Store hash in your password DB.
+                            if (err) {
+                                throw err;
+                            } else {
+                                hashedpassword = hash;
+                                console.log("This is hashed pasword \n", hashedpassword);
+                                // Create new user record
+                                User.create({ FirstName, LastName, Username, Email, Password: hashedpassword })
+                                    .then(user => {
+                                        alertMessage(res, 'success', user.Username + ' added.Please login', 'fas fa-sign-in-alt', true);
+                                        console.log("I AM USER",user.dataValues.user_id);
+                                        professionalProfile.create({color: null, background: null, userUserId: user.dataValues.user_id})
+                                        .then(()=>{res.redirect('/Login');})
+                                    }).catch(err => console.log(err));
+                                
+                                
+                            }
+                        });
+                    });
+                    // // Create new user record 
+                    // User.create({ FirstName, LastName, Email, Password }).then(user => {
+                    //     alertMessage(res, 'success', user.name + ' added.Please login', 'fas fa-sign-in-alt', true);
+                    //     res.redirect('/Login');
+                    // }).catch(err => console.log(err));
+                }
             });
         }    
-        else {
-            bcrypt.genSalt(10, function (err, salt) {
-                bcrypt.hash(Password, salt, function (err, hash) {
-                    // Store hash in your password DB.
-                    if (err) {
-                        throw err;
-                    } else {
-                        hashedpassword = hash;
-                        console.log("This is hashed pasword \n", hashedpassword);
-                        // Create new user record
-                        User.create({ FirstName, LastName, Username, Email, Password: hashedpassword })
-                            .then(user => {
-                                alertMessage(res, 'success', user.Username + ' added.Please login', 'fas fa-sign-in-alt', true);
-                                res.redirect('/Login');
-                            }).catch(err => console.log(err));
-                    }
-                });
-            });
-            // // Create new user record 
-            // User.create({ FirstName, LastName, Email, Password }).then(user => {
-            //     alertMessage(res, 'success', user.name + ' added.Please login', 'fas fa-sign-in-alt', true);
-            //     res.redirect('/Login');
-            // }).catch(err => console.log(err));
-        }
     });
-}
     // // Retrieves fields from register page from request body
     // let {FirstName, LastName, Username,Email, Password, ConfirmPassword} = req.body;
     // // Checks if both passwords entered are the same
@@ -257,7 +264,6 @@ router.post('/registerPost', [
 //         }
 //     });
 // }
-});
 
 
 module.exports = router;

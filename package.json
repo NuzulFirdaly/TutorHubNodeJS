@@ -25,8 +25,12 @@
     "moment": "^2.29.1",
     "multer": "^1.4.2",
     "mysql2": "^2.2.5",
+    "nodemailer": "^6.6.2",
+    "nodemailer-express-handlebars": "^4.0.0",
+    "nodemon": "^2.0.12",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
+    "paypal-rest-sdk": "^1.8.1",
     "sequelize": "^6.6.2"
   }
 }

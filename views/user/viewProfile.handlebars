@@ -1,12 +1,3 @@
-{{!-- {% if session.get('istutor') != True %}
-{% extends "profile/__profile_base.html" %}
-{% else %}
-{% extends "tutor_interface/base.html" %}
-{% endif %}
-
-{% block title %}TutorHub - Profile Page{% endblock %}
-
-{% block content %} --}}
 <script type="text/javascript">
     /// some script
 
@@ -43,106 +34,100 @@
 
     });
 // jquery end
+
+
 </script>
+<style>
+    .profile-head {
+        transform: translateY(5rem)
+    }
+
+    .cover {
+        background-size: cover;
+        background-repeat: no-repeat
+    }
+</style>
 
 <!-- ========================= SECTION PAGETOP ========================= -->
 <section class="section-pagetop bg padding-y">
     <div class="container">
-        <h2 class="title-page">My Profile</h2>
+        <h2 class="title-page">{{user.FirstName}} {{user.LastName}}'s Profile</h2>
     </div> <!-- container //  -->
 </section>
-<!-- ========================= SECTION INTRO END// ========================= -->
-
-<!-- ========================= SECTION CONTENT ========================= -->
-<section class="section-content padding-y">
-    <div class="container">
-
-        <div class="row">
-            <aside class="col-md-3">
-                <ul class="list-group">
-                    <a class="list-group-item active" href="#"> My Account </a>
-                    <a class="list-group-item" href="#"> Attended Courses </a>
-                    <a class="list-group-item" href="#"> My wishlist </a>
-                    <a class="list-group-item" href="#"> Return and refunds </a>
-                    <a class="list-group-item" href="#"> Settings </a>
-                    <a class="list-group-item" href="#"> My Selling Items </a>
-                    <a class="list-group-item" href="#"> Received orders </a>
-                </ul>
-            </aside> <!-- col.// -->
-            <main class="col-md-9">
-
-                <article class="card mb-3">
-                    <div class="card-body">
-
-                        <figure class="icontext">
-                            <div class="icon">
-                                <img class="rounded-circle img-sm border"
-                                    src="/images/profilepictures/{{user.Profile_pic}}">
-                            </div>
-                            <div class="text">
-                                <strong>{{user.Username}}</strong> <br>
-                                {{user.Email}} <br>
-                                <a href="/user/editProfile">Edit</a>
-                            </div>
-                        </figure>
-                        <hr>
-                        <article class="card-group">
-                            <figure class="card bg">
-                                <div class="p-3">
-                                    <h5 class="card-title">0</h5>
-                                    <span>No. of Sessions</span>
-                                </div>
-                            </figure>
-                            <figure class="card bg">
-                                <div class="p-3">
-                                    <h5 class="card-title">0</h5>
-                                    <span>Total No. of Hours</span>
-                                </div>
-                            </figure>
-                        </article>
-
-
-                    </div> <!-- card-body .// -->
-                </article> <!-- card.// -->
-
-                <article class="card mb-3">
-                    <div class="card-body" style="margin-left:2em;width:92%;">
-                        <h5 class="card-title mb-4">Recent Courses </h5>
-                        <div class="slider-items-owl owl-carousel owl-theme center-x" style="position:relative;">
-                            {{!-- {% for course, tutor in coursearray.items() %} --}}
-                            <div class="item-slide">
-                                <figure class="card card-product-grid" style="width: 18rem;">
-                                    <img class="card-img-top"
-                                        src="../static/images/coursethumbnails/zzz" height="140"
-                                        width="240">
-                                    <div class="widget-header">
-                                        <a href="#" class="ml-3 icontext" data-toggle="dropdown" data-offset="20,10">
-                                            <div class="icon"><img class="icon icon-xs rounded-circle"
-                                                    src='/static/images/profilepictures/zz'>
-                                            </div>
-                                            <div class="text">
-                                                <small class="text-muted">tutor username</small> <br>
-                                            </div>
-                                        </a>
-                                    </div>
-                                    <figcaption class="info-wrap">
-                                        <h5 class="title" style="height:58px;"><a
-                                                href="">course title</a></h5>
-                                        <p class="text-muted" style="width:208px; height:58px;">description</p>
-                                        <br>
-                                        <h6>$hourly rate/Hour</h6>
-                                    </figcaption>
-                                </figure> <!-- card // -->
-                            </div>
-                            {{!-- {% endfor %} --}}
-                        </div>
-                    </div> <!-- card-body .// -->
-                </article>
-
-            </main> <!-- col.// -->
+<div class="col-md-7 mx-auto">
+    <!-- Profile widget -->
+    <div class="bg-white shadow rounded overflow-hidden">
+        <div class="px-4 pt-0 pb-4 cover"
+            style="background-image: url(/images/background/{{extra.background}}), url(https://images.unsplash.com/photo-1530305408560-82d13781b33a?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1352&q=80);">
+            <div class="media align-items-end profile-head">
+                <div class="profile mr-3"><img src="/images/profilepictures/{{user.Profile_pic}}" alt="..." width="130"
+                        class="rounded mb-2 img-thumbnail"></div>
+                <div class="media-body mb-5" style="color: {{extra.color}}">
+                    <h4 class="mt-0 mb-0">{{user.FirstName}} {{user.LastName}}</h4>
+                    <p class="small mb-4"> {{user.Username}}</p>
+                </div>
+            </div>
         </div>
+        <div class="bg-light p-4 d-flex justify-content-end text-center">
+            <ul class="list-inline mb-0">
+                <li class="list-inline-item">
+                    <h5 class="font-weight-bold mb-0 d-block">0</h5><small class="text-muted"> <i
+                            class="fas fa-image mr-1"></i>No. of Sessions</small>
+                </li>
+                <li class="list-inline-item">
+                    <h5 class="font-weight-bold mb-0 d-block">0</h5><small class="text-muted"> <i
+                            class="fas fa-user mr-1"></i>Total No. of Hours</small>
+                </li>
+            </ul>
+        </div>
+        <div class="px-4 py-3">
+            <h5 class="mb-0">About</h5>
+            <div class="p-4 rounded shadow-sm bg-light">
+                {{#if user.description}}
+                {{user.description}}
+                {{else}}
+                The user has not written a description of themself.
+                {{/if}}
+            </div>
+        </div>
+        <div class="py-4 px-4">
+            {{#if coursesarray}}
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h5 class="mb-0">My Courses</h5>
+            </div>
+            <div class="slider-items-owl owl-carousel owl-theme" style="margin-left:2em;">
+                {{#each coursesarray }}
+                <div class="item-slide">
+                    <figure class="card card-product-grid" style="width: 18rem;">
+                        <img class="card-img-top" src="/images/coursethumbnails/{{Course_thumbnail}}" height="140"
+                            width="240">
+                        <div class="widget-header">
+                            <a href="#" class="ml-3 icontext" data-toggle="dropdown" data-offset="20,10">
+                                <div class="icon">
+                                    <div class="text">
+                                        <small class="text-muted">{{userobject.FirstName}}
+                                            {{userobject.LastName}}</small> <br>
+                                    </div>
+                            </a>
+                        </div>
+                        <figcaption class="info-wrap">
+                            <h4 class="title" style="font-size:1.3em; height:58px"><a
+                                    href="/course/updatecourse/{{course_id}}">{{Title}}</a></h4>
+                            <p class="text-muted" style="font-size:0.9em; height:58px">{{Short_description}}
+                            </p>
+                            <br>
+                            <h5>${{Hourlyrate}}/Hour</h5>
+                        </figcaption>
+                    </figure> <!-- card // -->
+                </div>
+                {{/each}}
+            </div>
+            {{/if}}
+        </div>
+    </div>
+</div>
 
-    </div> <!-- container .//  -->
+</div> <!-- container .//  -->
 </section>
 <!-- ========================= SECTION CONTENT END// ========================= -->
 

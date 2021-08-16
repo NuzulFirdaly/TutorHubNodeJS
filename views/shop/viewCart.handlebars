@@ -1,5 +1,23 @@
-<div>
+<script type="text/javascript">
+  function changeValue(el) {
+    if (el.value === 'subtract') {
+      if (parseInt(el.nextElementSibling.innerHTML) > 1) {
+        var curr = parseInt(el.nextElementSibling.innerHTML);
+        var after = curr - 1;
+        el.nextElementSibling.innerHTML = after;
+        el.parentNode.nextElementSibling.nextElementSibling.childNodes[1].childNodes[3].childNodes[1].value = after;
 
+      }
+    } else if (el.value === 'add') {
+      var curr = parseInt(el.previousElementSibling.innerHTML);
+      var after = curr + 1;
+      el.previousElementSibling.innerHTML = after;
+      el.parentNode.nextElementSibling.nextElementSibling.childNodes[1].childNodes[3].childNodes[1].value = after;
+    }
+  }
+</script>
+
+<div>
   <table class="table table-striped">
     <thead>
       <tr>
@@ -10,61 +28,76 @@
       </tr>
     </thead>
     <tbody>
-    {% for item in session['cart'] %}
+      {{#each cart}}
       <tr>
-        <td>{{ item.replace('_',' ') }}</td>
-        <td>{{ session['cart'][item][0] }}</td>
+        <td>{{this.[3]}}</td>
+        <td>{{ this.[0] }}</td>
         <td style="width:200px;" class="row">
-          <form method="POST" action="{{url_for('editcart', action='minus')}}">
-            <button class="btn btn-secondary" type="submit" name="minus_item" value="{{item}}"><span class="fa fa-minus"></span></button>
-          </form>
-          <p class="col-md-2">{{ session['cart'][item][1] }}</p>
-          <form method="POST" action="{{url_for('editcart', action='plus')}}">
-            <button class="btn btn-secondary" type="submit" name="add_item" value ="{{item}}" ><span class="fa fa-plus"></span></button>
-          </form>
+          <button class="btn btn-secondary" name="minus_item" value="subtract" onclick="changeValue(this)"><span
+              class="fa fa-minus"></span></button>
+          <p class="col-md-2">{{ this.[1] }}</p>
+          <button class="btn btn-secondary" name="add_item" value="add" onclick="changeValue(this)"><span
+              class="fa fa-plus"></span></button>
         </td>
-        <td>{{ session['cart'][item][2] }}</td>
+        <td>{{ this.[2] }}</td>
         <td>
-          <form action="{{url_for('deleteitem', id=item)}}" method="POST">
-            <!input type="submit" value="Delete" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete {{item}}?');">
-            <!-- Button to Open the Modal -->
-            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal_{{item}}">
-            Delete
-            </button>
-
-            <!-- The Modal -->
-            <div class="modal" id="myModal_{{item}}">
-              <div class="modal-dialog">
-                <div class="modal-content">
-
-                  <!-- Modal Header -->
-                  <div class="modal-header">
-                    <h4 class="modal-title">Delete Confirmation</h4>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                  </div>
-
-                  <!-- Modal body -->
-                  <div class="modal-body">
-                    Are you sure you want to delete {{item}}?
-                  </div>
-
-                  <!-- Modal footer -->
-                  <div class="modal-footer">
-                    <input type="submit" value="Delete" class="btn btn-danger">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                  </div>
-
-                </div>
-              </div>
-            </div>
-          </form
+          <div class="row">
+            <form action="/shop/removeCart/{{ @key }}" method="POST">
+              <button type="submit" class="btn btn-danger">
+                Delete
+              </button>
+            </form>
+            &nbsp;
+            <form action="/shop/updateCart/{{ @key }}" method="POST">
+              <input type="hidden" name="newValue" id="newValue" value="{{ this.[1] }}">
+              <button type="submit" class="btn btn-primary">
+                Update
+              </button>
+            </form>
+          </div>
         </td>
       </tr>
-    {% endfor %}
+      {{/each}}
+
     </tbody>
   </table>
-  {% if session['cart']|length != 0 %}
-    <a href="{{ url_for('placeOrder' , item = 'cart') }}" style="margin-right:20px" class="btn btn-primary float-right">Place Order</a>
-  {% endif %}
+  {{#if cartLength}}
+  <div class="row">
+    <div class="ml-auto">
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+        Save Cart
+      </button>
+    </div>
+    &nbsp;
+    <div class="ml-end">
+      <form action="/payment/item" method="POST">
+        <button style="margin-right:20px" class="btn btn-primary">Place Order</button>
+      </form>
+    </div>
+  </div>
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Save Confirmation</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          This action will overwrite your previous save, continue?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <form action="/shop/saveCart/{{user.user_id}}" method="POST">
+            <button type="submit" class="btn btn-primary">Save changes</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  {{/if}}
 </div>
-{% endblock %}
