@@ -1,4 +1,4 @@
-<div class="container" style="width: 75%; padding-top: 50px; margin-top: 50px; padding-left: 50px;">
+<div class="container" style="width: 85%; padding-top: 50px; margin-top: 50px; padding-left: 50px;">
 	<!-- ========================= SECTION CONTENT ========================= -->
 	<section class="section-content padding-y">
 
@@ -7,22 +7,25 @@
 			<article class="card-body">
 				{{#with admin}}
 				<header class="mb-4">
-					<h4 class="card-title">Edit Profile</h4>
+					<h2 class="card-title">Edit Profile</h2>
 				</header>
 				<form method="POST" action="/admin/editprofile" enctype="multipart/form-data">
 					<div class="px-4 py-3">
-						<h5 class="mb-0" style="padding-bottom: 10px;">Personal Info</h5>
+						<h4 class="mb-0" style="padding-bottom: 10px;">Personal Info</h4>
 						<div class="img bg-wrap text-center py-5 rounded"
 							style="background-image: url(/admin/images/adminBackgroundPictures/bg_1.jpg);">
 							<div class="form-row">
 								<div class="col-xs-12 col-xl-4 form-group d-flex align-items-center">
 									<div class="work d-flex justify-content-center">
-										<div class="img rounded-circle d-flex align-items-center justify-content-center"
+										<div class="img rounded-circle d-flex align-items-center justify-content-center image-upload" id="output"
 											style="height: 180px; width: 180px; background-image: url(/admin/images/adminProfilePictures/{{../user.Profile_pic}});">
-											<a href="#" class="icon d-flex align-items-center justify-content-center"
-												style="height: 180px; width: 180px; background-color: rgb(255, 255, 255, 0.4);">
-												<span class="fas fa-edit" style="color: white;"></span>
-											</a>
+											<label for="profile_pic">
+												<a class="icon d-flex align-items-center justify-content-center"
+													style="height: 180px; width: 180px; background-color: rgb(255, 255, 255, 0.4);">
+													<span class="fas fa-edit" style="color: white;"></span>
+												</a>
+											</label>
+											<input type="file" name="profile_pic" id="profile_pic" accept="image/png,image/jpeg,image/jpg,image/gif" onchange="loadFile(event)">
 										</div>
 									</div>
 								</div>
@@ -57,7 +60,7 @@
 					<div class="form-row">
 						<div class="col form-group">
 							<div class="px-4 py-3">
-								<h5 class="mb-0" style="padding-bottom: 10px;">About</h5>
+								<h4 class="mb-0" style="padding-bottom: 10px;">About</h4>
 								<div class="p-4 rounded shadow-sm bg-light">
 									<div class="form-group">
 										<label class="col-form-label">Language</label>
@@ -82,7 +85,7 @@
 
 						<div class="col form-group">
 							<div class="px-4 py-3">
-								<h5 class="mb-0" style="padding-bottom: 10px;">Contact</h5>
+								<h4 class="mb-0" style="padding-bottom: 10px;">Contact</h4>
 								<div class="p-4 rounded shadow-sm bg-light">
 									<div class="form-group">
 										<label class="col-form-label">Email</label>
@@ -101,54 +104,11 @@
 					</div>
 
 					<div class="px-4 py-3">
-						<h5 class="mb-0" style="padding-bottom: 10px;">Upload Certificate</h5>
+						<h4 class="mb-0" style="padding-bottom: 10px;">Upload Certificate</h4>
 						<div class="p-4 rounded shadow-sm bg-light">
 							<div class="form-group">
-								<div class="px-4 py-3" id="admincertdiv">
-									<h5 class="mb-0" style="padding-bottom: 10px;">Certificate</h5>
-									<div class="p-4 rounded shadow-sm bg-light">
-										<div class="container">
-											<div class="row">
-												<div class="col-md-12">
-													<div class="featured-carousel owl-carousel">
-														{{!-- start --}}
-														<div class="item">
-															<div class="work">
-																<div class="img d-flex align-items-center justify-content-center rounded"
-																	style="background-image: url(/images/work-1.jpg);">
-																	<a href="#"
-																		class="icon d-flex align-items-center justify-content-center">
-																		<span class="ion-ios-search"></span>
-																	</a>
-																</div>
-																<div class="text pt-3 w-100 text-center">
-																	<h3><a href="#">Work 01</a></h3>
-																	<span>Web Design</span>
-																</div>
-																<input type="file" name="certificate" id="certificate"
-																	accept="image/png,image/jpeg,image/jpg,image/gif">
-															</div>
-														</div>
-														{{!-- end --}}
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-
-								{{!--
-								<script id="file-upload-template" type="text/x-handlebars-template">
-										<li class="removable_row">
-											<div class="file-field">
-												<label class="file required" for="{{field_id}}"><abbr title="required">*</abbr> Attachment</label>
-												<input class="file required" id="{{field_id}}" name="{{field_name}}" type="file" />
-											</div>
-										</li>
-									</script>
-
-								<div class="file-uploader">
-								</div> --}}
+								<input type="file" name="certificate" id="certificate"
+									accept="image/png,image/jpeg,image/jpg,image/gif">
 							</div> <!-- form-group end.// -->
 						</div>
 					</div>
@@ -162,11 +122,11 @@
 
 				{{else}}
 				<header class="mb-4">
-					<h4 class="card-title">Edit Profile</h4>
+					<h2 class="card-title">Edit Profile</h4>
 				</header>
 				<form method="POST" action="/admin/editprofile" enctype="multipart/form-data">
 					<div class="px-4 py-3">
-						<h5 class="mb-0" style="padding-bottom: 10px;">Personal Info</h5>
+						<h4 class="mb-0" style="padding-bottom: 10px;">Personal Info</h5>
 						<div class="img bg-wrap text-center py-5 rounded"
 							style="background-image: url(/admin/images/adminBackgroundPictures/bg_1.jpg);">
 							<div class="form-row">
@@ -212,7 +172,7 @@
 					<div class="form-row">
 						<div class="col form-group">
 							<div class="px-4 py-3">
-								<h5 class="mb-0" style="padding-bottom: 10px;">About</h5>
+								<h4 class="mb-0" style="padding-bottom: 10px;">About</h5>
 								<div class="p-4 rounded shadow-sm bg-light">
 									<div class="form-group">
 										<label class="col-form-label">Language</label>
@@ -235,7 +195,7 @@
 
 						<div class="col form-group">
 							<div class="px-4 py-3">
-								<h5 class="mb-0" style="padding-bottom: 10px;">Contact</h5>
+								<h4 class="mb-0" style="padding-bottom: 10px;">Contact</h5>
 								<div class="p-4 rounded shadow-sm bg-light">
 									<div class="form-group">
 										<label class="col-form-label">Email</label>
@@ -254,25 +214,11 @@
 					</div>
 
 					<div class="px-4 py-3">
-						<h5 class="mb-0" style="padding-bottom: 10px;">Upload Certificate</h5>
+						<h4 class="mb-0" style="padding-bottom: 10px;">Upload Certificate</h5>
 						<div class="p-4 rounded shadow-sm bg-light">
 							<div class="form-group">
-								{{!-- <input type="file" name="certificate" id="certificate"
-									accept="image/png,image/jpeg,image/jpg,image/gif"> --}}
-								<script id="file-upload-template" type="text/x-handlebars-template">
-									<li class="removable_row">
-										<div class="file-field">
-											<label class="file required" for="certificate"><abbr title="required">*</abbr> Attachment</label>
-											<input class="file required" id="certificate" name="certificate" type="file" />
-										</div>
-										{{#if allowRemove}}
-										<i alt="Remove" title="Remove" class="fa fa-trash remove-row-link" />
-										{{/if}}
-									</li>
-									</script>
-
-								<div class="file-uploader">
-								</div>
+								<input type="file" name="certificate" id="certificate"
+									accept="image/png,image/jpeg,image/jpg,image/gif">
 							</div> <!-- form-group end.// -->
 						</div>
 					</div>
@@ -288,6 +234,7 @@
 		</div> <!-- card .// -->
 		<p class="text-center mt-4"><a href="/admin/profile" style="color: white; text-shadow: 2px 2px 5px black;">Back
 				to Profile</a></p>
+		<br>
 		<p class="text-center"><a href="/admin" style="color: white; text-shadow: 2px 2px 5px black;">Back to Home</a>
 		</p>
 		<br><br>
@@ -297,3 +244,47 @@
 	<!-- ========================= SECTION CONTENT END// ========================= -->
 
 </div>
+
+{{!-- <div class="px-4 py-3" id="admincertdiv">
+	<h5 class="mb-0" style="padding-bottom: 10px;">Certificate</h5>
+	<div class="p-4 rounded shadow-sm bg-light">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="featured-carousel owl-carousel">
+						<div class="item">
+							<div class="work">
+								<div class="img d-flex align-items-center justify-content-center rounded"
+									style="background-image: url(/images/work-1.jpg);">
+									<a href="#"
+										class="icon d-flex align-items-center justify-content-center">
+										<span class="ion-ios-search"></span>
+									</a>
+								</div>
+								<div class="text pt-3 w-100 text-center">
+									<h3><a href="#">Work 01</a></h3>
+									<span>Web Design</span>
+								</div>
+								<input type="file" name="certificate" id="certificate"
+									accept="image/png,image/jpeg,image/jpg,image/gif">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div> 
+
+
+<script id="file-upload-template" type="text/x-handlebars-template">
+		<li class="removable_row">
+			<div class="file-field">
+				<label class="file required" for="{{field_id}}"><abbr title="required">*</abbr> Attachment</label>
+				<input class="file required" id="{{field_id}}" name="{{field_name}}" type="file" />
+			</div>
+		</li>
+	</script>
+
+<div class="file-uploader">
+</div>  --}}

@@ -44,14 +44,70 @@ const { body, validationResult } = require('express-validator');
 //const { ValidationError } = require('sequelize/types');
 const { error } = require('console');
 
+// Email
+const nodemailer = require('nodemailer');
+const { google } = require('googleapis');
+const CLIENT_ID = '993285737810-tfpuqq5vhfdjk5s5ng5v6vcbc3cht53s.apps.googleusercontent.com';
+const CLIENT_SECRET = 'uvWjFqdiAgVK_sFq_uaYcbGV';
+const REDIRECT_URI = 'https://developers.google.com/oauthplayground';
+const REFRESH_TOKEN = '1//04NJ-IXlwUJ_7CgYIARAAGAQSNgF-L9Irvecmxx12BMYyPKTIrSjhEroQErhaG49HwPEugWn5nSq3MJAb9py5_yEVmIwNd6gj5A';
+const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
+oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
+
+async function sendMailRegisterTutor(custom_mailemail,
+    custom_mailsubject, email, username, password) {
+    try {
+        const accessToken = await oAuth2Client.getAccessToken();
+
+        const transport = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                type: 'OAuth2',
+                user: 'adm.tutorhub@gmail.com',
+                clientId: CLIENT_ID,
+                clientSecret: CLIENT_SECRET,
+                refreshToken: REFRESH_TOKEN,
+                accessToken: accessToken,
+            },
+        });
+
+        const mailOptions = {
+            from: 'TutorHub Administrator 👨‍🏫<adm.tutorhub@gmail.com>',
+            to: custom_mailemail,
+            subject: custom_mailsubject,
+            html: "<h1> Congratulations. Your account is ready to be used.</h1> \
+            <br> <p>Your institution has registered your account and you are now able to login and start using!. Below are the details of your account.</p> \
+            <br><h4>It is highly recommended to immediately change your password once you've logged in.</h4> \
+            <br><p>Your email: </p>" + email + "\
+            <p>Username: </p>" + username + " \
+            <p>Password: </p>" + password
+        };
+
+        const result = await transport.sendMail(mailOptions)
+        return result;
+
+    } catch (error) {
+        return error;
+    }
+}
+
 
 // ---------------------------------------------
 router.use(express.urlencoded({
     extended: true
 }));
 
+var banneritems;
+var alloftutors;
+var bothdescriptions;
+var allwidgets;
+var allseminars;
+var allfeaturetutors;
+var allcourselistings;
+var allfeaturedcourse;
+
 // show edit home page  -- Main overall page
-router.get('/showyourpage', async (req, res) => {
+router.get('/showyourpage', async(req, res) => {
     if ((req.user) && (req.user.AccountTypeID == 2)) {
         console.log("Fetching admin id.....");
         institutionadminid = req.user.dataValues.user_id;
@@ -72,33 +128,25 @@ router.get('/showyourpage', async (req, res) => {
         // ----
         console.log("Finding institution.........");
         Institution.findOne({
-            where: {
-                AdminUserID: institutionadminid
-            },
-            raw: true
-        })
-            .then(async (institute) => {
+                where: {
+                    AdminUserID: institutionadminid
+                },
+                raw: true
+            })
+            .then(async(institute) => {
                 console.log("fetching institution id........");
                 institutionid = institute.institution_id;
                 console.log("Institution id: ", institutionid);
                 console.log("Fetching institutionid complete...");
                 if (institute) {
-                    var banneritems;
-                    var alloftutors;
-                    var bothdescriptions;
-                    var allwidgets;
-                    var allseminars;
-                    var allfeaturetutors;
-                    var allcourselistings;
-                    var allfeaturedcourse;
                     // getting all banners
                     console.log("Fetching all institution banners.........");
                     await Banner.findAll({
-                        where: {
-                            institutionInstitutionId: institutionid
-                        },
-                        raw: true
-                    })
+                            where: {
+                                institutionInstitutionId: institutionid
+                            },
+                            raw: true
+                        })
                         .then((banners) => {
                             console.log("Putting banners into bannerarray....");
                             console.log(banners);
@@ -115,12 +163,12 @@ router.get('/showyourpage', async (req, res) => {
                     // getting all institution tutors
                     console.log("Fetching all institution's tutors");
                     await User.findAll({
-                        where: {
-                            AccountTypeID: 1,
-                            institutionInstitutionId: institutionid
-                        },
-                        raw: true
-                    })
+                            where: {
+                                AccountTypeID: 1,
+                                institutionInstitutionId: institutionid
+                            },
+                            raw: true
+                        })
                         .then(foundtutor => {
                             console.log("Putting tutors into an array.....");
                             console.log(foundtutor);
@@ -131,11 +179,11 @@ router.get('/showyourpage', async (req, res) => {
                     // getting institution's description
                     console.log("Fetching institution's descriptions")
                     await Description.findAll({
-                        where: {
-                            institutionInstitutionId: institutionid
-                        },
-                        raw: true
-                    })
+                            where: {
+                                institutionInstitutionId: institutionid
+                            },
+                            raw: true
+                        })
                         .then(founddescription => {
                             console.log("Putting descriptions into descriptionarray");
                             console.log(founddescription);
@@ -146,11 +194,11 @@ router.get('/showyourpage', async (req, res) => {
                     // getting institution's widgets
                     console.log("Fetching institution's widget");
                     await Widget.findAll({
-                        where: {
-                            institutionInstitutionId: institutionid
-                        },
-                        raw: true
-                    })
+                            where: {
+                                institutionInstitutionId: institutionid
+                            },
+                            raw: true
+                        })
                         .then(foundwidget => {
                             console.log("putting widget into widgetarray");
                             console.log(foundwidget);
@@ -161,11 +209,11 @@ router.get('/showyourpage', async (req, res) => {
                     // getting institution's seminar
                     console.log("Fetching institution's seminars");
                     await SeminarEvent.findAll({
-                        where: {
-                            institutionInstitutionId: institutionid
-                        },
-                        raw: true
-                    })
+                            where: {
+                                institutionInstitutionId: institutionid
+                            },
+                            raw: true
+                        })
                         .then(foundseminar => {
                             console.log("putting seminar into seminaraaray");
                             console.log(foundseminar);
@@ -175,11 +223,11 @@ router.get('/showyourpage', async (req, res) => {
 
                     // getting institution's featured tutors
                     await FeaturedTutor.findAll({
-                        where: {
-                            institutionInstitutionId: institutionid
-                        },
-                        raw: true
-                    })
+                            where: {
+                                institutionInstitutionId: institutionid
+                            },
+                            raw: true
+                        })
                         .then(foundfeaturetutor => {
                             console.log("Putting featured tutors into array");
                             console.log(foundfeaturetutor);
@@ -189,31 +237,31 @@ router.get('/showyourpage', async (req, res) => {
 
                     // getting institution's courses
                     await CourseListing.findAll({
-                        where: {
-                            institutionInstitutionId: institutionid
-                        },
-                        include: {model: User}
-                    })
-                    .then(foundcourse => {
-                        console.log("Putting course into courselistingarray");
-                        console.log(foundcourse);
-                        allcourselistings = foundcourse;
-                        console.log("Successfully put courses into array.");
-                    }).catch(err => console.log(err));
+                            where: {
+                                institutionInstitutionId: institutionid
+                            },
+                            include: { model: User }
+                        })
+                        .then(foundcourse => {
+                            console.log("Putting course into courselistingarray");
+                            console.log(foundcourse);
+                            allcourselistings = foundcourse;
+                            console.log("Successfully put courses into array.");
+                        }).catch(err => console.log(err));
 
                     // getting institution featured courses
                     await FeaturedCourse.findAll({
-                        where: {
-                            institutionInstitutionId: institutionid,
-                        },
-                        raw: true
-                    })
-                    .then(foundfeaturecourse => {
-                        console.log("Putting course into allfeaturedcoursearray");
-                        console.log(foundfeaturecourse);
-                        allfeaturedcourse = foundfeaturecourse;
-                        console.log("Successfully put courses into array.");
-                    });
+                            where: {
+                                institutionInstitutionId: institutionid,
+                            },
+                            raw: true
+                        })
+                        .then(foundfeaturecourse => {
+                            console.log("Putting course into allfeaturedcoursearray");
+                            console.log(foundfeaturecourse);
+                            allfeaturedcourse = foundfeaturecourse;
+                            console.log("Successfully put courses into array.");
+                        });
 
                     // render page
                     res.render('institution_admin/yourpage', {
@@ -251,11 +299,11 @@ router.get('/showeditmainlogo', (req, res) => {
 
         console.log("Finding institution.........");
         Institution.findOne({
-            where: {
-                AdminUserID: institutionadminid
-            },
-            raw: true
-        })
+                where: {
+                    AdminUserID: institutionadminid
+                },
+                raw: true
+            })
             .then((foundinstitution) => {
                 console.log("fetching institution id........");
                 institutionid = foundinstitution.institution_id;
@@ -290,23 +338,41 @@ router.post('/editmainlogo/editlogo', [body('trueFileLogoName').not().isEmpty().
             console.log(error);
             errors.push({ text: error.msg })
         })
-        res.render('/institution_admin/showeditmainlogo', {
-            user: req.user.dataValues,
-            errors
-        });
-    }
-    else {
+        Institution.findOne({
+                where: {
+                    AdminUserID: institutionadminid
+                },
+                raw: true
+            })
+            .then((foundinstitution) => {
+                console.log("fetching institution id........");
+                institutionid = foundinstitution.institution_id;
+                console.log("Institution id: ", institutionid)
+                console.log("Fetching institutionid complete...");
+
+                if (foundinstitution) {
+                    console.log("fetching main logo of institution and putting it into an array..");
+                    res.render('institution_admin/editmainlogo', {
+                        title: "Your institution",
+                        layout: 'institution_admin_base',
+                        user: req.user.dataValues,
+                        mainlogoarray: foundinstitution,
+                        errors
+                    });
+                }
+            });
+    } else {
         console.log("There are no errors found.");
         userid = req.user.dataValues.user_id;
         console.log("User id: ", userid);
         Institution.findOne({
-            where: {
-                AdminUserID: userid
-            },
-            order: [
-                ['name', 'ASC']
-            ]
-        })
+                where: {
+                    AdminUserID: userid
+                },
+                order: [
+                    ['name', 'ASC']
+                ]
+            })
             .then(updateinstit => {
                 if (updateinstit) {
                     console.log("This is the file: ", trueFileLogoName);
@@ -314,8 +380,7 @@ router.post('/editmainlogo/editlogo', [body('trueFileLogoName').not().isEmpty().
                         .catch(err => console.log(err));
                     console.log("Update main logo successfully");
                     res.redirect('/institution_admin/showeditmainlogo');
-                }
-                else {
+                } else {
                     console.log("Updating main logo UNSUCCESSFUL.");
                 }
             }).catch(err => console.log(err));
@@ -324,7 +389,7 @@ router.post('/editmainlogo/editlogo', [body('trueFileLogoName').not().isEmpty().
 
 router.post('/institutionMainLogoUpload', (req, res) => {
     console.log("Attempting to upload main institution logo...");
-    institutionMainLogoUpload(req, res, async (err) => {
+    institutionMainLogoUpload(req, res, async(err) => {
         console.log("Main logo image upload printing req.file.filename");
         console.log(req.file)
         if (err) {
@@ -378,7 +443,7 @@ router.get('/showregistertutor', (req, res) => {
 // })
 
 router.post('/pendingcertUpload2', (req, res) => {
-    pendingcertsUpload(req, res, async (err) => {
+    pendingcertsUpload(req, res, async(err) => {
         console.log("profile picture upload printing req.file.filename")
         console.log(req.file)
         if (err) {
@@ -429,13 +494,10 @@ router.post('/registertutor', [
     }),
     body('profilePictureUpload2').not().isEmpty().trim().escape().withMessage("Please upload a cert"),
     body('username').not().isEmpty().trim().escape().withMessage("Username is invalid"),
-    body('password').isLength({ min: 8 }).withMessage("Password must be at least 8 Character").matches(
-        /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[a-zA-Z\d@$.!%*#?&]/
-    ).withMessage("Password must contain at least 1 uppercase letter, 1 lowercase letter and 1 special character"),
     body('email').trim().isEmail().withMessage("Email must be a valid email").normalizeEmail().toLowerCase()
-    ], ensureAuthenticated, (req, res) => {
+], ensureAuthenticated, (req, res) => {
     console.log("retrieving the institution tutor forms......")
-    let { firstname, lastname, description, occupation, college_country, collegename, major, nric, fromyear, toyear, graduateyear, trueFileCertName, username, password, email } = req.body;
+    let { firstname, lastname, description, occupation, college_country, collegename, major, nric, fromyear, toyear, graduateyear, trueFileCertName, username, email } = req.body;
     let errors = [];
     const validatorErrors = validationResult(req);
     if (!validatorErrors.isEmpty()) { //if isEmpty is false
@@ -448,55 +510,60 @@ router.post('/registertutor', [
     } else {
         console.log("Creating instititution tutor...........");
         console.log("This is the institution: ", req.user.user_id);
-        User.findOne({where: {Email: email}})
-        .then(user => {
-            if (user) {
-                res.render('institution_admin/registertutor', {
-                    error: email + ' already registered.',
-                    firstname,
-                    lastname,
-                    description,
-                    username,
-                    password,
-                    email,
-                    occupation,
-                    college_country,
-                    collegename,
-                    major,
-                    nric,
-                    toyear,
-                    fromyear,
-                    graduateyear
-                });
-            } else {
-                bcrypt.genSalt(10, function(err, salt) {
-                    bcrypt.hash(password, salt, function(err, hash) {
-                        // Store hash in your password DB.
-                        if (err) {
-                            throw err;
-                        } else {
-                            hashedpassword = hash;
-                            console.log("This is hashed pasword \n", hashedpassword);
-                            // Create new user record
-                            Institution.findOne({
-                                where: {
-                                    AdminUserID: req.user.user_id
-                                },
-                                order: [
-                                    ['name', 'ASC']
-                                ],
-                                raw: true
-                            }).then(createnewtutor => {
-                                User.create({ FirstName: firstname, LastName: lastname, description: description, Email: email, Username: username, Password: hashedpassword, AccountTypeID: 1, institutionInstitutionId: createnewtutor.institution_id })
-                                .catch(err => console.log(err));
-                            });
-                    
-                            res.redirect('/institution_admin/tutorcompletion');
-                        }
+        User.findOne({ where: { Email: email } })
+            .then(user => {
+                if (user) {
+                    res.render('institution_admin/registertutor', {
+                        error: email + ' already registered.',
+                        firstname,
+                        lastname,
+                        description,
+                        username,
+                        email,
+                        occupation,
+                        college_country,
+                        collegename,
+                        major,
+                        nric,
+                        toyear,
+                        fromyear,
+                        graduateyear
                     });
-                });
-            }
-        })
+                } else {
+                    var APassword = crypto.randomBytes(20).toString('hex');
+                    bcrypt.genSalt(10, function(err, salt) {
+                        bcrypt.hash(APassword, salt, function(err, hash) {
+                            // Store hash in your password DB.
+                            if (err) {
+                                throw err;
+                            } else {
+                                hashedpassword = hash;
+                                console.log("this is the password before it is hashed: ", APassword);
+                                console.log("This is hashed pasword \n", hashedpassword);
+                                // Create new user record
+                                Institution.findOne({
+                                    where: {
+                                        AdminUserID: req.user.user_id
+                                    },
+                                    order: [
+                                        ['name', 'ASC']
+                                    ],
+                                    raw: true
+                                }).then(createnewtutor => {
+                                    User.create({ FirstName: firstname, LastName: lastname, description: description, Email: email, Username: username, Password: hashedpassword, AccountTypeID: 1, institutionInstitutionId: createnewtutor.institution_id })
+                                        .catch(err => console.log(err));
+                                });
+
+                                // send email to tutor
+                                sendMailRegisterTutor(email, 'Your TutorHub Account is ready!', email, username, APassword)
+                                    .then((result) => console.log("Email sent...", result))
+                                    .catch((error) => console.log(error.message));
+                                res.redirect('/institution_admin/tutorcompletion');
+                            }
+                        });
+                    });
+                }
+            })
     }
 })
 
@@ -515,18 +582,130 @@ router.get('/tutorcompletion', (req, res) => {
 
 
 
+var uploadnone = multer();
 
-
-// show your tutor page ------------------------------------------------------
+// show your tutor page CRUD ------------------------------------------------------
 router.get('/showyourtutors', (req, res) => {
     if ((req.user) && (req.user.AccountTypeID == 2)) {
-        res.render('institution_admin/yourtutor', {
-            title: "Your institution",
-            layout: 'institution_admin_base'
-        });
+        console.log("Fetching admin id.....");
+        institutionadminid = req.user.dataValues.user_id;
+        console.log(institutionadminid);
+        console.log("Fetching adminid successful");
+        // Institution.findOne({
+        // 	where: {
+        // 		user_id: req.params.institutionadminid
+        // 	},
+        // 	raw: true,
+        // 	// order: [[]]
+        // })
+        // .then(institutionadmin => {
+        // 	if(institutionadmin.user_id == req.user.user_id) {
+        // 		res.render('institution_admin/yourpage', {title: "Your institution", layout: 'institution_admin_base'})
+        // 	}
+        // });,
+        // ----
+        console.log("Finding institution.........");
+        Institution.findOne({
+            where: {
+                AdminUserID: institutionadminid
+            },
+            raw: true
+        }).then(async(institute) => {
+            console.log("fetching institution id........");
+            institutionid = institute.institution_id;
+            console.log("Institution id: ", institutionid);
+            console.log("Fetching institutionid complete...");
+            if (institute) {
+                // getting all institution tutors
+                console.log("Fetching all institution's tutors");
+                await User.findAll({
+                        where: {
+                            AccountTypeID: 1,
+                            institutionInstitutionId: institutionid
+                        },
+                        raw: true
+                    })
+                    .then(foundtutor => {
+                        console.log("Putting tutors into an array.....");
+                        console.log(foundtutor);
+                        alloftutors = foundtutor
+                        console.log("Successfully put tutors into institutiontutorarray...");
+                    }).catch(err => console.log(err));
+
+                res.render('institution_admin/yourtutor', {
+                    title: "Your institution",
+                    layout: 'institution_admin_base',
+                    user: req.user.dataValues,
+                    institutiontutorarray: alloftutors
+                });
+            }
+        }).catch(err => console.log(err));
     } else {
         res.redirect("/");
     };
+});
+
+router.post('/profilePictureUpload4', (req, res) => {
+    profilePictureUpload(req, res, async(err) => {
+        console.log("profile picture upload printing req.file.filename")
+        console.log(req.file)
+        if (err) {
+            res.json({ err: err });
+        } else {
+            if (req.file === undefined) {
+                res.json({ err: err });
+            } else {
+                res.json({ path: `/images/profilepictures/${req.file.filename}`, file: `${req.file.filename}` });
+                // await Pending.findOne({where: {user_id:  req.user.user_id } }).then(user => {
+                //     user.update({cert:req.file.filename})
+                // })
+            }
+        }
+    });
+})
+
+router.post('/yourtutor/deletetutortable', uploadnone.none(), [body('removetutortable').not().isEmpty().escape().withMessage("Pleas select a tutor")], (req, res) => {
+    console.log("request delete tutor table form......");
+    let { removetutortable } = req.body;
+    console.log(removetutortable);
+    let errors = [];
+    const validatorErrors = validationResult(req);
+    if (!validatorErrors.isEmpty()) {
+        console.log("There are errors when deleting the tutor");
+        validatorErrors.array().forEach(error => {
+            console.log(error);
+            errors.push({ text: error.msg })
+        })
+        res.render('institution_admin/yourtutor', {
+            title: "Your institution",
+            layout: 'institution_admin_base',
+            user: req.user.dataValues,
+            institutiontutorarray: alloftutors,
+            errors
+        });
+    } else {
+        console.log("There are no errors");
+        userid = req.user.dataValues.user_id;
+        Institution.findOne({
+                where: {
+                    AdminUserID: userid
+                }
+            })
+            .then(deletebannerinst => {
+                console.log("Attempting to delete tutor chosen.....");
+                console.log("tutor id to be deleted: ", removetutortable);
+                User.destroy({
+                    where: {
+                        institutionInstitutionId: deletebannerinst.institution_id,
+                        user_id: removetutortable
+                    }
+                }).catch(err => console.log(err));
+
+                res.redirect('/institution_admin/yourtutor');
+
+                console.log("Successfully deleted the banner.");
+            })
+    }
 });
 // -----------------------------------------------------------------------
 
@@ -570,9 +749,17 @@ router.post('/yourpage/addbanner', [body('trueFileInstitutionName').not().isEmpt
             console.log(error);
             errors.push({ text: error.msg })
         })
-        res.render('/institution_admin/showyourpage', {
+        res.render('institution_admin/yourpage', {
             user: req.user.dataValues,
-            errors
+            errors,
+            bannerarray: banneritems,
+            institutiontutorarray: alloftutors,
+            descriptionarray: bothdescriptions,
+            widgetarray: allwidgets,
+            seminararray: allseminars,
+            featuretutorarray: allfeaturetutors,
+            allinstcoursearray: allcourselistings,
+            allfeaturedcoursearray: allfeaturedcourse
         });
     } else {
         console.log("There are no erros");
@@ -604,7 +791,7 @@ router.post('/yourpage/addbanner', [body('trueFileInstitutionName').not().isEmpt
 
 router.post("/institutionBannerUpload", (req, res) => {
     console.log("attempting to upload banner");
-    institutionBannerUpload(req, res, async (err) => {
+    institutionBannerUpload(req, res, async(err) => {
         console.log("Banner image upload printing req.file.filename")
         console.log(req.file)
         if (err) {
@@ -633,20 +820,26 @@ router.post('/yourpage/deletebanner', uploadnone.none(), [body('uploaddeletebann
             console.log(error);
             errors.push({ text: error.msg })
         })
-        res.render('/institution_admin/showyourpage',
-            {
-                user: req.user.dataValues,
-                errors
-            });
-    }
-    else {
+        res.render('institution_admin/yourpage', {
+            user: req.user.dataValues,
+            errors,
+            bannerarray: banneritems,
+            institutiontutorarray: alloftutors,
+            descriptionarray: bothdescriptions,
+            widgetarray: allwidgets,
+            seminararray: allseminars,
+            featuretutorarray: allfeaturetutors,
+            allinstcoursearray: allcourselistings,
+            allfeaturedcoursearray: allfeaturedcourse
+        });
+    } else {
         console.log("There are no errors");
         userid = req.user.dataValues.user_id;
         Institution.findOne({
-            where: {
-                AdminUserID: userid
-            }
-        })
+                where: {
+                    AdminUserID: userid
+                }
+            })
             .then(deletebannerinst => {
                 console.log("Attempting to delete banner chosen.....");
                 console.log("File id to be deleted: ", uploaddeletebanner);
@@ -671,9 +864,7 @@ router.post('/yourpage/deletebanner', uploadnone.none(), [body('uploaddeletebann
 
 // CRUD for description ------------------------------------------------------------------------
 router.post('/yourpage/editdescription',
-    uploadnone.none(),
-    [body('instituteAbout').not().isEmpty().trim().escape().withMessage("about is invalid")],
-    [body('instituteMyCourse').not().isEmpty().trim().escape().withMessage("My course is invalid")],
+    uploadnone.none(), [body('instituteAbout').not().isEmpty().trim().escape().withMessage("about is invalid")], [body('instituteMyCourse').not().isEmpty().trim().escape().withMessage("My course is invalid")],
     ensureAuthenticated, (req, res) => {
         console.log("Retrieving  description form...");
         let { instituteAbout, instituteMyCourse } = req.body;
@@ -685,40 +876,45 @@ router.post('/yourpage/editdescription',
                 console.log(error);
                 errors.push({ text: error.msg });
             })
-            res.render('/institution_admin/showyourpage',
-                {
-                    user: req.user.dataValues,
-                    errors
-                });
-        }
-        else {
+            res.render('institution_admin/yourpage', {
+                user: req.user.dataValues,
+                errors,
+                bannerarray: banneritems,
+                institutiontutorarray: alloftutors,
+                descriptionarray: bothdescriptions,
+                widgetarray: allwidgets,
+                seminararray: allseminars,
+                featuretutorarray: allfeaturetutors,
+                allinstcoursearray: allcourselistings,
+                allfeaturedcoursearray: allfeaturedcourse
+            });
+        } else {
             console.log("adding/updating about....");
             // check if the about row for instituion has been created
             userid = req.user.dataValues.user_id;
             Institution.findOne({
-                where: {
-                    AdminUserID: userid
-                }
-            })
-            .then(founddescription => {
-                Description.findOne({
                     where: {
-                        institutionInstitutionId: founddescription.institution_id
+                        AdminUserID: userid
                     }
                 })
-                    .then(updatedescription => {
-                        if (updatedescription) {
-                            console.log("There is a description that exist");
-                            updatedescription.update({ about: instituteAbout, mycourse: instituteMyCourse })
-                                .catch(err => console.log(err));
-                        }
-                        else {
-                            console.log("There is no description that exist");
-                            Description.create({ about: instituteAbout, mycourse: instituteMyCourse, institutionInstitutionId: founddescription.institution_id })
-                                .catch(err => console.log(err));
-                        }
-                    }).catch(err => console.log(err));
-            }).catch(err => console.log(err));
+                .then(founddescription => {
+                    Description.findOne({
+                            where: {
+                                institutionInstitutionId: founddescription.institution_id
+                            }
+                        })
+                        .then(updatedescription => {
+                            if (updatedescription) {
+                                console.log("There is a description that exist");
+                                updatedescription.update({ about: instituteAbout, mycourse: instituteMyCourse })
+                                    .catch(err => console.log(err));
+                            } else {
+                                console.log("There is no description that exist");
+                                Description.create({ about: instituteAbout, mycourse: instituteMyCourse, institutionInstitutionId: founddescription.institution_id })
+                                    .catch(err => console.log(err));
+                            }
+                        }).catch(err => console.log(err));
+                }).catch(err => console.log(err));
             res.redirect('/institution_admin/showyourpage');
         }
     });
@@ -730,54 +926,58 @@ router.post('/yourpage/editdescription',
 
 //CRUD for Widget -------------------------------------------------------------------------
 // var uploadSM = multer({ dest: 'public/images/Institutionpictures/socialmedia/' });
-router.post('/yourpage/addwidget',
-    [body('trueFileWidgetName').not().isEmpty().trim().escape().withMessage("Please upload a widget image")],
-    [body('widgeturl').not().isEmpty().withMessage("Please enter url")]
-    , (req, res) => {
-        console.log("Requesting widget form....");
-        let { trueFileWidgetName, widgeturl } = req.body;
-        let errors = [];
+router.post('/yourpage/addwidget', [body('trueFileWidgetName').not().isEmpty().trim().escape().withMessage("Please upload a widget image")], [body('widgeturl').not().isEmpty().withMessage("Please enter url")], (req, res) => {
+    console.log("Requesting widget form....");
+    let { trueFileWidgetName, widgeturl } = req.body;
+    let errors = [];
 
-        const validatorErrors = validationResult(req);
-        if (!validatorErrors.isEmpty()) {
-            console.log("There are errors uploading the widget. Please try again");
-            validatorErrors.array().forEach(error => {
-                console.log(error);
-                errors.push({ text: error_msg })
-            });
-            res.render('/institution_admin/showyourpage', {
-                user: req.user.dataValues,
-                errors
-            });
-        } else {
-            console.log("There are no errors");
-            userid = req.user.dataValues.user_id;
-            Institution.findOne({
-                where: {
-                    AdminUserID: userid
-                },
-                order: [
-                    ['name', 'ASC']
-                ],
-                raw: true
-            }).then((institution) => {
-                if (institution) {
-                    // institutionid = institution.institution_id;
-                    Widget.create({ widgetimage: trueFileWidgetName, widgeturl: widgeturl, institutionInstitutionId: institution.institution_id })
-                        .catch(err => console.log(err));
-                    console.log("redirecting back to show your page");
-                    res.redirect('/institution_admin/showyourpage');
-                }
-                else {
-                    console.log("Unable to find institution id. Error in uploading.");
-                }
-            }).catch(err => console.log(err));
-        }
-    });
+    const validatorErrors = validationResult(req);
+    if (!validatorErrors.isEmpty()) {
+        console.log("There are errors uploading the widget. Please try again");
+        validatorErrors.array().forEach(error => {
+            console.log(error);
+            errors.push({ text: error.msg })
+        });
+        res.render('institution_admin/yourpage', {
+            user: req.user.dataValues,
+            errors,
+            bannerarray: banneritems,
+            institutiontutorarray: alloftutors,
+            descriptionarray: bothdescriptions,
+            widgetarray: allwidgets,
+            seminararray: allseminars,
+            featuretutorarray: allfeaturetutors,
+            allinstcoursearray: allcourselistings,
+            allfeaturedcoursearray: allfeaturedcourse
+        });
+    } else {
+        console.log("There are no errors");
+        userid = req.user.dataValues.user_id;
+        Institution.findOne({
+            where: {
+                AdminUserID: userid
+            },
+            order: [
+                ['name', 'ASC']
+            ],
+            raw: true
+        }).then((institution) => {
+            if (institution) {
+                // institutionid = institution.institution_id;
+                Widget.create({ widgetimage: trueFileWidgetName, widgeturl: widgeturl, institutionInstitutionId: institution.institution_id })
+                    .catch(err => console.log(err));
+                console.log("redirecting back to show your page");
+                res.redirect('/institution_admin/showyourpage');
+            } else {
+                console.log("Unable to find institution id. Error in uploading.");
+            }
+        }).catch(err => console.log(err));
+    }
+});
 
 router.post('/institutionWidgetUpload', (req, res) => {
     console.log("attempting to upload widget imager");
-    institutionWidgetUpload(req, res, async (err) => {
+    institutionWidgetUpload(req, res, async(err) => {
         console.log("widget image upload printing req.file.filename")
         console.log(req.file)
         if (err) {
@@ -794,12 +994,10 @@ router.post('/institutionWidgetUpload', (req, res) => {
 
 });
 
-router.post("/yourpage/updatewidget", 
-    [body('trueFileWidgetName2').isEmpty().trim().escape().withMessage("Please upload a seminar image")],
-    [body('widgeturl').isEmpty().withMessage("Please enter a url")], uploadnone.none(),
+router.post("/yourpage/updatewidget", [body('trueFileWidgetName2').isEmpty().trim().escape().withMessage("Please upload a seminar image")], [body('widgeturl').isEmpty().withMessage("Please enter a url")], uploadnone.none(),
     ensureAuthenticated, (req, res) => {
         console.log("Retireving update widget form....");
-        let {trueFileWidgetName2, widgeturl, widgetid} = req.body;
+        let { trueFileWidgetName2, widgeturl, widgetid } = req.body;
         const validatorErrors = validationResult(req);
         if (validatorErrors.isEmpty()) {
             console.log("There are errors uploading the widget. Please try again.");
@@ -807,30 +1005,37 @@ router.post("/yourpage/updatewidget",
                 console.log(error);
                 errors.push({ text: error.msg });
             })
-            res.render('/institution_admin/showyourpage',
-                {
-                    user: req.user.dataValues,
-                    errors
-                });
+            res.render('institution_admin/yourpage', {
+                user: req.user.dataValues,
+                errors,
+                bannerarray: banneritems,
+                institutiontutorarray: alloftutors,
+                descriptionarray: bothdescriptions,
+                widgetarray: allwidgets,
+                seminararray: allseminars,
+                featuretutorarray: allfeaturetutors,
+                allinstcoursearray: allcourselistings,
+                allfeaturedcoursearray: allfeaturedcourse
+            });
         } else {
             console.log("Updating Widget....");
             userid = req.user.dataValues.user_id;
             Institution.findOne({
-                where: {
-                    AdminUserID: userid
-                }
-            })
-            .then(foundinstitution => { 
-                Widget.findOne({
                     where: {
-                        institutionInstitutionId: foundinstitution.institution_id,
-                        widget_id: widgetid
+                        AdminUserID: userid
                     }
                 })
-                .then(updatewidgets => {
-                    updatewidgets.update({widgetimage: trueFileWidgetName2, widgeturl: widgeturl})
+                .then(foundinstitution => {
+                    Widget.findOne({
+                            where: {
+                                institutionInstitutionId: foundinstitution.institution_id,
+                                widget_id: widgetid
+                            }
+                        })
+                        .then(updatewidgets => {
+                            updatewidgets.update({ widgetimage: trueFileWidgetName2, widgeturl: widgeturl })
+                        }).catch(err => console.log(err));
                 }).catch(err => console.log(err));
-            }).catch(err => console.log(err));
             res.redirect('/institution_admin/showyourpage');
         }
     });
@@ -848,19 +1053,26 @@ router.post('/yourpage/deletewidget', uploadnone.none(), [body('deletewidget').n
             console.log(error);
             errors.push({ text: error.msg });
         });
-        res.render('/institution_admin/showyourpage',
-            {
-                user: req.user.dataValues,
-                errors
-            });
+        res.render('institution_admin/yourpage', {
+            user: req.user.dataValues,
+            errors,
+            bannerarray: banneritems,
+            institutiontutorarray: alloftutors,
+            descriptionarray: bothdescriptions,
+            widgetarray: allwidgets,
+            seminararray: allseminars,
+            featuretutorarray: allfeaturetutors,
+            allinstcoursearray: allcourselistings,
+            allfeaturedcoursearray: allfeaturedcourse
+        });
     } else {
         console.log("THere are no errors uploading.");
         userid = req.user.dataValues.user_id;
         Institution.findOne({
-            where: {
-                AdminUserID: userid
-            }
-        })
+                where: {
+                    AdminUserID: userid
+                }
+            })
             .then(deletewidgetinst => {
                 console.log("Attempting to delete widget chosen.........");
                 console.log("File id to be deleted: ", deletewidgetinst);
@@ -893,33 +1105,39 @@ router.post('/yourpage/featuretutor', uploadnone.none(), [body('featuretutor').n
             console.log(error);
             errors.push({ text: error.msg });
         });
-        res.render('institution_admin/showyourpage',
-            {
-                user: req.user.dataValues,
-                errors
-            });
+        res.render('institution_admin/yourpage', {
+            user: req.user.dataValues,
+            errors,
+            bannerarray: banneritems,
+            institutiontutorarray: alloftutors,
+            descriptionarray: bothdescriptions,
+            widgetarray: allwidgets,
+            seminararray: allseminars,
+            featuretutorarray: allfeaturetutors,
+            allinstcoursearray: allcourselistings,
+            allfeaturedcoursearray: allfeaturedcourse
+        });
     } else {
         console.log("There are no errors.");
         userid = req.user.dataValues.user_id;
         Institution.findOne({
-            where: {
-                AdminUserID: userid
-            }
-        })
+                where: {
+                    AdminUserID: userid
+                }
+            })
             .then(fft => {
                 User.findOne({
-                    where: {
-                        user_id: featuretutor
-                    }
-                })
+                        where: {
+                            user_id: featuretutor
+                        }
+                    })
                     .then(addfeaturetutor => {
                         if (addfeaturetutor) {
                             FeaturedTutor.create({ Username: addfeaturetutor.Username, FirstName: addfeaturetutor.FirstName, LastName: addfeaturetutor.LastName, Profile_pic: addfeaturetutor.Profile_pic, User_id: featuretutor, institutionInstitutionId: fft.institution_id })
                                 .catch(err => console.log(err));
                             console.log("featured tutors added complete.");
                             res.redirect('/institution_admin/showyourpage');
-                        }
-                        else {
+                        } else {
                             console.log("Tutor does not exist.");
                         }
                     }).catch(err => console.log(err));
@@ -939,19 +1157,26 @@ router.post('/yourpage/removefeaturetutor', uploadnone.none(), [body('removefeat
             console.log(error);
             errors.push({ text: error.msg });
         });
-        res.render('/institution_admin/showyourpage',
-            {
-                user: req.user.dataValues,
-                errors
-            });
+        res.render('institution_admin/yourpage', {
+            user: req.user.dataValues,
+            errors,
+            bannerarray: banneritems,
+            institutiontutorarray: alloftutors,
+            descriptionarray: bothdescriptions,
+            widgetarray: allwidgets,
+            seminararray: allseminars,
+            featuretutorarray: allfeaturetutors,
+            allinstcoursearray: allcourselistings,
+            allfeaturedcoursearray: allfeaturedcourse
+        });
     } else {
         console.log("There are no errors uploading..");
         userid = req.user.dataValues.user_id;
         Institution.findOne({
-            where: {
-                AdminUserID: userid
-            }
-        })
+                where: {
+                    AdminUserID: userid
+                }
+            })
             .then(deletefeaturedtutor => {
                 console.log("Attempting to remove featured tutor....");
                 FeaturedTutor.destroy({
@@ -973,7 +1198,7 @@ router.post('/yourpage/removefeaturetutor', uploadnone.none(), [body('removefeat
 // CRUD for featured courses ---------------------------------------------------------
 router.post('/yourpage/featurecourses', uploadnone.none(), [body('featurecourse').not().isEmpty().escape().withMessage("Please select a course")], (req, res) => {
     console.log("Requesting feature courses");
-    let {featurecourse} = req.body;
+    let { featurecourse } = req.body;
     let errors = [];
     const validatorErrors = validationResult(req);
     if (!validatorErrors.isEmpty()) {
@@ -982,54 +1207,62 @@ router.post('/yourpage/featurecourses', uploadnone.none(), [body('featurecourse'
             console.log(error);
             errors.push({ text: error.msg });
         });
-        res.render('institution_admin/showyourpage',
-            {
-                user: req.user.dataValues,
-                errors
-            });
-    } else { 
+        res.render('institution_admin/yourpage', {
+            user: req.user.dataValues,
+            errors,
+            bannerarray: banneritems,
+            institutiontutorarray: alloftutors,
+            descriptionarray: bothdescriptions,
+            widgetarray: allwidgets,
+            seminararray: allseminars,
+            featuretutorarray: allfeaturetutors,
+            allinstcoursearray: allcourselistings,
+            allfeaturedcoursearray: allfeaturedcourse
+        });
+    } else {
         userid = req.user.dataValues.user_id;
         Institution.findOne({
-            where: {
-                AdminUserID: userid
-            }
-        })
-        .then(fic => {
-            CourseListing.findOne({
                 where: {
-                    course_id: featurecourse
-                },
-                raw: true
-            }).then(addfeaturecourse => {
-                // console.log(addfeaturecourse);
-                // console.log("name: ", addfeaturecourse.FirstName);
-                User.findOne({
+                    AdminUserID: userid
+                }
+            })
+            .then(fic => {
+                CourseListing.findOne({
                     where: {
-                        user_id: addfeaturecourse.userUserId
-                    }
-                }).then(courseuser => {
-                    FeaturedCourse.create({
-                        course_id: featurecourse, 
-                        Title: addfeaturecourse.Title, 
-                        Short_description: addfeaturecourse.short_description, 
-                        Description: addfeaturecourse.Description, 
-                        Hourlyrate: addfeaturecourse.Hourlyrate,
-                        FirstName: courseuser.FirstName,
-                        LastName: courseuser.LastName,
-                        Profile_pic: courseuser.Profile_pic,
-                        institutionInstitutionId: fic.institution_id}).catch(err => console.log(err));
-                    console.log("Successfully created feature courses");
-                    res.redirect('/institution_admin/showyourpage');
-                })
-               // res.redirect('/institution_admin/showyourpage');
+                        course_id: featurecourse
+                    },
+                    raw: true
+                }).then(addfeaturecourse => {
+                    // console.log(addfeaturecourse);
+                    // console.log("name: ", addfeaturecourse.FirstName);
+                    User.findOne({
+                            where: {
+                                user_id: addfeaturecourse.userUserId
+                            }
+                        }).then(courseuser => {
+                            FeaturedCourse.create({
+                                course_id: featurecourse,
+                                Title: addfeaturecourse.Title,
+                                Short_description: addfeaturecourse.short_description,
+                                Description: addfeaturecourse.Description,
+                                Hourlyrate: addfeaturecourse.Hourlyrate,
+                                FirstName: courseuser.FirstName,
+                                LastName: courseuser.LastName,
+                                Profile_pic: courseuser.Profile_pic,
+                                institutionInstitutionId: fic.institution_id
+                            }).catch(err => console.log(err));
+                            console.log("Successfully created feature courses");
+                            res.redirect('/institution_admin/showyourpage');
+                        })
+                        // res.redirect('/institution_admin/showyourpage');
+                }).catch(err => console.log(err));
             }).catch(err => console.log(err));
-        }).catch(err => console.log(err));
     }
 });
 
 router.post('/yourpage/deletefeaturecourse', uploadnone.none(), [body('removefeaturedcourse').not().isEmpty().escape().withMessage("Please select a course")], (req, res) => {
     console.log("Requesting feature courses");
-    let {removefeaturedcourse} = req.body;
+    let { removefeaturedcourse } = req.body;
     let errors = [];
     const validatorErrors = validationResult(req);
     if (!validatorErrors.isEmpty()) {
@@ -1038,30 +1271,37 @@ router.post('/yourpage/deletefeaturecourse', uploadnone.none(), [body('removefea
             console.log(error);
             errors.push({ text: error.msg });
         });
-        res.render('/institution_admin/showyourpage',
-            {
-                user: req.user.dataValues,
-                errors
-            });
-    } else { 
+        res.render('institution_admin/yourpage', {
+            user: req.user.dataValues,
+            errors,
+            bannerarray: banneritems,
+            institutiontutorarray: alloftutors,
+            descriptionarray: bothdescriptions,
+            widgetarray: allwidgets,
+            seminararray: allseminars,
+            featuretutorarray: allfeaturetutors,
+            allinstcoursearray: allcourselistings,
+            allfeaturedcoursearray: allfeaturedcourse
+        });
+    } else {
         userid = req.user.dataValues.user_id;
         Institution.findOne({
-            where: {
-                AdminUserID: userid
-            }
-        })
-        .then(fic => {
-            FeaturedCourse.destroy({
                 where: {
-                    featuredcourse_id: removefeaturedcourse,
-                    institutionInstitutionId: fic.institution_id
+                    AdminUserID: userid
                 }
-            }).catch(err => console.log(err));
-            console.log("Successfully created feature courses");
-            res.redirect('/institution_admin/showyourpage');
+            })
+            .then(fic => {
+                FeaturedCourse.destroy({
+                    where: {
+                        featuredcourse_id: removefeaturedcourse,
+                        institutionInstitutionId: fic.institution_id
+                    }
+                }).catch(err => console.log(err));
+                console.log("Successfully created feature courses");
+                res.redirect('/institution_admin/showyourpage');
 
-               // res.redirect('/institution_admin/showyourpage');
-        }).catch(err => console.log(err));
+                // res.redirect('/institution_admin/showyourpage');
+            }).catch(err => console.log(err));
     }
 });
 // -----------------------------------------------------------------------------------
@@ -1073,7 +1313,7 @@ router.post('/yourpage/deletefeaturecourse', uploadnone.none(), [body('removefea
 // CRUD for seminar and events ----------------------------------------------------
 router.post('/institutionSeminarUpload', (req, res) => {
     console.log("Attempting to upload seminar image");
-    institutionSeminarUpload(req, res, async (err) => {
+    institutionSeminarUpload(req, res, async(err) => {
         console.log("Seminar image upload printing req.file.filename");
         console.log(req.file);
         if (err) {
@@ -1090,11 +1330,7 @@ router.post('/institutionSeminarUpload', (req, res) => {
 });
 
 
-router.post("/yourpage/addseminar",
-    [body('trueFileSeminarName').not().isEmpty().withMessage("Please upload a seminar image")],
-    [body('seminartitle').not().isEmpty().trim().escape().withMessage("Please write a title")],
-    [body('seminardescription').not().isEmail().trim().escape().withMessage("Please enter a description")],
-    [body('seminarurl').not().isEmpty().withMessage("Please enter a url")], uploadnone.none(),
+router.post("/yourpage/addseminar", [body('trueFileSeminarName').not().isEmpty().withMessage("Please upload a seminar image")], [body('seminartitle').not().isEmpty().trim().escape().withMessage("Please write a title")], [body('seminardescription').not().isEmail().trim().escape().withMessage("Please enter a description")], [body('seminarurl').not().isEmpty().withMessage("Please enter a url")], uploadnone.none(),
     ensureAuthenticated, (req, res) => {
         console.log("Requesting seminar form..........");
         let { trueFileSeminarName, seminartitle, seminardescription, seminarurl } = req.body;
@@ -1108,9 +1344,17 @@ router.post("/yourpage/addseminar",
                 console.log(error);
                 errors.push({ text: error.msg })
             });
-            res.render('/institution_admin/showyourpage', {
+            res.render('institution_admin/yourpage', {
                 user: req.user.dataValues,
-                errors
+                errors,
+                bannerarray: banneritems,
+                institutiontutorarray: alloftutors,
+                descriptionarray: bothdescriptions,
+                widgetarray: allwidgets,
+                seminararray: allseminars,
+                featuretutorarray: allfeaturetutors,
+                allinstcoursearray: allcourselistings,
+                allfeaturedcoursearray: allfeaturedcourse
             });
         } else {
             console.log("There are no errors");
@@ -1136,11 +1380,7 @@ router.post("/yourpage/addseminar",
         }
     });
 
-router.post("/yourpage/updateseminar",
-    [body('trueFileSeminarName2').isEmpty().trim().escape().withMessage("Please upload a seminar image")],
-    [body('seminartitle').isEmpty().trim().escape().withMessage("Please write a title")],
-    [body('seminardescription').isEmpty().trim().escape().withMessage("Please enter a description")],
-    [body('seminarurl').isEmpty().withMessage("Please enter a url")], uploadnone.none(),
+router.post("/yourpage/updateseminar", [body('trueFileSeminarName2').isEmpty().trim().escape().withMessage("Please upload a seminar image")], [body('seminartitle').isEmpty().trim().escape().withMessage("Please write a title")], [body('seminardescription').isEmpty().trim().escape().withMessage("Please enter a description")], [body('seminarurl').isEmpty().withMessage("Please enter a url")], uploadnone.none(),
     ensureAuthenticated, (req, res) => {
         console.log("Retrieving update seminar form..");
         let { trueFileSeminarName2, seminartitle, seminardescription, seminarurl, seminarid } = req.body;
@@ -1155,32 +1395,39 @@ router.post("/yourpage/updateseminar",
                 console.log(error);
                 errors.push({ text: error.msg });
             })
-            res.render('/institution_admin/showyourpage',
-                {
-                    user: req.user.dataValues,
-                    errors
-                });
+            res.render('institution_admin/yourpage', {
+                user: req.user.dataValues,
+                errors,
+                bannerarray: banneritems,
+                institutiontutorarray: alloftutors,
+                descriptionarray: bothdescriptions,
+                widgetarray: allwidgets,
+                seminararray: allseminars,
+                featuretutorarray: allfeaturetutors,
+                allinstcoursearray: allcourselistings,
+                allfeaturedcoursearray: allfeaturedcourse
+            });
         } else {
             console.log("updating seminar....");
             // check if the about row for instituion has been created
             userid = req.user.dataValues.user_id;
             Institution.findOne({
-                where: {
-                    AdminUserID: userid
-                }
-            })
+                    where: {
+                        AdminUserID: userid
+                    }
+                })
                 .then(foundinstitution => {
                     SeminarEvent.findOne({
-                        where: {
-                            institutionInstitutionId: foundinstitution.institution_id,
-                            seminarevents_id: seminarid
-                        }
-                    })
-                    .then(updateseminar => {
-                        updateseminar.update({SEImage: trueFileSeminarName2, SETitle: seminartitle, SEDescription: seminardescription, SEUrl: seminarurl})
-                        .catch(err => console.log(err));
-                    }) .catch(err => console.log(err));
-                }) .catch(err => console.log(err));
+                            where: {
+                                institutionInstitutionId: foundinstitution.institution_id,
+                                seminarevents_id: seminarid
+                            }
+                        })
+                        .then(updateseminar => {
+                            updateseminar.update({ SEImage: trueFileSeminarName2, SETitle: seminartitle, SEDescription: seminardescription, SEUrl: seminarurl })
+                                .catch(err => console.log(err));
+                        }).catch(err => console.log(err));
+                }).catch(err => console.log(err));
             res.redirect('/institution_admin/showyourpage');
         }
     })
@@ -1196,19 +1443,26 @@ router.post("/yourpage/deleteseminar", uploadnone.none(), [body('deleteseminar')
             console.log(error);
             errors.push({ text: error.msg });
         });
-        res.render('/institution_admin/showyourpage',
-            {
-                user: req.user.dataValues,
-                errors
-            });
+        res.render('institution_admin/yourpage', {
+            user: req.user.dataValues,
+            errors,
+            bannerarray: banneritems,
+            institutiontutorarray: alloftutors,
+            descriptionarray: bothdescriptions,
+            widgetarray: allwidgets,
+            seminararray: allseminars,
+            featuretutorarray: allfeaturetutors,
+            allinstcoursearray: allcourselistings,
+            allfeaturedcoursearray: allfeaturedcourse
+        });
     } else {
         console.log("There are no errors deleting.");
         userid = req.user.dataValues.user_id;
         Institution.findOne({
-            where: {
-                AdminUserID: userid
-            }
-        })
+                where: {
+                    AdminUserID: userid
+                }
+            })
             .then(deleteseminarevents => {
                 console.log("Attempting to delete seminar chosen....");
                 SeminarEvent.destroy({

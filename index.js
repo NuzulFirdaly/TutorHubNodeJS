@@ -6,6 +6,13 @@ const methodOverride = require('method-override');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser'); //to retrieve req.body
 const Sequelize = require('sequelize');
+const paypal = require('paypal-rest-sdk');
+
+paypal.configure({
+    'mode': 'sandbox', //sandbox or live
+    'client_id': 'AXO5V1rlutZynF0Ki1rO2imjUeM8bI1RE5duaqKPKaaptEE97kMhkMpu2IIWBZ30H09LCyUheBlDI6dC',
+    'client_secret': 'EDjmtzb5OjJTZBmkEoCea9WykI5XnUTBtqgk57w8RfLcOON_I0G0Y--mXIyQdJodkkM_Z3BUzoDzw9gJ'
+})
 
 const Handlebars = require('handlebars');
 const { allowInsecurePrototypeAccess } = require('@handlebars/allow-prototype-access')
@@ -31,6 +38,8 @@ const rateRoute = require("./routes/ratereview");
 const mainInstitutionRoute = require('./routes/maininstitution');
 const institutionAdminRoute = require('./routes/institutionadmin');
 const adminRoute = require("./routes/admin");
+const paymentRoute = require('./routes/payment');
+const chatRoute = require('./routes/chat');
 
 
 
@@ -43,11 +52,17 @@ const db = require('./config/db'); // db.js config file for session
 
 // Passport Config
 const authenticate = require('./config/passport');
+const { username } = require('./config/db');
+const Notification = require('./models/Notification');
+const NotificationMessages = require('./models/NotificationMessages');
 
 authenticate.localStrategy(passport);
 
 //App
 var app = express();
+var http = require("http").createServer(app);
+var io = require("socket.io")(http);
+
 //MiddleWares
 // Body parser middleware to parse HTTP body in order to read HTTP data
 app.use(bodyParser.json());
@@ -112,7 +127,41 @@ app.engine('handlebars', exphbs({
         },
         printToConsole(a) {
             console.log("this is print to console", a)
+        },
+        takeLast3(notification) {
+            var slicednoti = notification.slice(notification.length - 3, notification.length).reverse()
+            console.log("slicednoti", slicednoti)
+            toreturn = ''
+            for (i in slicednoti) {
+                toreturn += `<div class="notifi__item notifiitem${parseInt(i) + 1}"><div class="bg-c1 img-cir img-40"><i class="zmdi zmdi-email-open"></i></div><div class="content"><p>You got a email notification</p><span class="date">${slicednoti[i].notificationmsg.DateSent}</span></div></div>`
+            }
+            return toreturn
+        },
+        // return notification.slice(notification.length - 3, notification.length).reverse()
+        timestampFormat(date) {
+            var date = new Date(Date.parse(date));
+            console.log('Date', date);
+
+            var year = date.getFullYear();
+            console.log('YEARS', year);
+            var month = date.getMonth();
+            console.log('month', month);
+            var day = date.getDate();
+            console.log('day', day);
+
+            var hours = date.getHours();
+            console.log('HOURS', hours);
+            var minutes = date.getMinutes();
+            console.log('MINUTES', minutes);
+            var ampm = hours >= 12 ? 'pm' : 'am';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            var strTime = day + "/" + month + "/" + year + " " + hours + ':' + minutes + ' ' + ampm;
+            console.log('Date', strTime);
+            return strTime
         }
+
 
     },
     handlebars: allowInsecurePrototypeAccess(Handlebars)
@@ -160,7 +209,7 @@ app.use(passport.session());
 app.use(flash());
 app.use(FlashMessenger.middleware);
 //WAS MISSING THIS WHAT IS THIS
-app.use(function(req, res, next) {
+app.use(async function(req, res, next) {
     // console.log("THHIS is fuCking local")
     // console.log("savnig to local")
 
@@ -169,9 +218,27 @@ app.use(function(req, res, next) {
     res.locals.error = req.flash('error');
     if (req.user) {
         res.locals.user = req.user.dataValues;
+        console.log("this is req.user in next", req.user.user_id)
+        await Notification.findAll({
+                where: { userUserId: req.user.user_id },
+                include: [NotificationMessages],
+            }).then(notification => {
+                notificationCleaned = []
+                for (let i in notification) {
+                    notificationobject = JSON.parse(JSON.stringify(notification[i], null, 2))
+                    notificationCleaned.push(notificationobject)
+                }
+
+                console.log("notification", notification)
+                res.locals.notification = notificationCleaned
+                console.log("this is res locals notifications", res.locals.notificationCleaned)
+
+            })
+            .catch(err => console.log(err));
+        // res.locals.notification = req.notification.data
     }
     //setup framework
-    next();
+    await next();
 });
 // Place to define global variables - not used in practical 1
 // app.use(function (req, res, next) {
@@ -193,6 +260,10 @@ app.use("/institution", mainInstitutionRoute)
 app.use("/institution_admin", institutionAdminRoute);
 
 app.use("/admin", adminRoute)
+app.use("/payment", paymentRoute);
+app.use("/chat", chatRoute);
+
+
 
 
 // // Method override middleware to use other HTTP methods such as PUT and DELETE
@@ -201,9 +272,18 @@ app.use("/admin", adminRoute)
 
 app.set('port', (process.env.PORT || 3000));
 
-
+io.on('connection', function(client) {
+    console.log('Client connected...');
+    client.on('join', function(data) {
+        console.log(data);
+        client.on('messages', function(data) {
+            client.emit('createnotification', data);
+            client.broadcast.emit('createnotification', data);
+        });
+    });
+});
 
 //Initializing app with this port number
-app.listen(app.get('port'), function() {
+http.listen(app.get('port'), function() {
     console.log(`Server started on port ${app.get('port')}`)
 });

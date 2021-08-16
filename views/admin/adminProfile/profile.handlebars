@@ -1,4 +1,4 @@
-<div class="container" style="width: 75%; padding-top: 50px; margin-top: 50px; padding-left: 50px;">
+<div class="container" style="width: 85%; padding-top: 50px; margin-top: 50px; padding-left: 50px;">
     <br><br>
     <div class="bg-white shadow rounded overflow-hidden">
         <div class="px-4 pt-0 pb-4 cover">
@@ -7,40 +7,33 @@
                         width="130" class="rounded mb-2 img-thumbnail"><a href="/admin/editprofile"
                         class="btn btn-outline-dark btn-sm btn-block">Edit profile</a></div>
                 <div class="media-body mb-auto text-white">
-                    <h4 class="mt-0 mb-0">{{user.FirstName}} {{user.LastName}}</h4>
-                    <h5 class="mt-0 mb-0 text-secondary">{{user.Username}}</h5>
+                    <h3 class="mt-0 mb-0">{{user.FirstName}} {{user.LastName}}</h3>
+                    <h4 class="mt-0 mb-0 text-secondary">{{user.Username}}</h4>
                 </div>
             </div>
         </div>
 
         <div class="px-4 py-3">
-            <h5 class="mb-0" style="padding-bottom: 10px;">About</h5>
+            <h4 class="mb-0" style="padding-bottom: 10px;">About</h4>
             <div class="p-4 rounded shadow-sm bg-light">
-                <h5 class="mt-0 mb-0">Date Joined : YYYY/MM/DD</h5>
-                <h5 class="mt-0 mb-0" style="padding-top: 10px;">
-                    {{#if (ifSame user.AccountTypeID 3)}}
-                    Role : Admin
-                    {{/if}}
-                    {{#if (ifSame user.AccountTypeID 7)}}
-                    Role : SuperUser Admin
-                    {{/if}}
-                </h5>
-                <h5 class="mt-0 mb-0" style="padding-top: 10px;">Language : English</h5>
-                <h5 class="mt-0 mb-0" style="padding-top: 10px;">Region : Singapore</h5>
-                <h5 class="mt-0 mb-0" style="padding-top: 10px;">Description : </h5>
+                <h4 class="mt-0 mb-0">Date Joined : YYYY/MM/DD</h4>
+                <h4 class="mt-0 mb-0" style="padding-top: 10px;">Role : {{user.AccountTypeID}}</h4>
+                <h4 class="mt-0 mb-0" style="padding-top: 10px;">Language : {{user.adminlist.Language}}</h4>
+                <h4 class="mt-0 mb-0" style="padding-top: 10px;">Region : Singapore</h4>
+                <h4 class="mt-0 mb-0" style="padding-top: 10px;">Description : </h4>
             </div>
         </div>
 
         <div class="px-4 py-3">
-            <h5 class="mb-0" style="padding-bottom: 10px;">Contact</h5>
+            <h4 class="mb-0" style="padding-bottom: 10px;">Contact</h4>
             <div class="p-4 rounded shadow-sm bg-light">
-                <h5 class="mt-0 mb-0">Email : {{user.Email}}</h5>
-                <h5 class="mt-0 mb-0" style="padding-top: 10px;">Phone Number : </h5>
+                <h4 class="mt-0 mb-0">Email : {{user.Email}}</h4>
+                <h4 class="mt-0 mb-0" style="padding-top: 10px;">Phone Number : </h4>
             </div>
         </div>
 
         <div class="px-4 py-3" id="admincertdiv">
-            <h5 class="mb-0" style="padding-bottom: 10px;">Certificate</h5>
+            <h4 class="mb-0" style="padding-bottom: 10px;">Certificate</h4>
             <div class="p-4 rounded shadow-sm bg-light">
                 <div class="container">
                     <div class="row">

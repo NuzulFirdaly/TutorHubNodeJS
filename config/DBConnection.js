@@ -17,12 +17,11 @@ const Widgets = require('../models/widgets');
 const SeminarEvents = require('../models/seminarevents');
 const FeaturedInstitutionTutor = require('../models/featuredinstitutiontutor');
 const FeaturedInstitutionCourses = require("../models/featuredinstitutioncourses");
+const Booking = require("../models/Booking")
 
 const Admin = require('../models/Admin');
-
-
-// const user = require('../models/User');
-// const video = require('../models/Video');
+const Notification = require('../models/Notification');
+const NotificationMessages = require('../models/NotificationMessages');
 
 // If drop is true, all existing tables are dropped and recreated
 const setUpDB = (drop) => {
@@ -50,8 +49,26 @@ const setUpDB = (drop) => {
             PendingTutor.belongsTo(User);
             User.hasMany(ItemListing);
             ItemListing.belongsTo(User);
-            User.hasMany(Calendar);
-            Calendar.belongsTo(User)
+            // Calendar
+            User.hasMany(Calendar, { foreignKey: "userUserId" }); //this is the tutorID
+            Calendar.belongsTo(User, { foreignKey: "userUserId" })
+            User.hasMany(Calendar, { foreignKey: "tuteeId" })
+            Calendar.belongsTo(User, { foreignKey: "tuteeId" })
+            Booking.hasMany(Calendar, { foreignKey: "booking_id" })
+            Calendar.belongsTo(Booking, { foreignKey: "booking_id" })
+
+            //Bookings | CourseID|CalendarID|SessionID|tuteeID|TutorID|totalPrice|startTime|endTime|Paid|HourlyRate|Date|CourseName|
+            CourseListing.hasMany(Booking, { foreignKey: "CourseId" })
+            Booking.belongsTo(CourseListing, { foreignKey: "CourseId" })
+            Lessons.hasMany(Booking, { foreignKey: "SessionId" })
+            Booking.belongsTo(Lessons, { foreignKey: "SessionId" })
+            User.hasMany(Booking, { foreignKey: "UserId" })
+            Booking.belongsTo(Booking, { foreignKey: "UserId" })
+            User.hasMany(Booking, { foreignKey: "TutorId" })
+            Booking.belongsTo(Booking, { foreignKey: "TutorId" })
+
+
+            //ratereview
             CourseListing.hasMany(RateReview, { foreignKey: "CourseId" });
             RateReview.belongsTo(CourseListing, { foreignKey: "CourseId" });
             User.hasMany(RateReview, { foreignKey: "TutorId" });
@@ -73,12 +90,17 @@ const setUpDB = (drop) => {
             SeminarEvents.belongsTo(Institution);
             Institution.hasMany(FeaturedInstitutionTutor, { foreignKey: { type: Sequelize.UUID, allowNull: false } });
             FeaturedInstitutionTutor.belongsTo(Institution);
-            Institution.hasMany(FeaturedInstitutionCourses,{ foreignKey: { type: Sequelize.UUID, allowNull: false } });
+            Institution.hasMany(FeaturedInstitutionCourses, { foreignKey: { type: Sequelize.UUID, allowNull: false } });
             FeaturedInstitutionCourses.belongsTo(Institution);
             // user.hasMany(video);
 
+            // admin ----------
             User.hasOne(Admin);
             Admin.belongsTo(User, { foreignKey: "userUserId" });
+            User.hasMany(Notification);
+            Notification.belongsTo(User, { foreignKey: "userUserId" });
+            NotificationMessages.hasMany(Notification);
+            Notification.belongsTo(NotificationMessages);
 
             mySQLDB.sync({ // Creates table if none exists
                 force: drop

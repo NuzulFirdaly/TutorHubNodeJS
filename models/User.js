@@ -11,7 +11,6 @@ const User = db.define('user', { //Creates a table called user
         defaultValue: Sequelize.UUIDV4,
         primaryKey: true,
         allowNull: false
-
     },
     Username: {
         type: Sequelize.STRING
@@ -39,6 +38,10 @@ const User = db.define('user', { //Creates a table called user
     AccountTypeID: {
         type: Sequelize.INTEGER,
         defaultValue: 0
+    },
+    InstitutionName: {
+        type: Sequelize.STRING,
+        defaultValue: "NIL"
     }
     // accountType
 });

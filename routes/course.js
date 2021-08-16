@@ -389,10 +389,10 @@ router.get("/mycourses", (req, res) => {
 //associationze.UUID, allowNull: false }});
 
 
-router.get("/viewcourse/:courseid", (req, res) => {
-
+router.get("/viewcourse/:courseid", ensureAuthenticated, async(req, res) => {
+    console.log("we are at view course now")
     courseid = req.params.courseid;
-    CourseListing.findAll({
+    await CourseListing.findAll({
             where: { course_id: courseid },
             include: [Lessons, User],
             order: [
@@ -402,68 +402,71 @@ router.get("/viewcourse/:courseid", (req, res) => {
         .then(course => {
             console.log("THIS IS COURSE NUZULLLLLLLL")
             console.log(course)
-            RateReview.findAll({ where: { CourseId: courseid }, include: [User] })
-
-            .then(ratereviews => {
-                RateReview.findAll({
-                        where: { CourseId: courseid },
-                        attributes: [
-                            [Sequelize.fn('avg', Sequelize.col('Rating')), 'avgRating']
-                        ],
-                        raw: true,
-                    })
-                    .then(async function(avgRating) {
-                        if (!avgRating) {
-                            avgRating = 0;
-                        }
-
-                        if (req.user) {
-                            console.log("ymca")
-                            console.log(req.user.user_id)
-                            await RateReview.findOne({ where: { CourseId: courseid, UserId: req.user.user_id }, include: [User] })
-                                .then(yourRateReview => {
-                                    console.log('gjfdjgjldfgj')
-                                    course = JSON.parse(JSON.stringify(course, null, 2))[0]
-                                    yourRateReview = yourRateReview
-                                    if (yourRateReview) {
-                                        console.log("kms")
-                                        console.log(JSON.parse(JSON.stringify(ratereviews, null, 2)))
-                                        res.render("course/viewcourse", {
-                                            users: req.user.dataValues, //have to do this for all pages
-                                            course,
-                                            avgRating: avgRating[0].avgRating,
-                                            yourRateReview: yourRateReview.dataValues,
-                                            ratereviews: JSON.parse(JSON.stringify(ratereviews, null, 2))
-                                        })
-                                    } else {
-                                        console.log(JSON.parse(JSON.stringify(ratereviews, null, 2)))
-                                        console.log(ratereviews)
-                                        console.log(avgRating)
-                                        console.log("yopopropr")
-                                        res.render("course/viewcourse", {
-                                            users: req.user.dataValues, //have to do this for all pages
-                                            course,
-                                            avgRating: avgRating[0].avgRating,
-                                            ratereviews: JSON.parse(JSON.stringify(ratereviews, null, 2))
-                                        })
-                                    }
-                                })
-                                .catch(error => console.log(error));
-                        } else { // console.log(course);
-                            console.log("================")
-                                // console.log(JSON.stringify(course, null, 2))
-                            console.log("================")
-                            course = JSON.parse(JSON.stringify(course, null, 2))[0]
-                            res.render("course/viewcourse", {
-                                course: course,
-                                avgRating: avgRating[0].avgRating,
-                                ratereviews: JSON.parse(JSON.stringify(ratereviews, null, 2))
+            console.log("this is course user", course[0].user) //checking if tutor created the course
+            if (course[0].user.user_id == req.user.user_id) {
+                console.log("*****************wtfsfsdf sf???")
+                res.redirect('/course/updatecourse/' + req.params.courseid)
+            } else {
+                RateReview.findAll({ where: { CourseId: courseid }, include: [User] })
+                    .then(ratereviews => {
+                        RateReview.findAll({
+                                where: { CourseId: courseid },
+                                attributes: [
+                                    [Sequelize.fn('avg', Sequelize.col('Rating')), 'avgRating']
+                                ],
+                                raw: true,
                             })
+                            .then(async function(avgRating) {
+                                if (!avgRating) {
+                                    avgRating = 0;
+                                }
 
-                        }
+                                if (req.user) {
+                                    console.log("ymca")
+                                    console.log(req.user.user_id)
+                                    await RateReview.findOne({ where: { CourseId: courseid, UserId: req.user.user_id }, include: [User] })
+                                        .then(yourRateReview => {
+                                            console.log('gjfdjgjldfgj')
+                                            course = JSON.parse(JSON.stringify(course, null, 2))[0]
+                                            yourRateReview = yourRateReview
+                                            if (yourRateReview) {
+                                                console.log("kms")
+                                                console.log(JSON.parse(JSON.stringify(ratereviews, null, 2)))
+                                                res.render("course/viewcourse", {
+                                                    users: req.user.dataValues, //have to do this for all pages
+                                                    course,
+                                                    avgRating: avgRating[0].avgRating,
+                                                    yourRateReview: yourRateReview.dataValues,
+                                                    ratereviews: JSON.parse(JSON.stringify(ratereviews, null, 2))
+                                                })
+                                            } else {
+                                                console.log(JSON.parse(JSON.stringify(ratereviews, null, 2)))
+                                                console.log(ratereviews)
+                                                console.log(avgRating)
+                                                console.log("yopopropr")
+                                                res.render("course/viewcourse", {
+                                                    users: req.user.dataValues, //have to do this for all pages
+                                                    course,
+                                                    avgRating: avgRating[0].avgRating,
+                                                    ratereviews: JSON.parse(JSON.stringify(ratereviews, null, 2))
+                                                })
+                                            }
+                                        })
+                                        .catch(error => console.log(error));
+                                } else { // console.log(course);
+                                    course = JSON.parse(JSON.stringify(course, null, 2))[0]
+                                    res.render("course/viewcourse", {
+                                        course: course,
+                                        avgRating: avgRating[0].avgRating,
+                                        ratereviews: JSON.parse(JSON.stringify(ratereviews, null, 2))
+                                    })
 
-                    });
-            })
+                                }
+
+                            });
+                    })
+            }
+
         }).catch(error => console.log(error));
 })
 
@@ -477,21 +480,26 @@ router.get("/updatecourse/:courseid", ensureAuthenticated, (req, res) => {
             ]
         })
         .then(course => {
-            // console.log(course);
-            console.log("================")
-                // console.log(JSON.stringify(course, null, 2))
-            course = JSON.parse(JSON.stringify(course, null, 2))[0]
-            console.log(course)
-            console.log("================")
-            if ((req.user != null) && (req.user.AccountTypeID == 1)) {
-                res.render("course/updatecourse", {
-                    user: req.user.dataValues, //have to do this for all pages
-                    course
-                })
+            if (course[0].user.user_id != req.user.user_id) {
+                res.redirect('/course/viewcourse/' + courseid)
             } else {
-                alertMessage(res, 'danger', 'You dont have access to that page!', 'fas fa-exclamation-triangle', true)
-                res.redirect("/")
-            };
+                // console.log(course);
+                console.log("====== update course==========")
+                    // console.log(JSON.stringify(course, null, 2))
+                course = JSON.parse(JSON.stringify(course, null, 2))[0]
+                console.log(course)
+                console.log("================")
+                if ((req.user != null) && (req.user.AccountTypeID == 1)) {
+                    res.render("course/updatecourse", {
+                        user: req.user.dataValues, //have to do this for all pages
+                        course
+                    })
+                } else {
+                    alertMessage(res, 'danger', 'You dont have access to that page!', 'fas fa-exclamation-triangle', true)
+                    res.redirect("/")
+                };
+
+            }
 
         }).catch(error => console.log(error));
 })
