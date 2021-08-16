@@ -10,8 +10,6 @@ const Sequelize = require('sequelize');
 const Handlebars = require('handlebars');
 const { allowInsecurePrototypeAccess } = require('@handlebars/allow-prototype-access')
 
-
-
 // Messaging Libraries
 const flash = require('connect-flash');
 const FlashMessenger = require('flash-messenger');
@@ -43,11 +41,18 @@ const db = require('./config/db'); // db.js config file for session
 
 // Passport Config
 const authenticate = require('./config/passport');
+const { username } = require('./config/db');
+const Notification = require('./models/Notification');
+const NotificationMessages = require('./models/NotificationMessages');
 
 authenticate.localStrategy(passport);
 
 //App
 var app = express();
+var http = require("http").createServer(app);
+var io = require("socket.io")(http);
+
+
 //MiddleWares
 // Body parser middleware to parse HTTP body in order to read HTTP data
 app.use(bodyParser.json());
@@ -94,6 +99,16 @@ app.engine('handlebars', exphbs({
         },
         ifInBetween(a, b, c) {
             return a >= b && a <= c;
+        },
+        takeLast3(notification) {
+            var slicednoti = notification.slice(notification.length - 3, notification.length).reverse()
+            console.log("slicednoti", slicednoti)
+            toreturn = ''
+            for (i in slicednoti) {
+                toreturn += `<div class="notifi__item notifiitem${parseInt(i) + 1}"><div class="bg-c1 img-cir img-40"><i class="zmdi zmdi-email-open"></i></div><div class="content"><p>You got a email notification</p><span class="date">${slicednoti[i].notificationmsg.DateSent}</span></div></div>`
+            }
+            return toreturn
+                // return notification.slice(notification.length - 3, notification.length).reverse()
         }
 
     },
@@ -142,7 +157,7 @@ app.use(passport.session());
 app.use(flash());
 app.use(FlashMessenger.middleware);
 //WAS MISSING THIS WHAT IS THIS
-app.use(function(req, res, next) {
+app.use(async function(req, res, next) {
     // console.log("THHIS is fuCking local")
     // console.log("savnig to local")
 
@@ -151,9 +166,27 @@ app.use(function(req, res, next) {
     res.locals.error = req.flash('error');
     if (req.user) {
         res.locals.user = req.user.dataValues;
+        console.log("this is req.user in next", req.user.user_id)
+        await Notification.findAll({
+                where: { userUserId: req.user.user_id },
+                include: [NotificationMessages],
+            }).then(notification => {
+                notificationCleaned = []
+                for (let i in notification) {
+                    notificationobject = JSON.parse(JSON.stringify(notification[i], null, 2))
+                    notificationCleaned.push(notificationobject)
+                }
+
+                console.log("notification", notification)
+                res.locals.notification = notificationCleaned
+                console.log("this is res locals notifications", res.locals.notificationCleaned)
+
+            })
+            .catch(err => console.log(err));
+        // res.locals.notification = req.notification.data
     }
     //setup framework
-    next();
+    await next();
 });
 // Place to define global variables - not used in practical 1
 // app.use(function (req, res, next) {
@@ -183,9 +216,22 @@ app.use("/admin", adminRoute)
 
 app.set('port', (process.env.PORT || 3000));
 
+io.on('connection', function(client) {
+    console.log('Client connected...');
+    client.on('join', function(data) {
+        console.log(data);
+        client.on('messages', function(data) {
+            client.emit('createnotification', data);
+            client.broadcast.emit('createnotification', data);
+        });
+    });
+});
 
-
-//Initializing app with this port number
-app.listen(app.get('port'), function() {
+// Initializing app with this port number
+http.listen(app.get('port'), function() {
     console.log(`Server started on port ${app.get('port')}`)
 });
+
+// app.listen(app.get('port'), function() {
+//     console.log(`Server started on port ${app.get('port')}`)
+// });

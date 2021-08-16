@@ -1,5 +1,5 @@
 <div class="container bg-white shadow rounded overflow-hidden"
-    style="width: 75%; padding-top: 50px; margin-top: 50px; margin-bottom: 50px; padding-left: 50px; padding-right: 50px;">
+    style="width: 85%; padding-top: 50px; margin-top: 120px; margin-bottom: 50px; padding-left: 50px; padding-right: 50px;">
 
     <h2 class="display-4">Tutor Certificate</h2>
 
@@ -17,7 +17,7 @@
                 </tr>
             </thead>
             <tbody>
-                {{#each userlist}}
+                {{#each list}}
                 {{#if (ifSame this.AccountTypeID 0)}} {{!-- change conditioning to pending tutor ticket != NULL --}}
                 <tr>
                     <td>{{this.FirstName}} {{this.LastName}}</td>
@@ -130,131 +130,117 @@
         </div>
     </section>
 
-    <h2 class="display-4">Institution Certificate</h2>
+    <h2 id="institution" class="display-4">Institution Certificate</h2>
 
     <section class="ftco-section">
 
-        <h2 class="heading-section mb-5 pb-md-4">Overview</h2>
+        <h2 class="heading-section mb-5 pb-md-4 text-md-left" style="text-align: center;" id="toOverviewInst">Overview</h2>
 
-        <table id="" class="table display responsive nowrap" style="width:100%">
+        <table id="instOverview" class="table display responsive nowrap" style="width:100%">
             <thead>
                 <tr>
+                    <th>Ticket ID</th>
                     <th>Name</th>
-                    <th>User ID</th>
-                    <th>Position</th>
+                    <th>Address</th>
+                    <th>Postal Code</th>
                     <th>Email</th>
+                    <th>Website</th>
+                    <th>Office Number</th>
+                    <th>Document</th>
                 </tr>
             </thead>
             <tbody>
-                {{#each userlist}}
-                {{#if (ifSame this.AccountTypeID 0)}} {{!-- change conditioning to pending institution ticket != NULL
-                --}}
-                <tr>
-                    <td>{{this.FirstName}} {{this.LastName}}</td>
-                    <td>{{this.user_id}}</td>
-                    <td>User</td>
-                    <td>{{this.Email}}</td>
-                </tr>
-                {{/if}}
+                {{#each pInstList}}
+                    <tr>
+                        <td>{{pending_institution_id}}</td>
+                        <td>{{name}}</td>
+                        <td>{{address}}</td>
+                        <td>{{postalcode}}</td>
+                        <td>{{iemail}}</td>
+                        <td><a href="{{website}}" target="_blank">{{website}}</a></td>
+                        <td>{{officeno}}</td>
+                        <td><a href="#inst_{{document}}">{{document}}</a></td>
+                    </tr>
                 {{/each}}
             </tbody>
         </table>
 
         <br><br><br><br><br>
-        <h2>Review</h2>
 
+        <h2 class="heading-section mb-5 pb-md-4 text-md-left" style="text-align: center;">Review</h2>
+        
         <div class="container">
             <div class="row">
                 <div class="col-md-12 text-center">
-                    <h2 class="heading-section mb-5 pb-md-4">Institution Carousel</h2>
+                    <h2 class="heading-section mb-5 pb-md-4">Institution Certificates</h2>
                 </div>
                 <div class="col-md-12">
                     <div class="featured-carousel owl-carousel">
-                        <div class="item">
-                            <div class="work">
-                                <div class="img d-flex align-items-center justify-content-center rounded"
-                                    style="background-image: url(/images/work-1.jpg);">
-                                    <a href="#" class="icon d-flex align-items-center justify-content-center">
-                                        <span class="ion-ios-search"></span>
-                                    </a>
-                                </div>
-                                <div class="text pt-3 w-100 text-center">
-                                    <h3><a href="#">Work 01</a></h3>
-                                    <span>Web Design</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="item">
-                            <div class="work">
-                                <div class="img d-flex align-items-center justify-content-center rounded"
-                                    style="background-image: url(/images/work-2.jpg);">
-                                    <a href="#" class="icon d-flex align-items-center justify-content-center">
-                                        <span class="ion-ios-search"></span>
-                                    </a>
-                                </div>
-                                <div class="text pt-3 w-100 text-center">
-                                    <h3><a href="#">Work 02</a></h3>
-                                    <span>Web Design</span>
+                        {{#each pInstList}}
+                            <div class="item" id="inst_{{document}}" data-hash="inst_{{document}}">
+                                <div class="work">
+                                    <div class="img d-flex align-items-center justify-content-center rounded"
+                                        style="background-image: url(/images/items/{{document}});">
+                                        <a class="icon d-flex align-items-center justify-content-center" data-toggle="modal" data-target="#inst_{{pending_institution_id}}">
+                                            <span class="ion-ios-search"></span>
+                                        </a>
+                                    </div>
+                                    <div class="text pt-3 w-100 text-center">
+                                        <h3><a href="#toOverviewInst" onclick=findInOverview("{{pending_institution_id}}")>{{name}}</a></h3>
+                                        <span>{{document}}</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="item">
-                            <div class="work">
-                                <div class="img d-flex align-items-center justify-content-center rounded"
-                                    style="background-image: url(/images/work-3.jpg);">
-                                    <a href="#" class="icon d-flex align-items-center justify-content-center">
-                                        <span class="ion-ios-search"></span>
-                                    </a>
-                                </div>
-                                <div class="text pt-3 w-100 text-center">
-                                    <h3><a href="#">Work 03</a></h3>
-                                    <span>Web Design</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="item">
-                            <div class="work">
-                                <div class="img d-flex align-items-center justify-content-center rounded"
-                                    style="background-image: url(/images/work-4.jpg);">
-                                    <a href="#" class="icon d-flex align-items-center justify-content-center">
-                                        <span class="ion-ios-search"></span>
-                                    </a>
-                                </div>
-                                <div class="text pt-3 w-100 text-center">
-                                    <h3><a href="#">Work 04</a></h3>
-                                    <span>Web Design</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="item">
-                            <div class="work">
-                                <div class="img d-flex align-items-center justify-content-center rounded"
-                                    style="background-image: url(/images/work-5.jpg);">
-                                    <a href="#" class="icon d-flex align-items-center justify-content-center">
-                                        <span class="ion-ios-search"></span>
-                                    </a>
-                                </div>
-                                <div class="text pt-3 w-100 text-center">
-                                    <h3><a href="#">Work 05</a></h3>
-                                    <span>Web Design</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="item">
-                            <div class="work">
-                                <div class="img d-flex align-items-center justify-content-center rounded"
-                                    style="background-image: url(/images/work-6.jpg);">
-                                    <a href="#" class="icon d-flex align-items-center justify-content-center">
-                                        <span class="ion-ios-search"></span>
-                                    </a>
-                                </div>
-                                <div class="text pt-3 w-100 text-center">
-                                    <h3><a href="#">Work 06</a></h3>
-                                    <span>Web Design</span>
-                                </div>
-                            </div>
-                        </div>
+                        {{/each}}                   
                     </div>
+                    {{#each pInstList}}
+                        <!-- Modal -->
+                        <div class="modal fade" id="inst_{{pending_institution_id}}" tabindex="-1" role="dialog" aria-labelledby="ModalTitle" aria-hidden="true">
+                        <div class="modal-xl modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title" id="ModalTitle">{{name}}</h3>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin: auto; margin-right: 0px; margin-top: -10px;">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="px-4 py-3">
+                                            <div class="text-center">
+                                                <img src="/images/items/{{document}}" class="img-fluid">
+                                            </div>                 
+                                            <div class="text pt-3 w-100 text-center">
+                                                <h3>{{name}}</h3>
+                                                <span>{{document}}</span>
+                                            </div>                                   
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-6">
+                                        <div class="px-4 py-3">
+                                            <div class="text-center">
+                                                <img src="/images/items/{{document}}" class="img-fluid">
+                                            </div>                 
+                                            <div class="text pt-3 w-100 text-center">
+                                                <h3>{{name}}</h3>
+                                                <span>{{document}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="submit" id="{{pending_institution_id}}" class="inst_reject btn btn-primary">Reject</button>
+                                <button type="submit" id="{{pending_institution_id}}" class="inst_approve btn btn-primary">Approve</button>                               
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                        <!-- Modal -->
+                    {{/each}}
                 </div>
             </div>
         </div>

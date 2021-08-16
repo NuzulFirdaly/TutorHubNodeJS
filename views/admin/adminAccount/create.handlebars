@@ -1,39 +1,115 @@
 <div class="container bg-white shadow rounded overflow-hidden"
-    style="width: 75%; padding-top: 50px; margin-top: 50px; margin-bottom: 50px; padding-left: 50px; padding-right: 50px;">
+    style="width: 85%; padding-top: 50px; margin-top: 120px; margin-bottom: 50px; padding-left: 50px; padding-right: 50px;">
 
-    <h2 class="display-4">Create</h2>
+    <h1 class="display-4">Account</h1>
+    <br>
 
     <section class="ftco-section">
 
-        <h2 class="heading-section mb-5 pb-md-4">Admin List</h2>
+        <h2 class="heading-section mb-5 pb-md-4" id="createadminheader">Create Admin</h2>
+        <div class="card mx-auto" style="max-width:720px; margin-top:40px;">
+            <article class="card-body">
+                <header class="mb-4">
+                    <h4 class="card-title">Generate Admin ID</h4>
+                </header>
+                <form>
+                    <div class="form-group">
+                        <label for="newadminemail">Email address</label>
+                        <input type="email" class="form-control" id="newadminemail" aria-describedby="emailHelp"
+                            placeholder="Enter email" name="newadminemail" required>
+                    </div>
+                    <button type="submit" id="createadmin" class="btn btn-primary float-right">Create</button>
+                </form>
+            </article>
+        </div>
+        <br><br>
+    </section>
 
-        <table id="" class="table display responsive nowrap" style="width:100%">
+    <section class="ftco-section">
+
+        <h2 class="heading-section mb-5 pb-md-4"><i class="zmdi zmdi-account-calendar"></i> Admin List</h2>
+
+        <table id="adminList" class="table display responsive nowrap" style="width:100%">
             <thead>
                 <tr>
-                    <th>Name</th>
                     <th>User ID</th>
-                    <th>Position</th>
+                    <th>Name</th>
                     <th>Email</th>
+                    <th>Position</th>
                 </tr>
             </thead>
             <tbody>
                 {{#each userlist}}
-                {{#if (ifInBetween this.AccountTypeID 3 7)}}
                 <tr>
-                    <td>{{this.FirstName}} {{this.LastName}}</td>
-                    <td>{{this.user_id}}</td>
+                    <td>{{user_id}}</td>
+                    <td>{{FirstName}} {{LastName}}</td>
+                    <td>{{Email}}</td>
                     <td>
-                        {{#if (ifSame this.AccountTypeID 3)}}
-                        Admin
-                        {{/if}}
-                        {{#if (ifSame this.AccountTypeID 7)}}
-                        SuperUser Admin
-                        {{/if}}
+                        <div class="table-data-feature">
+                            <form>
+                                <input type="hidden" id="dtname_{{user_id}}" value="{{FirstName}} {{LastName}}">
+                            </form>
+                            <span class="role {{AccountTypeID}}" style="margin-right: 55px;">
+                                {{AccountTypeID}}
+                            </span>
+                            <span data-toggle="modal" data-target="#updaterole_{{user_id}}">
+                                <button class="item" data-toggle="tooltip" data-placement="top" title="Edit">
+                                    <i class="zmdi zmdi-edit"></i>
+                                </button>
+                            </span>                            
+                            <button id="{{user_id}}" type="submit" class="deleteadmin item" data-toggle="tooltip" data-placement="top" title="Delete">
+                                <i class="zmdi zmdi-delete"></i>
+                            </button>
+                        </div>
                     </td>
-                    <td>{{this.Email}}</td>
                 </tr>
-                {{/if}}
                 {{/each}}
+                {{#each userlist}}
+                <!-- Modal -->
+                <div class="modal fade updaterolemodal" id="updaterole_{{user_id}}" tabindex="-1" role="dialog"
+                    aria-labelledby="ModalTitle" aria-hidden="true">
+                    <div class="modal-xl modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
+                        <div class="modal-content" style="min-height: 500px;">
+                            <div class="modal-header">
+                                <h3 class="modal-title" id="ModalTitle">{{FirstName}} {{LastName}}</h3>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                                    style="margin: auto; margin-right: 0px; margin-top: -10px;">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="px-4 py-3">
+                                    <h3 class="updaterolemodalitem">Name                :    {{FirstName}} {{LastName}}</h3>
+                                    <h3 class="updaterolemodalitem">User ID              :    {{user_id}}</h3>
+                                    <h3 class="updaterolemodalitem">Current Role  :    {{AccountTypeID}}</h3>
+                                    <br>
+                                    <h3 style="margin-bottom: 15px;">Update Role</h3>
+                                    <form>
+                                        <div class="form-group">
+                                            <select data-placeholder="Select a role..." class="form-control chosen-select" tabindex="2" required id="roleselected_{{user_id}}">
+                                                <option value=""></option>
+                                                <option value="Admin">
+                                                    Admin
+                                                </option>
+                                                <option value="SuperAdmin">
+                                                    SuperAdmin
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <input type="hidden" id="urtname_{{user_id}}" value="{{FirstName}} {{LastName}}">
+                                        <input type="hidden" id="urtcrole_{{user_id}}" value="{{AccountTypeID}}">
+                                    </form>
+                                </div>                        
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="submit" id="{{user_id}}" class="updaterole btn btn-primary">Save Changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal -->
+                {{/each}}               
             </tbody>
         </table>
 

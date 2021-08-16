@@ -17,7 +17,8 @@ const Widgets = require('../models/widgets');
 const SeminarEvents = require('../models/seminarevents');
 
 const Admin = require('../models/Admin');
-
+const Notification = require('../models/Notification');
+const NotificationMessages = require('../models/NotificationMessages');
 // const user = require('../models/User');
 // const video = require('../models/Video');
 
@@ -49,8 +50,8 @@ const setUpDB = (drop) => {
             RateReview.belongsTo(User, { foreignKey: "UserId" });
 
             // institution --------
-            User.hasOne(Institution, { foreignKey: { type: Sequelize.UUID, allowNull: false } });
-            Institution.belongsTo(User);
+            User.hasMany(Institution, { foreignKey: "AdminUserID", constraints: false });
+            Institution.belongsTo(User, { foreignKey: "AdminUserID", constraints: false });
             Institution.hasMany(Banners, { foreignKey: { type: Sequelize.UUID, allowNull: false } });
             Banners.belongsTo(Institution);
             Institution.hasMany(Descriptions, { foreignKey: { type: Sequelize.UUID, allowNull: false } });
@@ -61,8 +62,13 @@ const setUpDB = (drop) => {
             SeminarEvents.belongsTo(Institution);
             // user.hasMany(video);
 
+            // admin ----------
             User.hasOne(Admin);
             Admin.belongsTo(User, { foreignKey: "userUserId" });
+            User.hasMany(Notification);
+            Notification.belongsTo(User, { foreignKey: "userUserId" });
+            NotificationMessages.hasMany(Notification);
+            Notification.belongsTo(NotificationMessages);
 
             mySQLDB.sync({ // Creates table if none exists
                 force: drop

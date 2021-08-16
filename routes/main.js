@@ -3,6 +3,8 @@ const router = express.Router();
 var bcrypt = require('bcryptjs');
 /* models */
 const User = require('../models/User');
+const Notification = require('../models/Notification');
+const NotificationMessages = require('../models/NotificationMessages');
 console.log("Retrieve messenger helper flash");
 const alertMessage = require('../helpers/messenger');
 console.log("Retrieved flash");
@@ -91,8 +93,10 @@ router.post('/loginPost', [body('email').trim().isEmail().normalizeEmail().toLow
        message given by the strategy's verify callback, if any. When a failure occur passport passes the message
        object as error */
     })(req, res, next);
+
     // console.log("printing req usr from login post")
     // console.log(req.user);
+
 });
 
 // Logout User

@@ -18,7 +18,7 @@
 </section>
 <section class="section-content padding-y bg">
 <div class="container">
-
+{{>_errors}} {{!-- views/partials/_errors.handlebars --}}
 <div class="row">
 <aside class="col-md-3">
 <!-- COMPONENTS SIDEBAR -->
@@ -359,14 +359,16 @@
 							<div class="modal-body">
 								<br>
 								<br>
+								{{#each institutiontutorarray}}
 								<div class="form-group form-row">
 									<br>
-									<img class="img-sm rounded-circle mx-auto" src=""/>
+									<img class="img-sm rounded-circle mx-auto" src="/images/profilepictures/{{Profile_pic}}"/>
 									<br>
-									<label class="col-md-7">Erika Sampang</label>
+									<label class="col-md-7">{{Username}}</label>
 									<br>
 									<button class="btn btn-primary mx-auto" type="submit" name="featuretut" value="featuretut"><span class="col-md-1">feature</span></button>
 								</div>
+								{{/each}}
 								<br><br>
 							</div>
 							<div class="modal-footer">
