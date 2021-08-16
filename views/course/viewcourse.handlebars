@@ -32,6 +32,7 @@
     }
 </style>
 <section class="section-content padding-y">
+    {{> _flashmsg}} 
     <div class="container">
         <div class="row">
             {{#with course}}
@@ -221,11 +222,11 @@
         // Get percentage
         const starPercentage = (avgRating / starsTotal) * 100;
 
-    // Round to nearest 10
-    const starPercentageRounded = `${Math.round(starPercentage / 10) * 10}%`;
+        // Round to nearest 10
+        const starPercentageRounded = `${Math.round(starPercentage / 10) * 10}%`;
 
-    // Set width of stars-inner to percentage
-    document.querySelector(".stars-inner").style.width = starPercentageRounded;
+        // Set width of stars-inner to percentage
+        document.querySelector(".stars-inner").style.width = starPercentageRounded;
 
     // Add number rating
     if (Number.isNaN(avgRating)){
