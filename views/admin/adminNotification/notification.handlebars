@@ -1,0 +1,52 @@
+<div class="container bg-white shadow rounded overflow-hidden"
+    style="width: 85%; padding-top: 50px; margin-top: 120px; margin-bottom: 50px; padding-left: 50px; padding-right: 50px;">
+
+    <h1 class="display-4">Notification</h1>
+    <br>
+
+    <section class="ftco-section">
+        <h2 class="heading-section mb-5 pb-md-4" id="notificationheader">Create Notification</h2>
+        <div class="card mx-auto" style="max-width:720px; margin-top:40px;">
+            <article class="card-body">
+                <form>
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            <label for="notificationtarget" class=" form-control-label">To</label>
+                        </div>
+                        <div class="col-12 col-md-9">
+                            <select id="notificationtarget" name="notificationtarget" class="chosen" multiple required>
+                                <option value="User">User</option>
+                                <option value="Tutor">Tutor</option>
+                                <option value="Institution">Institution</option>
+                                <option value="Admin">Admin</option>
+                                <option value="SuperAdmin">SuperAdmin</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            <label for="notificationsubject" class="form-control-label">Subject</label>
+                        </div>
+                        <div class="col-12 col-md-9">
+                            <input type="text" id="notificationsubject" name="notificationsubject" placeholder="Subject"
+                                class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            <label for="notificationmessage" class="form-control-label">Message</label>
+                        </div>
+                        <div class="col-12 col-md-9">
+                            <textarea style="min-height: 235px;" name="notificationmessage" id="notificationmessage" rows="9"
+                                placeholder="Content..." class="form-control" required></textarea>
+                        </div>
+                    </div>
+                    <br>
+                    <button type="submit" id="{{user.Email}}" class="createnotification btn btn-primary float-right">Create</button>
+                </form>
+            </article>
+        </div>
+        <br><br>
+    </section>
+
+</div>

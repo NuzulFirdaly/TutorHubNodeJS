@@ -1,9 +1,7 @@
-
-
 module.exports = {
 
     host: 'localhost',
-    database:'tutorhub',
-    username:'tutorhubadmin',
-    password:'tutorhubadmin123'
+    database: 'tutorhub',
+    username: 'tutorhubadmin',
+    password: 'tutorhubadmin123'
 }

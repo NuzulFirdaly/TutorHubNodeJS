@@ -73,7 +73,7 @@ const setUpDB = (drop) => {
             SeminarEvents.belongsTo(Institution);
             Institution.hasMany(FeaturedInstitutionTutor, { foreignKey: { type: Sequelize.UUID, allowNull: false } });
             FeaturedInstitutionTutor.belongsTo(Institution);
-            Institution.hasMany(FeaturedInstitutionCourses,{ foreignKey: { type: Sequelize.UUID, allowNull: false } });
+            Institution.hasMany(FeaturedInstitutionCourses, { foreignKey: { type: Sequelize.UUID, allowNull: false } });
             FeaturedInstitutionCourses.belongsTo(Institution);
             // user.hasMany(video);
 

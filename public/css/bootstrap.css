@@ -12,10 +12,6 @@ Bootstrap with custom variables
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
 
-.required {
-    color: red;
-}
-
 :root {
     --blue: #3167eb;
     --indigo: #6610f2;
