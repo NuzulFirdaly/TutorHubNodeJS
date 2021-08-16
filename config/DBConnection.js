@@ -19,10 +19,8 @@ const FeaturedInstitutionTutor = require('../models/featuredinstitutiontutor');
 const FeaturedInstitutionCourses = require("../models/featuredinstitutioncourses");
 
 const Admin = require('../models/Admin');
-
-
-// const user = require('../models/User');
-// const video = require('../models/Video');
+const Notification = require('../models/Notification');
+const NotificationMessages = require('../models/NotificationMessages');
 
 // If drop is true, all existing tables are dropped and recreated
 const setUpDB = (drop) => {
@@ -77,8 +75,13 @@ const setUpDB = (drop) => {
             FeaturedInstitutionCourses.belongsTo(Institution);
             // user.hasMany(video);
 
+            // admin ----------
             User.hasOne(Admin);
             Admin.belongsTo(User, { foreignKey: "userUserId" });
+            User.hasMany(Notification);
+            Notification.belongsTo(User, { foreignKey: "userUserId" });
+            NotificationMessages.hasMany(Notification);
+            Notification.belongsTo(NotificationMessages);
 
             mySQLDB.sync({ // Creates table if none exists
                 force: drop
