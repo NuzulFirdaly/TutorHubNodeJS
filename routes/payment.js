@@ -59,6 +59,10 @@ router.post("/bookingPayment/:bookingId", (req, res) => {
     })
 })
 
+router.get("/booking/cancel/:bookingID", async(req, res) => {
+    res.redirect("/myschedule/bookingProcessing/" + req.params.bookingID)
+})
+
 
 router.get("/booking/success/:bookingID", async(req, res) => {
         //reorder calendar for tutor and create an entry for user in calendar

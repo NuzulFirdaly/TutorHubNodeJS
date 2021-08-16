@@ -1,5 +1,5 @@
 const express = require('express');
-const { Op } = require('sequelize');
+const { Op, UUID } = require('sequelize');
 const router = express.Router();
 const alertMessage = require('../helpers/messenger');
 const Booking = require('../models/Booking');
@@ -21,6 +21,8 @@ router.post("/book/:tutorid/:courseid", async(req, res) => {
     calendarId = req.body.calendarId
     sessionId = req.body.sessionId
     date = req.body.date
+    console.log("THIS SIS DATE FROM REQ BODY DATE", date)
+
     startTime = req.body.startTime
     endTime = req.body.endTime
     console.log("this is boook 2,0", calendarId, sessionId, date, startTime, endTime)
@@ -53,10 +55,12 @@ router.post("/book/:tutorid/:courseid", async(req, res) => {
     var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }; //https://stackoverflow.com/a/34015511
     convertedStartTime = convertTime12to24(startTime)
     convertedEndTime = convertTime12to24(endTime)
-    await Calendar.findOne({ where: { id: calendarId } }).then(calendar => {
-        calendarStartDate = calendar.startdate
-        bookDate = `${calendar.startdate.toLocaleDateString("en-US", options)} | ${formatAMPM(startTime)} - ${formatAMPM(endTime)} `
-    })
+        // await Calendar.findOne({ where: { id: calendarId } }).then(calendar => {
+        //     calendarStartDate = calendar.startdate
+        //     bookDate = `${calendar.startdate.toLocaleDateString("en-US", options)} | ${formatAMPM(startTime)} - ${formatAMPM(endTime)} `
+        // })
+    calendarStartDate = new Date(date).setHours(9)
+    bookDate = `${ new Date(date).toLocaleDateString("en-US", options)} | ${formatAMPM(startTime)} - ${formatAMPM(endTime)} `
     console.log("this is sessionId", sessionId)
     totalPrice = HourlyRate * sessionHours
     await Booking.create({ tutorName, tutorProfilePic, tuteeProfilePic: req.user.Profile_pic, tuteeName: req.user.FirstName + " " + req.user.LastName, calendarStartDate, bookDate, courseName, sessionName, sessionHours, sessionDescription, HourlyRate, totalPrice, startTime, endTime, paid: "No", CourseId: req.params.courseid, SessionId: sessionId, UserId: req.user.user_id, TutorId: req.params.tutorid })
@@ -582,22 +586,243 @@ function range(size, startAt) {
     return [...Array(size).keys()].map(i => i + startAt);
 }
 
-router.get('/fetch/:tutorid', (req, res) => {
+router.get('/fetch/:tutorid', async(req, res) => {
     console.log("fetching calendar")
     console.log(req.user.user_id)
     console.log(req.params.tutorid)
     if (req.user.user_id == req.params.tutorid) {
         Calendar.findAll({ where: { userUserId: req.params.tutorid }, raw: true, order: ["startdate"] })
             .then(calendar => {
-                // console.log(calendar)
+                console.log(calendar)
                 res.send(calendar)
             }).catch(err => console.log(err));
     } else {
         console.log("public fetching calendar")
-        Calendar.findAll({ where: { userUserId: req.params.tutorid }, raw: true })
+        bookings = null
+            //fetching user's previous bookings see if it will clash with the new bookings, if so need to create new available entries. 
+        await Calendar.findAll({ where: { tuteeId: req.user.user_id }, order: ['startdate'], raw: true }).then(bookingsTutee => {
+            console.log("this is tutee Bookings:", bookingsTutee)
+            bookings = bookingsTutee
+        })
+        await Calendar.findAll({ where: { userUserId: req.params.tutorid }, order: ['startdate'], raw: true })
             .then(calendar => {
-                // console.log(calendar)
-                res.send(calendar)
+                console.log("we are now inside calendar")
+                console.log(calendar)
+                console.log("this is cbooking inside the calendar find", bookings)
+                calendartoSendWithoutClashes = {}
+                calendartoSendWithoutClashes2Boogaloo = []
+                if (bookings != null) {
+                    for (let i in bookings) {
+                        for (let j in calendar) {
+                            console.log("this is i and j", i, j)
+                            console.log("this is calendar", calendar[j].startdate.toISOString().slice(0, 10))
+                            console.log("this is bookinfg", bookings[i].startdate.toISOString().slice(0, 10))
+                                // console.log("comparing these 2 dates see if there are any clashes \n", calendar[j].startdate.toISOString().slice(0, 10) + "  " + bookings[i].startdate.toISOString().slice(0, 10))
+                            if (calendar[j].startdate.toISOString().slice(0, 10) == bookings[i].startdate.toISOString().slice(0, 10)) { //it means that theres a date that clash
+                                console.log("1. round, theere are classhes", bookings[i].startdate.toISOString().slice(0, 10))
+                                    //getting timmings
+                                starttime = calendar[j].startdate.getHours()
+                                endtime = calendar[j].enddate.getHours() == 0 ? 24 : calendar[j].enddate.getHours()
+                                console.log("this is entime", endtime)
+                                bookstarttime = bookings[i].startdate.getHours()
+                                bookendtime = bookings[i].enddate.getHours() == 0 ? 24 : bookings[i].enddate.getHours()
+                                    //--
+                                availability = null
+
+                                if (calendartoSendWithoutClashes != null && calendar[j].startdate.toISOString().slice(0, 10) in calendartoSendWithoutClashes) { //same date but got another booking clash on the same date
+                                    availability = calendartoSendWithoutClashes[calendar[j].startdate.toISOString().slice(0, 10)] //getting the availability
+                                } else {
+                                    availability = { '9': 'break', '10': "break", '11': 'break', '12': "break", "13": "break", "14": "break", "15": "break", "16": "break", "17": "break", "18": "break", "19": "break", "20": "break", "21": "break", "22": "break", "23": "break" }
+                                    calendartoSendWithoutClashes[calendar[j].startdate.toISOString().slice(0, 10)] = availability
+                                }
+                                console.log("this is endtime, startime ranmgeg mge", endtime, starttime, endtime - starttime)
+                                    //filling in the availabilities
+                                theRange = range(parseInt(endtime) - parseInt(starttime), parseInt(starttime))
+                                for (k in theRange) {
+                                    // console.log(theRange[i])
+                                    availability[theRange[k]] = "Available"
+                                }
+                                theRange = range(parseInt(bookendtime) - parseInt(bookstarttime), parseInt(bookstarttime))
+                                for (k in theRange) {
+                                    // console.log(theRange[i])
+                                    availability[theRange[k]] = "TuteeHasBooking"
+                                }
+                                //----
+                                //now check the duration,
+                            }
+                        }
+                    }
+                }
+                currentClashDate = null
+                thisDateDone = false
+                for (let index in calendar) {
+                    noclashes = true
+                    clashdate = null
+                    thisDateDone = false
+                    if (calendar[index].startdate.toISOString().slice(0, 10) == currentClashDate) //it means the current clash date is done
+                    {
+                        continue
+                    } else {
+
+                    }
+                    for (let keys in calendartoSendWithoutClashes) {
+                        if (calendar[index].startdate.toISOString().slice(0, 10) != keys) {
+                            continue
+                        } else { //theres a date with clash
+                            // console.log("there are clashes", clashdate)
+                            noclashes = false
+                                // if(clashdate == keys){
+                                //     continue
+                                // }
+                            clashdate = keys
+                            currentClashDate = keys
+                            console.log("there are clashes now lol", clashdate, currentClashDate)
+
+                        }
+                    }
+                    if (noclashes == true) {
+                        calendartoSendWithoutClashes2Boogaloo.push(calendar[index])
+                    } else { //create new entries
+                        availability = calendartoSendWithoutClashes[clashdate]
+                        console.log("this date got clashes", clashdate, "\n", availability)
+
+                        ignore = true
+                        theStartOfRange = 0
+                        theEndOfRange = 0
+                        currentCategory = null
+                        for (var key in availability) {
+                            if ((availability[key] != "Available") && (ignore == true)) {
+                                continue
+                            } else if (availability[key] != "Available" && ignore == false) {
+                                if (currentCategory == null) {
+                                    currentCategory = "break"
+                                } else if (currentCategory != "break") {
+                                    //create previous category entry
+                                    if (theStartOfRange != 0) {
+                                        if (availability[key - 1] == "Available") {
+                                            // await Calendar.create({ category: "Available", startdate: new Date(sqlFormstartdateOffsetted).setHours(theStartOfRange), enddate: new Date(sqlFormstartdateOffsetted).setHours(theEndOfRange), userUserId: req.params.tutorid })
+                                            calendarObject = {
+                                                id: '7f63e539-4f0f-4264-bd80-cb6336858c50', //placeholder uuid
+                                                category: 'Available',
+                                                startdate: new Date(new Date(clashdate).setHours(theStartOfRange)),
+                                                enddate: new Date(new Date(clashdate).setHours(theEndOfRange)),
+                                                userUserId: calendar[index].userUserId
+
+                                            }
+                                            calendartoSendWithoutClashes2Boogaloo.push(calendarObject)
+                                        }
+                                        //reset the ranges
+                                        theStartOfRange = 0
+                                        theEndOfRange = 0
+                                        currentCategory = "break"
+                                    }
+                                } else {
+                                    currentCategory = "break"
+                                }
+                                if (theStartOfRange != 0) {
+                                    theEndOfRange += 1
+                                        // console.log("thje emdtofrange for break", theEndOfRange)
+                                } else {
+                                    theStartOfRange = parseInt(key)
+                                    theEndOfRange = parseInt(key) + 1
+                                        // console.log("thje startofrange for break", theStartOfRange)
+                                }
+                            } else if (availability[key] == "Available") {
+                                ignore = false
+                                if (currentCategory == null) {
+                                    currentCategory = "Available"
+                                } else if (currentCategory != "Available") {
+                                    //create break entry 
+                                    if (theStartOfRange != 0) {
+                                        if (availability[key - 1] == "break") {
+                                            // await Calendar.create({ category: "break", startdate: new Date(sqlFormstartdateOffsetted).setHours(theStartOfRange), enddate: new Date(sqlFormstartdateOffsetted).setHours(theEndOfRange), userUserId: req.params.tutorid })
+                                        } else {
+                                            // console.log("this will be startdate for booking", new Date(sqlFormstartdateOffsetted).setHours(theStartOfRange))
+                                            console.log("this is tuteeId", availability[key - 1][1])
+                                                // await Calendar.create({ category: availability[key - 1][0], startdate: new Date(sqlFormstartdateOffsetted).setHours(theStartOfRange), enddate: new Date(sqlFormstartdateOffsetted).setHours(theEndOfRange), userUserId: req.params.tutorid, tuteeId: availability[key - 1][1], booking_id: availability[key - 1][2] })
+                                        }
+                                        theStartOfRange = 0
+                                        theEndOfRange = 0
+                                        currentCategory = "Available"
+                                    }
+                                } else {
+                                    currentCategory = "Available"
+                                }
+                                if (theStartOfRange != 0) {
+                                    theEndOfRange += 1
+                                } else {
+                                    theStartOfRange = parseInt(key)
+                                    theEndOfRange = parseInt(key) + 1
+                                }
+                            } else if (availability[key] != "Available" && availability[key] != "break") { //this for those with bookings //need check if it is a seperate booking ID
+                                ignore = false
+                                console.log("this is availability[key]", availability[key][0])
+                                console.log("this is currentCategoryu", currentCategory)
+                                if (currentCategory == null) {
+                                    currentCategory = availability[key][0] + availability[key][2] //sessionname + bookingID
+                                } else if (currentCategory != availability[key][0] + availability[key][2]) {
+                                    if (theStartOfRange != 0) {
+                                        if (availability[key - 1] == "break") {
+                                            // await Calendar.create({ category: "break", startdate: new Date(sqlFormstartdateOffsetted).setHours(theStartOfRange), enddate: new Date(sqlFormstartdateOffsetted).setHours(theEndOfRange), userUserId: req.params.tutorid })
+                                        } else if (availability[key - 1] == "Available") {
+                                            // await Calendar.create({ category: "Available", startdate: new Date(sqlFormstartdateOffsetted).setHours(theStartOfRange), enddate: new Date(sqlFormstartdateOffsetted).setHours(theEndOfRange), userUserId: req.params.tutorid })
+                                            calendarObject = {
+                                                id: '7f63e539-4f0f-4264-bd80-cb6336858c50 ',
+                                                category: 'Available',
+                                                startdate: new Date(new Date(clashdate).setHours(theStartOfRange)),
+                                                enddate: new Date(new Date(clashdate).setHours(theEndOfRange)),
+                                                userUserId: calendar[index].userUserId
+                                            }
+                                            calendartoSendWithoutClashes2Boogaloo.push(calendarObject)
+                                        } else { //this is if theres same session
+                                            // await Calendar.create({ category: availability[key - 1][0], startdate: new Date(sqlFormstartdateOffsetted).setHours(theStartOfRange), enddate: new Date(sqlFormstartdateOffsetted).setHours(theEndOfRange), userUserId: req.params.tutorid, tuteeId: availability[key - 1][1], booking_id: availability[key - 1][2] })
+
+                                        }
+                                        theStartOfRange = 0
+                                        theEndOfRange = 0
+                                        currentCategory = availability[key][0] + availability[key][2]
+                                        console.log("changed currentCategory to array", currentCategory)
+                                    }
+                                } else {
+                                    currentCategory = availability[key][0] + availability[key][2]
+                                }
+
+                                console.log("this is the startof range before the else", theStartOfRange)
+                                if (theStartOfRange != 0) {
+                                    theEndOfRange += 1
+                                } else {
+                                    console.log("it keeps going here")
+                                    theStartOfRange = parseInt(key)
+                                    console.log("this is sthe start of range", theStartOfRange)
+                                    theEndOfRange = parseInt(key) + 1
+                                }
+
+                            }
+                        }
+                        if (theStartOfRange != 0) { //end of the loop check category
+                            if (currentCategory == "break") {
+                                // Calendar.create({ category: "break", startdate: new Date(sqlFormstartdateOffsetted).setHours(theStartOfRange), enddate: new Date(sqlFormstartdateOffsetted).setHours(theEndOfRange), userUserId: req.params.tutorid })
+                            } else if (currentCategory == "Available") {
+                                // Calendar.create({ category: "Available", startdate: new Date(sqlFormstartdateOffsetted).setHours(theStartOfRange), enddate: new Date(sqlFormstartdateOffsetted).setHours(theEndOfRange), userUserId: req.params.tutorid })
+                                calendarObject = {
+                                    id: '7f63e539-4f0f-4264-bd80-cb6336858c50 ',
+                                    category: 'Available',
+                                    startdate: new Date(new Date(clashdate).setHours(theStartOfRange)),
+                                    enddate: new Date(new Date(clashdate).setHours(theEndOfRange)),
+                                    userUserId: calendar[index].userUserId
+                                }
+                                calendartoSendWithoutClashes2Boogaloo.push(calendarObject)
+                            } else {
+                                // Calendar.create({ category: availability[Object.keys(availability)[Object.keys(availability).length - 1]][0], startdate: new Date(sqlFormstartdateOffsetted).setHours(theStartOfRange), enddate: new Date(sqlFormstartdateOffsetted).setHours(theEndOfRange), userUserId: req.params.tutorid, tuteeId: availability[Object.keys(availability)[Object.keys(availability).length - 1]][1], booking_id: availability[Object.keys(availability)[Object.keys(availability).length - 1]][2] })
+                            }
+                        }
+                        noclashes = false
+                        thisDateDone = true
+                    }
+                }
+                //cant destroy, but we can just add a new object with the new start dates and end dates
+                // console.log("this is calendar tossentwithouclashes ELECTRIC BOOGALOO BABBYYYYYYYYYYYY", calendartoSendWithoutClashes2Boogaloo)
+                res.send(calendartoSendWithoutClashes2Boogaloo)
             }).catch(err => console.log(err));
     }
 })
