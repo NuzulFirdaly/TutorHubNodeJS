@@ -11,28 +11,21 @@ Note that Sequelize automatically pleuralizes the entity name as the table name
 // done: false,
 const Calendar = db.define('calendar', { //Creates a table called user
     //the reason why in mysql there is a id column because we never define a primarykey!!
-    id:{
+    id: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         primaryKey: true,
         allowNull: false
 
     },
-    category:{
+    category: {
         type: Sequelize.STRING
     },
     startdate: {
-    type: Sequelize.DATE
+        type: Sequelize.DATE
     },
     enddate: {
-    type: Sequelize.DATE
+        type: Sequelize.DATE
     },
-    starttime: {
-    type: Sequelize.TIME
-    },
-    endtime: {
-    type: Sequelize.TIME,
-    },
-}
-);
+});
 module.exports = Calendar;

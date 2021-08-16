@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>TutorHub - Main</title>
     <link rel="shortcut icon" href="/images/favicon.ico">
   
      
@@ -28,6 +28,7 @@
     <!-- plugin: owl carousel  -->
     <link href="/plugins/owlcarousel/assets/owl.carousel.css" rel="stylesheet">
     <link href="/plugins/owlcarousel/assets/owl.theme.default.css" rel="stylesheet">
+    <link rel="stylesheet" href="/chat/chatbutton.css">
     
 </head>
 <body>
@@ -54,6 +55,11 @@
       {{!-- {{>_errors}} views/partials/_errors.handlebars --}}
       {{{body}}}
 	  </div>
+    {{#if user}}
+    <div class="chat">
+      {{>_chat}}
+    </div>
+  {{/if}}
 
 
 </body>

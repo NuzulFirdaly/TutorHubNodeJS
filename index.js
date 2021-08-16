@@ -6,6 +6,13 @@ const methodOverride = require('method-override');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser'); //to retrieve req.body
 const Sequelize = require('sequelize');
+const paypal = require('paypal-rest-sdk');
+
+paypal.configure({
+    'mode': 'sandbox', //sandbox or live
+    'client_id': 'AXO5V1rlutZynF0Ki1rO2imjUeM8bI1RE5duaqKPKaaptEE97kMhkMpu2IIWBZ30H09LCyUheBlDI6dC',
+    'client_secret': 'EDjmtzb5OjJTZBmkEoCea9WykI5XnUTBtqgk57w8RfLcOON_I0G0Y--mXIyQdJodkkM_Z3BUzoDzw9gJ'
+})
 
 const Handlebars = require('handlebars');
 const { allowInsecurePrototypeAccess } = require('@handlebars/allow-prototype-access')
@@ -31,6 +38,8 @@ const rateRoute = require("./routes/ratereview");
 const mainInstitutionRoute = require('./routes/maininstitution');
 const institutionAdminRoute = require('./routes/institutionadmin');
 const adminRoute = require("./routes/admin");
+const paymentRoute = require('./routes/payment');
+const chatRoute = require('./routes/chat');
 
 
 
@@ -127,7 +136,30 @@ app.engine('handlebars', exphbs({
                 toreturn += `<div class="notifi__item notifiitem${parseInt(i) + 1}"><div class="bg-c1 img-cir img-40"><i class="zmdi zmdi-email-open"></i></div><div class="content"><p>You got a email notification</p><span class="date">${slicednoti[i].notificationmsg.DateSent}</span></div></div>`
             }
             return toreturn
-                // return notification.slice(notification.length - 3, notification.length).reverse()
+        },
+        // return notification.slice(notification.length - 3, notification.length).reverse()
+        timestampFormat(date) {
+            var date = new Date(Date.parse(date));
+            console.log('Date', date);
+
+            var year = date.getFullYear();
+            console.log('YEARS', year);
+            var month = date.getMonth();
+            console.log('month', month);
+            var day = date.getDate();
+            console.log('day', day);
+
+            var hours = date.getHours();
+            console.log('HOURS', hours);
+            var minutes = date.getMinutes();
+            console.log('MINUTES', minutes);
+            var ampm = hours >= 12 ? 'pm' : 'am';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            var strTime = day + "/" + month + "/" + year + " " + hours + ':' + minutes + ' ' + ampm;
+            console.log('Date', strTime);
+            return strTime
         }
 
 
@@ -228,6 +260,10 @@ app.use("/institution", mainInstitutionRoute)
 app.use("/institution_admin", institutionAdminRoute);
 
 app.use("/admin", adminRoute)
+app.use("/payment", paymentRoute);
+app.use("/chat", chatRoute);
+
+
 
 
 // // Method override middleware to use other HTTP methods such as PUT and DELETE

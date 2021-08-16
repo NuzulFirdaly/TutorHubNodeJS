@@ -17,6 +17,7 @@ const Widgets = require('../models/widgets');
 const SeminarEvents = require('../models/seminarevents');
 const FeaturedInstitutionTutor = require('../models/featuredinstitutiontutor');
 const FeaturedInstitutionCourses = require("../models/featuredinstitutioncourses");
+const Booking = require("../models/Booking")
 
 const Admin = require('../models/Admin');
 const Notification = require('../models/Notification');
@@ -48,8 +49,26 @@ const setUpDB = (drop) => {
             PendingTutor.belongsTo(User);
             User.hasMany(ItemListing);
             ItemListing.belongsTo(User);
-            User.hasMany(Calendar);
-            Calendar.belongsTo(User)
+            // Calendar
+            User.hasMany(Calendar, { foreignKey: "userUserId" }); //this is the tutorID
+            Calendar.belongsTo(User, { foreignKey: "userUserId" })
+            User.hasMany(Calendar, { foreignKey: "tuteeId" })
+            Calendar.belongsTo(User, { foreignKey: "tuteeId" })
+            Booking.hasMany(Calendar, { foreignKey: "booking_id" })
+            Calendar.belongsTo(Booking, { foreignKey: "booking_id" })
+
+            //Bookings | CourseID|CalendarID|SessionID|tuteeID|TutorID|totalPrice|startTime|endTime|Paid|HourlyRate|Date|CourseName|
+            CourseListing.hasMany(Booking, { foreignKey: "CourseId" })
+            Booking.belongsTo(CourseListing, { foreignKey: "CourseId" })
+            Lessons.hasMany(Booking, { foreignKey: "SessionId" })
+            Booking.belongsTo(Lessons, { foreignKey: "SessionId" })
+            User.hasMany(Booking, { foreignKey: "UserId" })
+            Booking.belongsTo(Booking, { foreignKey: "UserId" })
+            User.hasMany(Booking, { foreignKey: "TutorId" })
+            Booking.belongsTo(Booking, { foreignKey: "TutorId" })
+
+
+            //ratereview
             CourseListing.hasMany(RateReview, { foreignKey: "CourseId" });
             RateReview.belongsTo(CourseListing, { foreignKey: "CourseId" });
             User.hasMany(RateReview, { foreignKey: "TutorId" });
