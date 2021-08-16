@@ -18,6 +18,9 @@ const SeminarEvents = require('../models/seminarevents');
 const FeaturedInstitutionTutor = require('../models/featuredinstitutiontutor');
 const FeaturedInstitutionCourses = require("../models/featuredinstitutioncourses");
 const Booking = require("../models/Booking")
+const Orders = require('../models/Orders');
+const OrderDetails = require('../models/OrderDetails');
+const professionalProfile = require('../models/professionalProfile');
 
 const Admin = require('../models/Admin');
 const Notification = require('../models/Notification');
@@ -56,6 +59,26 @@ const setUpDB = (drop) => {
             Calendar.belongsTo(User, { foreignKey: "tuteeId" })
             Booking.hasMany(Calendar, { foreignKey: "booking_id" })
             Calendar.belongsTo(Booking, { foreignKey: "booking_id" })
+
+            // Order
+            User.hasMany(Orders, { foreignKey: "BuyerId" });
+            Orders.belongsTo(User, { foreignKey: "BuyerId" });
+
+            Orders.hasMany(OrderDetails, { foreignKey: "OrderId" });
+            OrderDetails.belongsTo(Orders, { foreignKey: "OrderId" });
+
+            ItemListing.hasMany(OrderDetails, { foreignKey: "item_id" });
+            OrderDetails.belongsTo(ItemListing, { foreignKey: "item_id" });
+
+            // Itemlisting
+            User.hasMany(ItemListing);
+            ItemListing.belongsTo(User);
+            User.hasMany(Calendar);
+            Calendar.belongsTo(User)
+
+            //professionalInfo
+            User.hasOne(professionalProfile);
+            professionalProfile.belongsTo(User);
 
             //Bookings | CourseID|CalendarID|SessionID|tuteeID|TutorID|totalPrice|startTime|endTime|Paid|HourlyRate|Date|CourseName|
             CourseListing.hasMany(Booking, { foreignKey: "CourseId" })

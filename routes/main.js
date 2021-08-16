@@ -9,6 +9,7 @@ console.log("Retrieved flash");
 const passport = require('passport');
 const { cookie } = require('express-validator');
 const CourseListing = require('../models/CoursesListing');
+const professionalProfile = require('../models/professionalProfile');
 
 //express validator
 const { body, validationResult } = require('express-validator');
@@ -91,6 +92,7 @@ router.post('/loginPost', [body('email').trim().isEmail().normalizeEmail().toLow
        message given by the strategy's verify callback, if any. When a failure occur passport passes the message
        object as error */
     })(req, res, next);
+    req.session.cart = {};
     // console.log("printing req usr from login post")
     // console.log(req.user);
 });
@@ -179,7 +181,8 @@ router.post('/registerPost', [
                                 User.create({ FirstName, LastName, Username, Email, Password: hashedpassword })
                                     .then(user => {
                                         alertMessage(res, 'success', user.Username + ' added.Please login', 'fas fa-sign-in-alt', true);
-                                        res.redirect('/Login');
+                                        professionalProfile.create({ color: white, background: null, userUserId: user.dataValues.user_id })
+                                            .then(() => { res.redirect('/Login'); })
                                     }).catch(err => console.log(err));
                             }
                         });

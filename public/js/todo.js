@@ -857,8 +857,11 @@ async function todoMain() {
                     // console.log("this is all sessions retrieved: ", data)
                     sessionInfo = data
                     console.log("this is sessionInfo", sessionInfo)
-                        // update everything and add the booking, Id inside the input 
-                    document.getElementById("tuteeName").innerHTML = sessionInfo.tuteeName
+                        // update everything and add the booking, Id inside the input
+
+                    document.getElementById("tuteeName").innerHTML = "<h2>" + sessionInfo.tuteeName + "</h2>"
+                    document.getElementById("tuteeName").setAttribute("href", "/user/viewProfile/" + sessionInfo.UserId)
+
                     document.getElementById("sessionName").innerHTML = sessionInfo.sessionName
                     document.getElementById("courseName").innerHTML = sessionInfo.courseName
                     document.getElementById("datetime").innerHTML = sessionInfo.bookDate

@@ -40,8 +40,7 @@
                     <h1>{{Title}}</h1>
                     <br>
                     <div class="widget-header">
-                        <a href="{url_for('viewtutor', tutor_id = courseobject.tutor)}" target="_blank"
-                            class="ml-3 icontext">
+                        <a href="/user/viewProfile/{{user.user_id}}"class="ml-3 icontext">
                             <div class="icon"><img class="icon icon-md rounded-circle border"
                                     src="/images/profilepictures/{{user.Profile_pic}}"></div>
                             <div class="text">
@@ -125,10 +124,11 @@
                     <p class="text-muted">{{ ../yourRateReview.Date }}</p>
                     <div class="row gx-5">
                         <button class="btn btn-primary" type="submit">Update</button>
-                </form>
-                <form action="/rate/deleteRating/course/{{course_id}}" method="POST">
-                    <button class="btn btn-danger" type="submit">Delete</button>
-                </form>
+                        </form>
+                        <form action="/rate/deleteRating/course/{{course_id}}" method="POST">
+                            <button class="btn btn-danger" type="submit">Delete</button>
+                        </form>
+                    </div>
 
                 <!-- Reviews -->
                 <div>
@@ -191,7 +191,7 @@
                     {{/each}}
                     {{/if}}
             </div> 
-             <!-- Booking -->
+            <!-- Booking -->
             <div class="col-md-4">
                 <div class="card center-x relative" style="width:50%;">
                     <div class="card-body">

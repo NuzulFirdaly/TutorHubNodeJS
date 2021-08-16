@@ -237,7 +237,8 @@ async function prefillBookingModal(event) {
                 sessionInfo = data
                 console.log("this is sessionInfo", sessionInfo)
                     // update everything and add the booking, Id inside the input 
-                document.getElementById("tutorName").innerHTML = sessionInfo.tutorName
+                document.getElementById("tutorName").innerHTML = "<h2>" + sessionInfo.tutorName + "</h2>"
+                document.getElementById("tutorName").setAttribute("href", "/user/viewProfile/" + sessionInfo.TutorId)
                 document.getElementById("sessionName").innerHTML = sessionInfo.sessionName
                 document.getElementById("courseName").innerHTML = sessionInfo.courseName
                 document.getElementById("datetime").innerHTML = sessionInfo.bookDate
