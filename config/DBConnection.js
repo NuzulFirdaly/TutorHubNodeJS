@@ -25,12 +25,6 @@ const professionalProfile = require('../models/professionalProfile');
 const Admin = require('../models/Admin');
 const Notification = require('../models/Notification');
 const NotificationMessages = require('../models/NotificationMessages');
-const Orders = require('../models/Orders');
-const OrderDetails = require('../models/OrderDetails');
-const professionalProfile = require('../models/professionalProfile');
-
-// const user = require('../models/User');
-// const video = require('../models/Video');
 
 // If drop is true, all existing tables are dropped and recreated
 const setUpDB = (drop) => {
@@ -109,13 +103,6 @@ const setUpDB = (drop) => {
             //for admin
             User.hasOne(Institution, { foreignKey: "AdminUserID", constraints: false });
             Institution.belongsTo(User, { foreignKey: "AdminUserID", constraints: false });
-            //professionalInfo
-            User.hasOne(professionalProfile);
-            professionalProfile.belongsTo(User);
-
-            // institution --------
-            User.hasOne(Institution, { foreignKey: { type: Sequelize.UUID, allowNull: false } });
-            Institution.belongsTo(User);
             Institution.hasMany(Banners, { foreignKey: { type: Sequelize.UUID, allowNull: false } });
             Banners.belongsTo(Institution);
             Institution.hasMany(Descriptions, { foreignKey: { type: Sequelize.UUID, allowNull: false } });

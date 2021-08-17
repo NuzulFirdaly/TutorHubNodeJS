@@ -43,7 +43,6 @@ router.post('/editRating/:type/:id', (req, res) => {
     RateReview.findOne({ where: { UserId: req.user.user_id }})
     .then(yourRateReview => {
         yourRateReview.update({ Rating: rating, Review: review, Date:today})
-        alertMessage(res, 'success', ' Review updated', 'fas fa-sign-in-alt', true);
         res.redirect(`/course/viewcourse/${id}`);
     })
     .catch(err => console.log(err));
