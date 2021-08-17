@@ -160,6 +160,30 @@ app.engine('handlebars', exphbs({
             var strTime = day + "/" + month + "/" + year + " " + hours + ':' + minutes + ' ' + ampm;
             console.log('Date', strTime);
             return strTime
+        },
+        ifAllSame(a, b, c, d, e, f) {
+            if (a == b && b == c && c == d && d == e && e == f) {
+                return true
+            } else {
+                return false
+            }
+        },
+        ifElementInList(a, b, c) {
+            console.log(a);
+            console.log(b);
+            var boolans;
+            for (const [key, value] of Object.entries(b)) {
+                console.log("This is the key: ", key);
+                console.log("This is the value: ", value);
+                console.log(value[c]);
+                if (value[c] == a) {
+                    boolans = true;
+                    break
+                } else {
+                    boolans = false
+                }
+            }
+            return boolans
         }
 
 

@@ -5,12 +5,14 @@ const { Op } = require('sequelize');
 const Booking = require('../models/Booking');
 const Orders = require('../models/Orders');
 const OrderDetails = require('../models/OrderDetails');
+const ensureAuthenticated = require('../helpers/auth');
+
 
 // const Orders = require('../models/Orders');
 // const OrderDetails = require('../models/OrderDetails');
 const alertMessage = require('../helpers/messenger');
 const Calendar = require('../models/Calendar');
-router.post("/bookingPayment/:bookingId", (req, res) => {
+router.post("/bookingPayment/:bookingId", ensureAuthenticated, (req, res) => {
     Booking.findOne({ where: { Booking_id: req.params.bookingId } }).then(booking => {
         tutor_id = booking.TutorId
         courseid = booking.CourseId
@@ -64,7 +66,6 @@ router.post("/bookingPayment/:bookingId", (req, res) => {
 router.get("/booking/cancel/:bookingID", async(req, res) => {
     res.redirect("/myschedule/bookingProcessing/" + req.params.bookingID)
 })
-
 
 router.get("/booking/success/:bookingID", async(req, res) => {
     //reorder calendar for tutor and create an entry for user in calendar
@@ -293,7 +294,7 @@ router.get("/booking/success/:bookingID", async(req, res) => {
     })
 
 })
-router.post('/item', (req, res) => {
+router.post('/item', ensureAuthenticated, (req, res) => {
     cart = req.session.cart;
     items = [];
     total = 0;

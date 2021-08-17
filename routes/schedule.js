@@ -1,5 +1,6 @@
 const express = require('express');
 const { Op, UUID } = require('sequelize');
+const ensureAuthenticated = require('../helpers/auth');
 const router = express.Router();
 const alertMessage = require('../helpers/messenger');
 const Booking = require('../models/Booking');
@@ -74,7 +75,7 @@ router.post("/book/:tutorid/:courseid", async(req, res) => {
 
 })
 
-router.get("/bookingProcessing/:bookingID", (req, res) => {
+router.get("/bookingProcessing/:bookingID", ensureAuthenticated, (req, res) => {
     Booking.findOne({ where: { Booking_id: req.params.bookingID } }).then(booking => {
         tutor_id = booking.TutorId
         courseid = booking.CourseId
@@ -1210,10 +1211,16 @@ router.post("/makeavailable_entry/:tutorid", async(req, res) => {
 })
 
 router.get("/bookavailableslot/:tutorid/:courseid", (req, res) => {
-    res.render("schedule/bookslot", {
-        tutor_id: req.params.tutorid,
-        course_id: req.params.courseid
-    })
+    if (!req.user) {
+        alertMessage(res, 'danger', 'Please log into an account to book', 'fas fa-exclamation-triangle', true)
+        res.redirect('/login')
+    } else {
+        res.render("schedule/bookslot", {
+            tutor_id: req.params.tutorid,
+            course_id: req.params.courseid
+        })
+    }
+
 })
 
 router.get("/fetchAllSession/:tutorid/:courseid", (req, res) => {

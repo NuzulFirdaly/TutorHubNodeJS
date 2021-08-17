@@ -6,6 +6,8 @@ const upload = require('../helpers/itemUpload');
 const ItemListing = require('../models/ItemListing');
 const User = require('../models/User')
 const path = require('path');
+const ensureAuthenticated = require('../helpers/auth');
+
 
 router.get('/viewShop', (req, res) => {
     ItemListing.findAll({ include: User })

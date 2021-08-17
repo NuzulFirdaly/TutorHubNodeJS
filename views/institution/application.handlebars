@@ -1,0 +1,157 @@
+<section class="padding-y bg">
+    {{#with institution}}
+<div class="container">
+<div class="row">
+    <div class="col-md-12">
+        <!-- ============================ COMPONENT BANNER 7 ================================= -->
+        <div class="card-banner justify-content-center" style="min-height:200px;">
+					<div class="text-center">
+						<br>
+						<br>
+						<p class="card-title float-middle" style="font-size: 30px;">You are now applying under</p>
+						<h1 style="font-size: 50px;">{{name}}</h1>
+					</div>
+				</div>
+        <!-- ============================ COMPONENT BANNER 7  END .// =========================== -->
+    </div> <!-- col.// -->
+</div>
+</div>
+</section>
+<section class="padding-y bg">
+    {{>_errors}} {{!-- views/partials/_errors.handlebars --}}
+<section class="container-fluid" style="min-height: 84vh; width: 90%">
+    <br>
+    <!-- ==================== form content ============ -->
+    <center>
+      <h2>Tutor Institution Application Form</h2>
+    </center>
+    <br>
+    <div class="col-md-12 text-left">
+      <p>
+
+          <br>
+          Please fill up the following details <br><br>
+          <strong>Do take Note:</strong> <br>
+          1. If application has been rejected, you will still be able to use your Tutor Account as per normal.
+          <br>
+          2. Email will be sent to your email regarding the result of your application.
+          <br><br>
+          False information will result in your application revoked.
+          <br>
+      </p>
+    </div>
+
+    <br>
+    <form class="block-register" action="/institution/affiliationapplication" method="POST">
+        <div class="card mx-auto">
+            <div class="card-body">
+                <h5 class="card-title mb-4">Personal Information</h5>
+                <div class="form-group form-row">
+                    {{!-- <label class="col-md-3 col-form-label">Full Name <br> <span class="text-muted">This will be private</span></label> --}}
+                    <div class="col-s-1 col-form-label">
+                        <label>First name</label>
+                    </div>
+                    <div class="col">
+                        <input class="form-control" type="text" name="firstname" id="firstname" placeholder="first name" value="{{../user.FirstName}}" required>
+                    </div>
+                    <div class="col-s-1 col-form-label">
+                        <label>Last name</label>
+                    </div>
+                    <div class="col-s-1 col-form-label">
+                        <input class="form-control" type="text" name="lastname" id="lastname" placeholder="last name" value="{{../user.LastName}}" required>
+                    </div>
+                </div>
+                {{!-- <div class="form-group form-row">
+                    <label class="col-md-3 col-form-label">Profile Picture</label>
+                    <div class="col-md-3">
+                        <img id="profilePicture" src="/images/profilepictures/2.jpg" class="img-md rounded-circle border">
+                        <div style="position:relative; ">
+                            <input type="file" name="profilePictureUpload" id="profilePictureUpload" accept="image/png,image/jpeg,image/jpg,image/gif">
+                            <input type="hidden" id='trueFileName' name="trueFileName">
+                            <div class="font-weight-bold text-danger small" id="profilePictureErr" style="display:none"></div>
+                        </div>
+                    </div>
+                </div> --}}
+                <div class="form-group form-row">
+                    <label class="col-md-3 col-form-label">Username</label>
+                    <div class="col-9">
+                        <input class="form-control" type="text" name="username" id="username" placeholder="Username" value="{{../user.Username}}" required>
+                    </div>
+                </div>
+              {{!-- <div class="form-group form-row">
+                  <label class="col-md-3 col-form-label">Languages</label>
+                  <div class="col">
+                      <input class="form-control"  id="language" name="language">
+                  </div>
+                  <div>
+                      <input class="form-control"  id="profficency" name="profficiency">
+                  </div>
+              </div> --}}
+                <br>
+                <hr>
+                <br>
+                <h5 class="card-title mb-4">Application Information</h5>
+                <div class="form-group form-row">
+                    {{!-- <label class="col-md-3 col-form-label">Full Name <br> <span class="text-muted">This will be private</span></label> --}}
+                    <div class="col-s-2 col-form-label">
+                        <label>Attach your resume</label>
+                        
+                    </div>
+                    <div class="col-s-4">
+                        <input type="file" name="resumeUpload" id="resumeUpload" required>
+                        <input type="hidden" id="trueFileResumeName" name="trueFileResumeName">
+                        <div class="font-weight-bold text-danger small" id="resumeErr" style="display: none"></div>
+                        <input type="hidden" id="userid" name="userid" value="{{../user.user_id}}">
+                        <input type="hidden" id="useremail" name="useremail" value="{{../user.Email}}">
+                        <input type="hidden" id="isntitutionid" name="institutionid" value="{{institution_id}}">
+
+                    </div>
+                    <div class="col-s-1 col-form-label">
+                        <label>Reason of application</label>
+                    </div>
+                    <div class="col-4 col-form-label">
+                        <textarea class="form-control" name="reason" id="reason" value="{{reasonofapplication}}" placeholder="Why do you wish to apply to our institution?" required></textarea>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <button class="btn btn-primary float-right" type="submit">Submit</button>
+        </div>
+    </form>
+    <br>
+</section>
+{{/with}}
+</section>
+<script>
+  $('#resumeUpload').on('change', function () {
+    //alert("hello");
+    let file = $("#resumeUpload")[0].files[0];
+    let formdata = new FormData();
+    formdata.append('resumeUpload', file);
+    //alert(file);
+    //alert("hello");
+    $.ajax({
+      url: '/institution/userResumeUpload',
+      data: formdata,
+      contentType: false,
+      processData: false,
+      type: 'POST',
+      'success': (data) => {
+        console.log(data);
+        //$('#profilePictureUpload').attr('src', data.path);
+        // alert(data.file);
+        $('#trueFileResumeName').attr('value', data.file)
+        if (data.err) {
+          $('#resumeErr').show();
+          $('#resumeErr').text(data.err.message);
+        } else {
+          $('#resumeErr').hide();
+        }
+      },
+      error: function (xhr,errorType,exception) {
+        responseText = jQuery.parseJSON(xhr.responseText);
+        alert(" Can't do because: ", errorType);
+      }
+    });
+  });
+</script>

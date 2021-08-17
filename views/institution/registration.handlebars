@@ -1,9 +1,7 @@
-
 <!-- ========================= SECTION CONTENT ========================= -->
 <section class="padding-y bg">
   <section class="container-fluid" style="min-height: 84vh; width: 90%">
     <br>
-    {{>_errors}}
     <!-- ==================== form content ============ -->
     <center><h2>Institution Registration Form</h2></center>
     <br>
@@ -22,8 +20,9 @@
         Username and Password will be sent via email.
       </p>
     </div>
-
     <br>
+    
+    {{>_errors}}
     <form class="block-register" action="/institution/institutionregistration" method="POST">
       <div class="card mx-auto">
         <div class="card-body">
@@ -56,7 +55,7 @@
               </div>
               <label class="col-md-2 col-form-label text-left">Office No.</label>
               <div class="col-md-4">
-                <input class="form-control" type="tel" pattern="[0-9]{8}" name="instituteNo" value="{{instituteNo}}" placeholder="1234-5678" required>
+                <input class="form-control" type="tel" pattern="[0-9]{8}" name="instituteNo" value="{{instituteNo}}" placeholder="12345678" required>
               </div>
             </div>
             <div class="form-group form-row">
@@ -80,7 +79,7 @@
             <div class="form-group form-row">
               <label class="col-md-2">Contact No.</label>
               <div class="col-md-4">
-                  <input class="form-control" type="tel" pattern="[0-9]{8}" name="IANo" value="{{IANo}}" placeholder="1234-5678" required>
+                  <input class="form-control" type="tel" pattern="[0-9]{8}" name="IANo" value="{{IANo}}" placeholder="12345678" required>
               </div>
               <label class="col-md-2">Email Address</label>
               <div class="col-md-4">
@@ -114,6 +113,7 @@
       'success': (data) => {
         console.log(data);
         //$('#profilePictureUpload').attr('src', data.path);
+        // alert(data.file);
         $('#trueFileDocumentName').attr('value', data.file)
         if (data.err) {
           $('#documentErr').show();

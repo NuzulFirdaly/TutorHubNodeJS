@@ -4,7 +4,7 @@ const path = require('path');
 
 //profilepicture
 const storageForUploads = multer.diskStorage({
-    destination: './public/pendingdocs',
+    destination: './public/pendingresumes',
     filename: function(req, file, cb) { //cb is a callback function (null, destination string)
         cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname)) //callback(err, ) we dont want error so we just put null
     }
@@ -17,7 +17,7 @@ const upload = multer({
     fileFilter: function(req, file, cb) {
         checkFileType(file, cb);
     }
-}).single('institutionDocumentUpload')
+}).single('resumeUpload')
 
 function checkFileType(file, cb) {
     //Allowed ext

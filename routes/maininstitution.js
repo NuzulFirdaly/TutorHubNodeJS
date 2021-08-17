@@ -1,5 +1,12 @@
 const express = require('express');
 const router = express.Router();
+const passport = require('passport');
+const multer = require('multer');
+var bcrypt = require('bcryptjs');
+var crypto = require('crypto');
+//express validator
+const { body, validationResult } = require('express-validator');
+
 // models
 const PendingInstitution = require('../models/PendingInstitution');
 const User = require('../models/User');
@@ -11,10 +18,15 @@ const Widget = require("../models/widgets");
 const FeaturedTutor = require("../models/featuredinstitutiontutor");
 const CourseListing = require("../models/CoursesListing");
 const FeaturedCourse = require("../models/featuredinstitutioncourses");
+const PendingInstitutionTutor = require('../models/PendingInstitutionTutor');
 
+//helpers
 console.log("Retrieve messenger helper flash");
 const alertMessage = require('../helpers/messenger');
 console.log("Retrieved flash");
+const institutionDocumentUpload = require('../helpers/DocumentUpload');
+const ensureAuthenticated = require('../helpers/auth');
+const resumeUpload = require('../helpers/resumeUpload');
 
 // // Email
 // var MailConfig = require('../config/email');
@@ -23,7 +35,7 @@ console.log("Retrieved flash");
 
 // Email
 const nodemailer = require('nodemailer');
-const {google} = require('googleapis');
+const { google } = require('googleapis');
 const CLIENT_ID = '993285737810-tfpuqq5vhfdjk5s5ng5v6vcbc3cht53s.apps.googleusercontent.com';
 const CLIENT_SECRET = 'uvWjFqdiAgVK_sFq_uaYcbGV';
 const REDIRECT_URI = 'https://developers.google.com/oauthplayground';
@@ -31,9 +43,9 @@ const REFRESH_TOKEN = '1//04NJ-IXlwUJ_7CgYIARAAGAQSNgF-L9Irvecmxx12BMYyPKTIrSjhE
 const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
 oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
 
-async function sendMailinstitution(custom_mailemail, 
-    custom_mailsubject,instituteName, 
-    instituteAddress, institutePC, instituteEmail, instituteUrl, 
+async function sendMailinstitution(custom_mailemail,
+    custom_mailsubject, instituteName,
+    instituteAddress, institutePC, instituteEmail, instituteUrl,
     instituteNo, IAFname, IALname, IANo, IAEmail) {
     try {
         const accessToken = await oAuth2Client.getAccessToken();
@@ -78,30 +90,23 @@ async function sendMailinstitution(custom_mailemail,
     }
 }
 
-const passport = require('passport');
-const multer = require('multer');
 
-var bcrypt = require('bcryptjs');
-var crypto = require('crypto');
-
-//express validator
-const { body, validationResult } = require('express-validator');
-
-// helpers
-const institutionDocumentUpload = require('../helpers/DocumentUpload');
-const ensureAuthenticated = require('../helpers/auth');
 
 // ---------------------------------------------
 router.use(express.urlencoded({
     extended: true
 }));
 
+// Main institution page
 router.get('/showallSchools', (req, res) => {
     console.log("Fetching all registered institution....");
     Institution.findAll()
         .then((displayinstitution) => {
+            console.log("Fetching all institution completed...");
             if (displayinstitution) {
                 console.log("There are institutions that are registered.");
+                console.log("Here are the institutions that are registered --------------");
+                console.log(displayinstitution);
             } else {
                 console.log("There are currently no registered institution.");
             }
@@ -109,27 +114,28 @@ router.get('/showallSchools', (req, res) => {
                 institutionarray: displayinstitution
             });
         });
-    console.log("Fetching all institution completed...");
+    console.log("Displaying institutions now......");
 });
 
 // registration
 router.get('/showregistration', (req, res) => {
+    console.log("Displaying Institution's registration form now...");
     res.render('institution/registration')
 });
 
+// documents for registration upload
 router.post('/institutionDocumentUpload', (req, res) => {
     console.log(req.file);
     institutionDocumentUpload(req, res, async(err) => {
         console.log("Institution's document upload printing req.file.filename");
         console.log(req.file);
         if (err) {
-            res.json({err: err});
-        }
-        else {
+            res.json({ err: err });
+        } else {
             if (req.file === undefined) {
-                res.json({err: err});
+                res.json({ err: err });
             } else {
-                res.json({path: `/pendingdocs/${req.file.filename}`, file: `${req.file.filename}`});
+                res.json({ path: `/pendingdocs/${req.file.filename}`, file: `${req.file.filename}` });
             }
         }
     });
@@ -143,32 +149,48 @@ router.post('/institutionregistration', [
     body('instituteEmail').trim().isEmail().withMessage("Email must be a valid email").normalizeEmail().toLowerCase(),
     body('instituteNo').not().isEmpty().trim().escape().withMessage("Phone number is invalid"),
     body('instituteUrl').not().isEmpty().withMessage("Please enter url"),
-    body('trueFileDocumentName').not().isEmpty().trim().escape().withMessage("Please upload a document"),
+    body('trueFileDocumentName').not().isEmpty().trim().escape().withMessage("Please upload a proper document. Only accept the following format: doc, docx, odt, pdf, zip"),
     body('IAFname').not().isEmpty().trim().escape().withMessage("First name is invalid"),
     body('IALname').not().isEmpty().trim().escape().withMessage("last name is invalid"),
     body('IANo').not().isEmpty().trim().escape().withMessage("Phone number is invalid"),
     body('IAEmail').trim().isEmail().withMessage("Email must be a valid email").normalizeEmail().toLowerCase()
-],uploadnone.none(), async (req, res) => {
-    let {instituteName, instituteAddress, institutePC, instituteNo, instituteEmail, instituteUrl, trueFileDocumentName, IAFname, IALname, IANo, IAEmail} = req.body;
+], uploadnone.none(), (req, res) => {
+    console.log("Processing institution registration form now.....");
+    let { instituteName, instituteAddress, institutePC, instituteNo, instituteEmail, instituteUrl, trueFileDocumentName, IAFname, IALname, IANo, IAEmail } = req.body;
     let errors = [];
+    console.log("Here is the document uploaded: ", trueFileDocumentName);
     const validatorErrors = validationResult(req);
     if (!validatorErrors.isEmpty()) { //if isEmpty is false
-        console.log("There are errors")
+        console.log("There are errors in the form, unable to proceed");
         validatorErrors.array().forEach(error => {
             console.log(error);
             errors.push({ text: error.msg })
         })
+        res.render('institution/registration', {
+            errors,
+            instituteName,
+            instituteAddress,
+            institutePC,
+            instituteEmail,
+            instituteUrl,
+            IAFname,
+            IALname,
+            IANo,
+            IAEmail,
+            instituteNo
+        });
 
     } else {
-        console.log("Validating if the institution has already been registered.");
+        console.log("Validating if the institution has already been registered....");
         Institution.findOne({
             where: {
                 name: instituteName
             }
         }).then(institution => {
             if (institution) {
+                console.log("Instituion already exist. unable to proceed.");
                 res.render('institution/registration', {
-                    error: instituteName + ' already been registered.',
+                    error: instituteName + ' has already been registered. If you did not register your institution, please contact TutorHub immediately.',
                     instituteName,
                     instituteAddress,
                     institutePC,
@@ -181,14 +203,17 @@ router.post('/institutionregistration', [
                     instituteNo
                 });
             } else {
-                User.findOne({
+                console.log("Institution name is available.");
+                console.log("Validating if the email for institution has already been registered...");
+                Institution.findOne({
                     where: {
-                        Email: IAEmail
+                        email: instituteEmail
                     }
-                }).then(user => {
-                    if (user) {
+                }).then(institutione => {
+                    if (institutione) {
+                        console.log("Instituion email already exist. unable to proceed.");
                         res.render('institution/registration', {
-                            error: IAEmail + ' already been registered.',
+                            error: instituteEmail + ' has already been registered. If you think there must have been a mistake, please contact TutorHub immediately.',
                             instituteName,
                             instituteAddress,
                             institutePC,
@@ -197,36 +222,55 @@ router.post('/institutionregistration', [
                             IAFname,
                             IALname,
                             IANo,
-                            instituteEmail,
+                            IAEmail,
                             instituteNo
                         });
                     } else {
-                        // Create pending institution
-                        console.log("Uploading to pending institution...........");
-                        PendingInstitution.create({ 
-                            name: instituteName, 
-                            address: instituteAddress, 
-                            postalcode: institutePC, 
-                            iemail: instituteEmail, 
-                            website: instituteUrl, 
-                            officeno: instituteNo, 
-                            document: trueFileDocumentName, 
-                            fname: IAFname, 
-                            lname: IALname, 
-                            phoneno: IANo, 
-                            aemail: IAEmail 
-                        })
-                        .catch(err => console.log(err));
-                        console.log("Upload to pending institution completed.");
-
-                        // sending registration completion email.
-                        sendMailinstitution(instituteEmail, 'Tutorhub Registration Form.',instituteName, 
-                        instituteAddress, institutePC, instituteEmail, instituteUrl, 
-                        instituteNo, IAFname, IALname, IANo, IAEmail)
-                        .then((result) => console.log("Email sent...", result))
-                        .catch((error) => console.log(error.message));
-
-                        res.redirect('/institution/showcompletion');
+                        console.log("Institution email is available.");
+                        console.log("Validating if the Admin account exist.........");
+                        User.findOne({
+                            where: {
+                                Email: IAEmail
+                            }
+                        }).then(user => {
+                            if (user) {
+                                console.log("User Account already exist. Unable to proceed.");
+                                res.render('institution/registration', {
+                                    error: IAEmail + ' has already been registered. Please use another email.',
+                                    instituteName,
+                                    instituteAddress,
+                                    institutePC,
+                                    instituteEmail,
+                                    instituteUrl,
+                                    IAFname,
+                                    IALname,
+                                    IANo,
+                                    instituteEmail,
+                                    instituteNo
+                                });
+                            } else {
+                                console.log("User email is available.");
+                                // Create pending institution
+                                console.log("Uploading to pending institution...........");
+                                PendingInstitution.create({
+                                        name: instituteName,
+                                        address: instituteAddress,
+                                        postalcode: institutePC,
+                                        iemail: instituteEmail,
+                                        website: instituteUrl,
+                                        officeno: instituteNo,
+                                        document: trueFileDocumentName,
+                                        fname: IAFname,
+                                        lname: IALname,
+                                        phoneno: IANo,
+                                        aemail: IAEmail
+                                    })
+                                    .catch(err => console.log(err));
+                                console.log("Upload to pending institution completed.");
+                                console.log("Registration form process has been completed. Redirecting now...");
+                                res.redirect('/institution/showcompletion');
+                            }
+                        }).catch(err => console.log(err));
                     }
                 }).catch(err => console.log(err));
             }
@@ -240,7 +284,7 @@ router.get('/showcompletion', (req, res) => {
 });
 
 // institution's page
-router.get('/showinstitutionpage/:institutionid', async (req, res) => {
+router.get('/showinstitutionpage/:institutionid/:institutionName', async(req, res) => {
     console.log("Finding institution...........");
     var banneritems;
     var alloftutors;
@@ -250,15 +294,17 @@ router.get('/showinstitutionpage/:institutionid', async (req, res) => {
     var allfeaturetutors;
     var allcourselistings;
     var allfeaturedcourse;
+    let institutionName = req.params.institutionName;
+    console.log("This is the institution Name: ", institutionName);
 
     // getting all banners
     console.log("Fetching all institution banners.........");
     await Banner.findAll({
-        where: {
-            institutionInstitutionId: req.params.institutionid
-        },
-        raw: true
-    })
+            where: {
+                institutionInstitutionId: req.params.institutionid
+            },
+            raw: true
+        })
         .then((banners) => {
             console.log("Putting banners into bannerarray....");
             console.log(banners);
@@ -275,12 +321,12 @@ router.get('/showinstitutionpage/:institutionid', async (req, res) => {
     // getting all institution tutors
     console.log("Fetching all institution's tutors");
     await User.findAll({
-        where: {
-            AccountTypeID: 1,
-            institutionInstitutionId: req.params.institutionid
-        },
-        raw: true
-    })
+            where: {
+                AccountTypeID: 1,
+                institutionInstitutionId: req.params.institutionid
+            },
+            raw: true
+        })
         .then(foundtutor => {
             console.log("Putting tutors into an array.....");
             console.log(foundtutor);
@@ -291,11 +337,11 @@ router.get('/showinstitutionpage/:institutionid', async (req, res) => {
     // getting institution's description
     console.log("Fetching institution's descriptions")
     await Description.findAll({
-        where: {
-            institutionInstitutionId: req.params.institutionid
-        },
-        raw: true
-    })
+            where: {
+                institutionInstitutionId: req.params.institutionid
+            },
+            raw: true
+        })
         .then(founddescription => {
             console.log("Putting descriptions into descriptionarray");
             console.log(founddescription);
@@ -306,11 +352,11 @@ router.get('/showinstitutionpage/:institutionid', async (req, res) => {
     // getting institution's widgets
     console.log("Fetching institution's widget");
     await Widget.findAll({
-        where: {
-            institutionInstitutionId: req.params.institutionid
-        },
-        raw: true
-    })
+            where: {
+                institutionInstitutionId: req.params.institutionid
+            },
+            raw: true
+        })
         .then(foundwidget => {
             console.log("putting widget into widgetarray");
             console.log(foundwidget);
@@ -321,11 +367,11 @@ router.get('/showinstitutionpage/:institutionid', async (req, res) => {
     // getting institution's seminar
     console.log("Fetching institution's seminars");
     await SeminarEvent.findAll({
-        where: {
-            institutionInstitutionId: req.params.institutionid
-        },
-        raw: true
-    })
+            where: {
+                institutionInstitutionId: req.params.institutionid
+            },
+            raw: true
+        })
         .then(foundseminar => {
             console.log("putting seminar into seminaraaray");
             console.log(foundseminar);
@@ -335,11 +381,11 @@ router.get('/showinstitutionpage/:institutionid', async (req, res) => {
 
     // getting institution's featured tutors
     await FeaturedTutor.findAll({
-        where: {
-            institutionInstitutionId: req.params.institutionid
-        },
-        raw: true
-    })
+            where: {
+                institutionInstitutionId: req.params.institutionid
+            },
+            raw: true
+        })
         .then(foundfeaturetutor => {
             console.log("Putting featured tutors into array");
             console.log(foundfeaturetutor);
@@ -349,36 +395,34 @@ router.get('/showinstitutionpage/:institutionid', async (req, res) => {
 
     // getting institution's courses
     await CourseListing.findAll({
-        where: {
-            institutionInstitutionId: req.params.institutionid
-        },
-        include: {model: User}
-    })
-    .then(foundcourse => {
-        console.log("Putting course into courselistingarray");
-        console.log(foundcourse);
-        allcourselistings = foundcourse;
-        console.log("Successfully put courses into array.");
-    }).catch(err => console.log(err));
+            where: {
+                institutionInstitutionId: req.params.institutionid
+            },
+            include: { model: User }
+        })
+        .then(foundcourse => {
+            console.log("Putting course into courselistingarray");
+            console.log(foundcourse);
+            allcourselistings = foundcourse;
+            console.log("Successfully put courses into array.");
+        }).catch(err => console.log(err));
 
     // getting institution featured courses
     await FeaturedCourse.findAll({
-        where: {
-            institutionInstitutionId: req.params.institutionid,
-        },
-        raw: true
-    })
-    .then(foundfeaturecourse => {
-        console.log("Putting course into allfeaturedcoursearray");
-        console.log(foundfeaturecourse);
-        allfeaturedcourse = foundfeaturecourse;
-        console.log("Successfully put courses into array.");
-    });
+            where: {
+                institutionInstitutionId: req.params.institutionid,
+            },
+            raw: true
+        })
+        .then(foundfeaturecourse => {
+            console.log("Putting course into allfeaturedcoursearray");
+            console.log(foundfeaturecourse);
+            allfeaturedcourse = foundfeaturecourse;
+            console.log("Successfully put courses into array.");
+        });
 
     // render page
     res.render('institution/institutionpage', {
-        title: "Your institution",
-        layout: 'institution_admin_base',
         bannerarray: banneritems,
         institutiontutorarray: alloftutors,
         descriptionarray: bothdescriptions,
@@ -386,7 +430,8 @@ router.get('/showinstitutionpage/:institutionid', async (req, res) => {
         seminararray: allseminars,
         featuretutorarray: allfeaturetutors,
         allinstcoursearray: allcourselistings,
-        allfeaturedcoursearray: allfeaturedcourse
+        allfeaturedcoursearray: allfeaturedcourse,
+        institutionName: institutionName
     });
 });
 
@@ -399,5 +444,96 @@ router.get('/showinstitutioncourses', (req, res) => {
 router.get('/showalltutors', (req, res) => {
     res.render('institution/alltutors')
 });
+
+// show affiliate page
+router.get('/showaffiliate', (req, res) => {
+    Institution.findAll({
+            include: { model: User }
+        })
+        .then((displayinstitution) => {
+            console.log("Here are all the institutions: ", displayinstitution);
+            if (displayinstitution) {
+                console.log("There are institutions that are registered.");
+            } else {
+                console.log("There are currently no registered institution.");
+            }
+            res.render('institution/affiliate', {
+                institutionarray: displayinstitution
+            });
+        });
+});
+
+router.get('/application/:institutionid', (req, res) => {
+    institutionid = req.params.institutionid
+    Institution.findOne({
+        where: {
+            institution_id: institutionid
+        },
+        include: { model: User }
+    }).then(institution => {
+        if ((req.user != null) && (req.user.AccountTypeID == 1)) {
+            console.log("here is the institution ", institution);
+            res.render("institution/application", {
+                institution
+            })
+        } else {
+            alertMessage(res, 'danger', 'You dont have access to that page!', 'fas fa-exclamation-triangle', true)
+            res.redirect("/")
+        }
+    }).catch(error => console.log(error));
+});
+
+router.post('/userResumeUpload', (req, res) => {
+    console.log(req.file);
+    resumeUpload(req, res, async(err) => {
+        console.log("User's resume upload printing req.file.filename");
+        console.log(req.file);
+        if (err) {
+            res.json({ err: err });
+        } else {
+            if (req.file === undefined) {
+                res.json({ err: err });
+            } else {
+                res.json({ path: `/pendingresumes/${req.file.filename}`, file: `${req.file.filename}` });
+            }
+        }
+    });
+});
+
+router.post('/affiliationapplication', [body('firstname').not().isEmpty().trim().escape().withMessage("Please enter your first name")], [body('lastname').not().isEmpty().trim().escape().withMessage("Please enter your last name")], [body('username').not().isEmpty().trim().escape().withMessage("Please enter your username")], [body('reason').not().isEmpty().trim().escape().withMessage("Please enter your reason")], [body('trueFileResumeName').not().isEmpty().trim().escape().withMessage("Please upload a proper document. Only accept the following format: doc, docx, odt, pdf, zip")], uploadnone.none(), (req, res) => {
+    console.log("processing institution application form now....");
+    let { firstname, lastname, username, reason, trueFileResumeName, userid, useremail, institutionid } = req.body;
+    let errors = [];
+    console.log("institutionid: ", institutionid);
+    console.log("here is the reason: ", reason);
+    console.log("Here is the resume: ", trueFileResumeName);
+    const validatorErrors = validationResult(req);
+    if (!validatorErrors.isEmpty()) {
+        console.log("There are errors in the form, unable to proceed.");
+        validatorErrors.array().forEach(error => {
+            console.log(error);
+            errors.push({ text: error.msg })
+        })
+        alertMessage(res, 'danger', "Please upload a proper document. Only accept the following format: doc, docx, odt, pdf, zip", 'fas fa-sign-in-alt', true);
+        res.redirect('/institution/application/' + institutionid);
+    } else {
+        console.log("adding application now..");
+        PendingInstitutionTutor.create({
+            FirstName: firstname,
+            LastName: lastname,
+            Username: username,
+            reason: reason,
+            resume: trueFileResumeName,
+            userUserId: userid,
+            institutionInstitutionId: institutionid
+        }).catch(err => console.log(err));
+        res.redirect('/institution/showapplicationcomplete');
+
+    }
+});
+
+router.get('/showapplicationcomplete', (req, res) => {
+    res.render('institution/applicationcomplete');
+})
 
 module.exports = router;

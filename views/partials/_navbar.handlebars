@@ -93,6 +93,9 @@
 					<a class="dropdown-item" href="/course/mycourses">My Courses</a>
 					<a class="dropdown-item" href="/myschedule/{{user.user_id}}">My Schedule</a>
 					<a class="dropdown-item" href="/myschedule/user/{{user.user_id}}">My Bookings</a>
+					{{#ifEquals user.institutionInstitutionId null}}
+					<a class="dropdown-item" href="/institution/showaffiliate">Be Affiliated</a>
+					{{/ifEquals}}
 
 					<hr class="dropdown-divider">
 					<a class="dropdown-item" href="/logout">Log out</a>
@@ -140,8 +143,8 @@
       	<li class="nav-item dropdown">
           <a class="nav-link pl-0" data-toggle="dropdown" href="#"><strong> <i class="fa fa-bars"></i> &nbsp  All category</strong></a>
           <div class="dropdown-menu">
-            <a class="dropdown-item" href="#">Foods and Drink</a>
-            <a class="dropdown-item" href="#">Home interior</a>
+            <a class="dropdown-item" href="#">Programming</a>
+            <a class="dropdown-item" href="#">Computer Science</a>
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="#">Category 1</a>
             <a class="dropdown-item" href="#">Category 2</a>

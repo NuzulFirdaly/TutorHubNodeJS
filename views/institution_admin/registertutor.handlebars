@@ -1,430 +1,1005 @@
+<script>
+    /// some script
+
+    // jquery ready start
+    $(document).ready(function () {
+        // jQuery code
+
+
+        /////////////////  items slider. /plugins/owlslider/
+        if ($('.slider-items-owl').length > 0) { // check if element exists
+            $('.slider-items-owl').owlCarousel({
+                //change the loop daddy
+                loop: false,
+                nav: true,
+                autoWidth: true,
+                margin: 10,
+                navText: ["<i class='fa fa-chevron-left'></i>", "<i class='fa fa-chevron-right'></i>"],
+                responsive: {
+                    0: {
+                        items: 1
+                    },
+                    640: {
+                        items: 2
+                    },
+                    1024: {
+                        items: 3
+                    }
+                }
+            })
+        } // end if
+
+
+
+
+    });
+// jquery end
+</script>
+<style>
+    /* Style the tab */
+    .tab {
+        overflow: hidden;
+        border: 1px solid #ccc;
+        background-color: #f1f1f1;
+    }
+
+    /* Style the buttons inside the tab */
+    .tab button {
+        background-color: inherit;
+        float: left;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 14px 16px;
+        transition: 0.3s;
+        font-size: 17px;
+    }
+
+    /* Change background color of buttons on hover */
+    .tab button:hover {
+        background-color: #ddd;
+    }
+
+    /* Create an active/current tablink class */
+    .tab button.active {
+        background-color: #ccc;
+    }
+
+    /* Style the tab content */
+    .tabcontent {
+        display: none;
+        padding: 6px 12px;
+        border: 1px solid #ccc;
+        border-top: none;
+    }
+</style>
 <section class="padding-y bg">
-<div class="container">
-<div class="row">
-    <div class="col-md-12">
-        <!-- ============================ COMPONENT BANNER 7 ================================= -->
-        <div class="card-banner text-center" style="min-height:200px;">
-          <div style="margin-left: 300px;">
-			  <br>
-			  <br>
-			  <h1 class="card-title" style="font-size: 60px;">Register your Tutor</h1>
-			  <p>Add your tutors and let them use their account immediately!</p>
-          </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <!-- ============================ COMPONENT BANNER 7 ================================= -->
+                <div class="card-banner justify-content-center" style="min-height:200px;">
+                    <div class="text-center">
+                        <br>
+                        <br>
+                        <h1 class="card-title float-middle" style="font-size: 60px;">Register your Tutor</h1>
+                        <p>Add your tutors and let them use their account immediately!</p>
+                    </div>
+                </div>
+                <!-- ============================ COMPONENT BANNER 7  END .// =========================== -->
+            </div> <!-- col.// -->
         </div>
-        <!-- ============================ COMPONENT BANNER 7  END .// =========================== -->
-    </div> <!-- col.// -->
-</div>
-</div>
+    </div>
 </section>
 <section class="padding-y bg">
     {{>_errors}} {{!-- views/partials/_errors.handlebars --}}
-<section class="container-fluid" style="min-height: 84vh; width: 90%">
-    <br>
-    <!-- ==================== form content ============ -->
-    <center>
-      <h2>Tutor Institution Registration Form</h2>
-    </center>
-    <br>
-    <div class="col-md-12 text-left">
-      <p>
+    <section class="container-fluid" style="min-height: 84vh; width: 100%;">
+        <div class="tab">
+            <button class="tablinks" onclick="openCity(event, 'London')" id="defaultOpen">Register Tutor</button>
+            <button class="tablinks" onclick="openCity(event, 'Paris')">View requested applications</button>
+        </div>
 
-          <br>
-          Please fill up the following details <br><br>
-          <strong>Do take Note:</strong> <br>
-          1. Institution's Tutor Registration shall be done only if the Tutor is officially license. Registration of Unofficial tutor will result in Insitution being permanently ban from TutorHub.
-          <br>
-          2. Submit certificates of proof for Tutor for legal purposes.
-          <br><br>
-          Upon submitting, please make sure information that are stated are real. False information will result in Tutor's registration revoked.
-          <br>
-          Tutor Account will be automatically created and is ready to be used. 
-      </p>
-    </div>
+        <div id="London" class="tabcontent">
+            <br>
+            <!-- ==================== form content ============ -->
+            <center>
+                <h2>Tutor Institution Registration Form</h2>
+            </center>
+            <br>
+            <div class="col-md-12 text-left">
+                <p>
 
-    <br>
-    <form class="block-register" action="/institution_admin/registertutor" method="POST">
-        <div class="card mx-auto">
-            <div class="card-body">
-                <h5 class="card-title mb-4">Personal Information</h5>
-                <div class="form-group form-row">
-                    <label class="col-md-3 col-form-label">Full Name <br> <span class="text-muted">This will be private</span></label>
-                    <div class="col-s-1 col-form-label">
-                        <label>First name</label>
-                    </div>
-                    <div class="col">
-                        <input class="form-control" type="text" name="firstname" placeholder="first name" value="{{firstname}}" required>
-                    </div>
-                    <div class="col-s-1 col-form-label">
-                        <input class="form-control" type="text" name="lastname" placeholder="last name" value="{{lastname}}" required>
-                    </div>
-                </div>
-                {{!-- <div class="form-group form-row">
-                    <label class="col-md-3 col-form-label">Profile Picture</label>
-                    <div class="col-md-3">
-                        <img id="profilePicture" src="/images/profilepictures/2.jpg" class="img-md rounded-circle border">
-                        <div style="position:relative; ">
-                            <input type="file" name="profilePictureUpload" id="profilePictureUpload" accept="image/png,image/jpeg,image/jpg,image/gif">
-                            <input type="hidden" id='trueFileName' name="trueFileName">
-                            <div class="font-weight-bold text-danger small" id="profilePictureErr" style="display:none"></div>
+                    <br>
+                    Please fill up the following details <br><br>
+                    <strong>Do take Note:</strong> <br>
+                    1. Institution's Tutor Registration shall be done only if the Tutor is officially license.
+                    Registration
+                    of Unofficial tutor will result in Insitution being permanently ban from TutorHub.
+                    <br>
+                    2. Submit certificates of proof for Tutor for legal purposes.
+                    <br><br>
+                    Upon submitting, please make sure information that are stated are real. False information will
+                    result in
+                    Tutor's registration revoked.
+                    <br>
+                    Tutor Account will be automatically created and is ready to be used.
+                </p>
+            </div>
+
+            <br>
+            <form class="block-register" action="/institution_admin/registertutor/byadmin" method="POST">
+                <div class="card mx-auto">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Personal Information</h5>
+                        <div class="form-group form-row">
+                            <label class="col-md-3 col-form-label">Full Name <br> <span class="text-muted">This will be
+                                    private</span></label>
+                            <div class="col-s-1 col-form-label">
+                                <label>First name</label>
+                            </div>
+                            <div class="col">
+                                <input class="form-control" type="text" name="firstname" placeholder="first name"
+                                    value="{{firstname}}" required>
+                            </div>
+                            <div class="col-s-1 col-form-label">
+                                <input class="form-control" type="text" name="lastname" placeholder="last name"
+                                    value="{{lastname}}" required>
+                            </div>
+                        </div>
+                        {{!-- <div class="form-group form-row">
+                            <label class="col-md-3 col-form-label">Profile Picture</label>
+                            <div class="col-md-3">
+                                <img id="profilePicture" src="/images/profilepictures/2.jpg"
+                                    class="img-md rounded-circle border">
+                                <div style="position:relative; ">
+                                    <input type="file" name="profilePictureUpload" id="profilePictureUpload"
+                                        accept="image/png,image/jpeg,image/jpg,image/gif">
+                                    <input type="hidden" id='trueFileName' name="trueFileName">
+                                    <div class="font-weight-bold text-danger small" id="profilePictureErr"
+                                        style="display:none"></div>
+                                </div>
+                            </div>
+                        </div> --}}
+                        <div class="form-group form-row">
+                            <label class="col-md-3 col-form-label">Description</label>
+                            <div class="col-9">
+                                <textarea class="form-control" id="description" name="description" rows="3"
+                                    placeholder="Share a bit about your work experience, cool projects you’ve completed, and your area of expertise."></textarea>
+                            </div>
+                        </div>
+                        {{!-- <div class="form-group form-row">
+                            <label class="col-md-3 col-form-label">Languages</label>
+                            <div class="col">
+                                <input class="form-control" id="language" name="language">
+                            </div>
+                            <div>
+                                <input class="form-control" id="profficency" name="profficiency">
+                            </div>
+                        </div> --}}
+                        <br>
+                        <hr>
+                        <br>
+                        <h5 class="card-title mb-4">Occupation Information</h5>
+                        <div class="form-group form-row">
+                            <label class="col-md-3 col-form-label">Your Occupation</label>
+                            <div class="col">
+                                <input class="form-control" type="text" id="occupation " name="occupation"
+                                    placeholder="Current occupation" required>
+                            </div>
+                            <div class="col-s-1 col-form-label">
+                                <label>From</label>
+                            </div>
+                            <div class="col">
+                                <input class="form-control" type="text" id="fromyear" name="fromyear" placeholder="year"
+                                    required>
+                            </div>
+                            <div class="col-s-1 col-form-label">
+                                <label>To</label>
+                            </div>
+                            <div class="col">
+                                <input class="form-control" type="text" id="toyear" name="toyear" placeholder="year"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="form-group form-row">
+                            <label class="col-md-3 col-form-label">Education</label>
+                            <div class="col-md-2">
+                                <select id="college_country" name="college_country" class="form-control"
+                                    aria-label="Default select example" required>
+                                    <option disabled selected hidden>Country of College/University</option>
+                                    <option value="Afganistan">Afghanistan</option>
+                                    <option value="Albania">Albania</option>
+                                    <option value="Algeria">Algeria</option>
+                                    <option value="American Samoa">American Samoa</option>
+                                    <option value="Andorra">Andorra</option>
+                                    <option value="Angola">Angola</option>
+                                    <option value="Anguilla">Anguilla</option>
+                                    <option value="Antigua & Barbuda">Antigua & Barbuda</option>
+                                    <option value="Argentina">Argentina</option>
+                                    <option value="Armenia">Armenia</option>
+                                    <option value="Aruba">Aruba</option>
+                                    <option value="Australia">Australia</option>
+                                    <option value="Austria">Austria</option>
+                                    <option value="Azerbaijan">Azerbaijan</option>
+                                    <option value="Bahamas">Bahamas</option>
+                                    <option value="Bahrain">Bahrain</option>
+                                    <option value="Bangladesh">Bangladesh</option>
+                                    <option value="Barbados">Barbados</option>
+                                    <option value="Belarus">Belarus</option>
+                                    <option value="Belgium">Belgium</option>
+                                    <option value="Belize">Belize</option>
+                                    <option value="Benin">Benin</option>
+                                    <option value="Bermuda">Bermuda</option>
+                                    <option value="Bhutan">Bhutan</option>
+                                    <option value="Bolivia">Bolivia</option>
+                                    <option value="Bonaire">Bonaire</option>
+                                    <option value="Bosnia & Herzegovina">Bosnia & Herzegovina</option>
+                                    <option value="Botswana">Botswana</option>
+                                    <option value="Brazil">Brazil</option>
+                                    <option value="British Indian Ocean Ter">British Indian Ocean Ter</option>
+                                    <option value="Brunei">Brunei</option>
+                                    <option value="Bulgaria">Bulgaria</option>
+                                    <option value="Burkina Faso">Burkina Faso</option>
+                                    <option value="Burundi">Burundi</option>
+                                    <option value="Cambodia">Cambodia</option>
+                                    <option value="Cameroon">Cameroon</option>
+                                    <option value="Canada">Canada</option>
+                                    <option value="Canary Islands">Canary Islands</option>
+                                    <option value="Cape Verde">Cape Verde</option>
+                                    <option value="Cayman Islands">Cayman Islands</option>
+                                    <option value="Central African Republic">Central African Republic</option>
+                                    <option value="Chad">Chad</option>
+                                    <option value="Channel Islands">Channel Islands</option>
+                                    <option value="Chile">Chile</option>
+                                    <option value="China">China</option>
+                                    <option value="Christmas Island">Christmas Island</option>
+                                    <option value="Cocos Island">Cocos Island</option>
+                                    <option value="Colombia">Colombia</option>
+                                    <option value="Comoros">Comoros</option>
+                                    <option value="Congo">Congo</option>
+                                    <option value="Cook Islands">Cook Islands</option>
+                                    <option value="Costa Rica">Costa Rica</option>
+                                    <option value="Cote DIvoire">Cote DIvoire</option>
+                                    <option value="Croatia">Croatia</option>
+                                    <option value="Cuba">Cuba</option>
+                                    <option value="Curaco">Curacao</option>
+                                    <option value="Cyprus">Cyprus</option>
+                                    <option value="Czech Republic">Czech Republic</option>
+                                    <option value="Denmark">Denmark</option>
+                                    <option value="Djibouti">Djibouti</option>
+                                    <option value="Dominica">Dominica</option>
+                                    <option value="Dominican Republic">Dominican Republic</option>
+                                    <option value="East Timor">East Timor</option>
+                                    <option value="Ecuador">Ecuador</option>
+                                    <option value="Egypt">Egypt</option>
+                                    <option value="El Salvador">El Salvador</option>
+                                    <option value="Equatorial Guinea">Equatorial Guinea</option>
+                                    <option value="Eritrea">Eritrea</option>
+                                    <option value="Estonia">Estonia</option>
+                                    <option value="Ethiopia">Ethiopia</option>
+                                    <option value="Falkland Islands">Falkland Islands</option>
+                                    <option value="Faroe Islands">Faroe Islands</option>
+                                    <option value="Fiji">Fiji</option>
+                                    <option value="Finland">Finland</option>
+                                    <option value="France">France</option>
+                                    <option value="French Guiana">French Guiana</option>
+                                    <option value="French Polynesia">French Polynesia</option>
+                                    <option value="French Southern Ter">French Southern Ter</option>
+                                    <option value="Gabon">Gabon</option>
+                                    <option value="Gambia">Gambia</option>
+                                    <option value="Georgia">Georgia</option>
+                                    <option value="Germany">Germany</option>
+                                    <option value="Ghana">Ghana</option>
+                                    <option value="Gibraltar">Gibraltar</option>
+                                    <option value="Great Britain">Great Britain</option>
+                                    <option value="Greece">Greece</option>
+                                    <option value="Greenland">Greenland</option>
+                                    <option value="Grenada">Grenada</option>
+                                    <option value="Guadeloupe">Guadeloupe</option>
+                                    <option value="Guam">Guam</option>
+                                    <option value="Guatemala">Guatemala</option>
+                                    <option value="Guinea">Guinea</option>
+                                    <option value="Guyana">Guyana</option>
+                                    <option value="Haiti">Haiti</option>
+                                    <option value="Hawaii">Hawaii</option>
+                                    <option value="Honduras">Honduras</option>
+                                    <option value="Hong Kong">Hong Kong</option>
+                                    <option value="Hungary">Hungary</option>
+                                    <option value="Iceland">Iceland</option>
+                                    <option value="Indonesia">Indonesia</option>
+                                    <option value="India">India</option>
+                                    <option value="Iran">Iran</option>
+                                    <option value="Iraq">Iraq</option>
+                                    <option value="Ireland">Ireland</option>
+                                    <option value="Isle of Man">Isle of Man</option>
+                                    <option value="Israel">Israel</option>
+                                    <option value="Italy">Italy</option>
+                                    <option value="Jamaica">Jamaica</option>
+                                    <option value="Japan">Japan</option>
+                                    <option value="Jordan">Jordan</option>
+                                    <option value="Kazakhstan">Kazakhstan</option>
+                                    <option value="Kenya">Kenya</option>
+                                    <option value="Kiribati">Kiribati</option>
+                                    <option value="Korea North">Korea North</option>
+                                    <option value="Korea Sout">Korea South</option>
+                                    <option value="Kuwait">Kuwait</option>
+                                    <option value="Kyrgyzstan">Kyrgyzstan</option>
+                                    <option value="Laos">Laos</option>
+                                    <option value="Latvia">Latvia</option>
+                                    <option value="Lebanon">Lebanon</option>
+                                    <option value="Lesotho">Lesotho</option>
+                                    <option value="Liberia">Liberia</option>
+                                    <option value="Libya">Libya</option>
+                                    <option value="Liechtenstein">Liechtenstein</option>
+                                    <option value="Lithuania">Lithuania</option>
+                                    <option value="Luxembourg">Luxembourg</option>
+                                    <option value="Macau">Macau</option>
+                                    <option value="Macedonia">Macedonia</option>
+                                    <option value="Madagascar">Madagascar</option>
+                                    <option value="Malaysia">Malaysia</option>
+                                    <option value="Malawi">Malawi</option>
+                                    <option value="Maldives">Maldives</option>
+                                    <option value="Mali">Mali</option>
+                                    <option value="Malta">Malta</option>
+                                    <option value="Marshall Islands">Marshall Islands</option>
+                                    <option value="Martinique">Martinique</option>
+                                    <option value="Mauritania">Mauritania</option>
+                                    <option value="Mauritius">Mauritius</option>
+                                    <option value="Mayotte">Mayotte</option>
+                                    <option value="Mexico">Mexico</option>
+                                    <option value="Midway Islands">Midway Islands</option>
+                                    <option value="Moldova">Moldova</option>
+                                    <option value="Monaco">Monaco</option>
+                                    <option value="Mongolia">Mongolia</option>
+                                    <option value="Montserrat">Montserrat</option>
+                                    <option value="Morocco">Morocco</option>
+                                    <option value="Mozambique">Mozambique</option>
+                                    <option value="Myanmar">Myanmar</option>
+                                    <option value="Nambia">Nambia</option>
+                                    <option value="Nauru">Nauru</option>
+                                    <option value="Nepal">Nepal</option>
+                                    <option value="Netherland Antilles">Netherland Antilles</option>
+                                    <option value="Netherlands">Netherlands (Holland, Europe)</option>
+                                    <option value="Nevis">Nevis</option>
+                                    <option value="New Caledonia">New Caledonia</option>
+                                    <option value="New Zealand">New Zealand</option>
+                                    <option value="Nicaragua">Nicaragua</option>
+                                    <option value="Niger">Niger</option>
+                                    <option value="Nigeria">Nigeria</option>
+                                    <option value="Niue">Niue</option>
+                                    <option value="Norfolk Island">Norfolk Island</option>
+                                    <option value="Norway">Norway</option>
+                                    <option value="Oman">Oman</option>
+                                    <option value="Pakistan">Pakistan</option>
+                                    <option value="Palau Island">Palau Island</option>
+                                    <option value="Palestine">Palestine</option>
+                                    <option value="Panama">Panama</option>
+                                    <option value="Papua New Guinea">Papua New Guinea</option>
+                                    <option value="Paraguay">Paraguay</option>
+                                    <option value="Peru">Peru</option>
+                                    <option value="Phillipines">Philippines</option>
+                                    <option value="Pitcairn Island">Pitcairn Island</option>
+                                    <option value="Poland">Poland</option>
+                                    <option value="Portugal">Portugal</option>
+                                    <option value="Puerto Rico">Puerto Rico</option>
+                                    <option value="Qatar">Qatar</option>
+                                    <option value="Republic of Montenegro">Republic of Montenegro</option>
+                                    <option value="Republic of Serbia">Republic of Serbia</option>
+                                    <option value="Reunion">Reunion</option>
+                                    <option value="Romania">Romania</option>
+                                    <option value="Russia">Russia</option>
+                                    <option value="Rwanda">Rwanda</option>
+                                    <option value="St Barthelemy">St Barthelemy</option>
+                                    <option value="St Eustatius">St Eustatius</option>
+                                    <option value="St Helena">St Helena</option>
+                                    <option value="St Kitts-Nevis">St Kitts-Nevis</option>
+                                    <option value="St Lucia">St Lucia</option>
+                                    <option value="St Maarten">St Maarten</option>
+                                    <option value="St Pierre & Miquelon">St Pierre & Miquelon</option>
+                                    <option value="St Vincent & Grenadines">St Vincent & Grenadines</option>
+                                    <option value="Saipan">Saipan</option>
+                                    <option value="Samoa">Samoa</option>
+                                    <option value="Samoa American">Samoa American</option>
+                                    <option value="San Marino">San Marino</option>
+                                    <option value="Sao Tome & Principe">Sao Tome & Principe</option>
+                                    <option value="Saudi Arabia">Saudi Arabia</option>
+                                    <option value="Senegal">Senegal</option>
+                                    <option value="Seychelles">Seychelles</option>
+                                    <option value="Sierra Leone">Sierra Leone</option>
+                                    <option value="Singapore">Singapore</option>
+                                    <option value="Slovakia">Slovakia</option>
+                                    <option value="Slovenia">Slovenia</option>
+                                    <option value="Solomon Islands">Solomon Islands</option>
+                                    <option value="Somalia">Somalia</option>
+                                    <option value="South Africa">South Africa</option>
+                                    <option value="Spain">Spain</option>
+                                    <option value="Sri Lanka">Sri Lanka</option>
+                                    <option value="Sudan">Sudan</option>
+                                    <option value="Suriname">Suriname</option>
+                                    <option value="Swaziland">Swaziland</option>
+                                    <option value="Sweden">Sweden</option>
+                                    <option value="Switzerland">Switzerland</option>
+                                    <option value="Syria">Syria</option>
+                                    <option value="Tahiti">Tahiti</option>
+                                    <option value="Taiwan">Taiwan</option>
+                                    <option value="Tajikistan">Tajikistan</option>
+                                    <option value="Tanzania">Tanzania</option>
+                                    <option value="Thailand">Thailand</option>
+                                    <option value="Togo">Togo</option>
+                                    <option value="Tokelau">Tokelau</option>
+                                    <option value="Tonga">Tonga</option>
+                                    <option value="Trinidad & Tobago">Trinidad & Tobago</option>
+                                    <option value="Tunisia">Tunisia</option>
+                                    <option value="Turkey">Turkey</option>
+                                    <option value="Turkmenistan">Turkmenistan</option>
+                                    <option value="Turks & Caicos Is">Turks & Caicos Is</option>
+                                    <option value="Tuvalu">Tuvalu</option>
+                                    <option value="Uganda">Uganda</option>
+                                    <option value="United Kingdom">United Kingdom</option>
+                                    <option value="Ukraine">Ukraine</option>
+                                    <option value="United Arab Erimates">United Arab Emirates</option>
+                                    <option value="United States of America">United States of America</option>
+                                    <option value="Uraguay">Uruguay</option>
+                                    <option value="Uzbekistan">Uzbekistan</option>
+                                    <option value="Vanuatu">Vanuatu</option>
+                                    <option value="Vatican City State">Vatican City State</option>
+                                    <option value="Venezuela">Venezuela</option>
+                                    <option value="Vietnam">Vietnam</option>
+                                    <option value="Virgin Islands (Brit)">Virgin Islands (Brit)</option>
+                                    <option value="Virgin Islands (USA)">Virgin Islands (USA)</option>
+                                    <option value="Wake Island">Wake Island</option>
+                                    <option value="Wallis & Futana Is">Wallis & Futana Is</option>
+                                    <option value="Yemen">Yemen</option>
+                                    <option value="Zaire">Zaire</option>
+                                    <option value="Zambia">Zambia</option>
+                                    <option value="Zimbabwe">Zimbabwe</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <input class="form-control" type="text" name="collegename"
+                                    placeholder="College/University Name" required>
+                            </div>
+                        </div>
+                        <div class="form-group form-row">
+                            <label class="col-md-3 col-form-label"></label>
+                            <div class="col">
+                                <input class="form-control" type="text" name="major" placeholder="Major" required>
+                            </div>
+                            <div class="col-md-1">
+                                <input class="form-control" type="text" name="graduateyear" placeholder="year" required>
+                            </div>
+                        </div>
+                        <div class="form-group form-row">
+                            <label class="col-md-2 col-form-label text-left">Submit relevant documentation here</label>
+                            <div class="col">
+                                {{!-- <input type="file" name="profilePictureUpload2" id="profilePictureUpload2">
+                                <input type="hidden" id='trueFileCertName2' name="trueFileCertName2">
+                                <div class="font-weight-bold text-danger small" id="certErr2" style="display:none">
+                                </div>
+                                --}}
+                                <input type="file" name="profilePictureUpload2" id="profilePictureUpload2" required>
+                                <input type="hidden" id="trueFileCertName2" name="trueFileCertName2">
+                                <div class="font-weight-bold text-danger small" id="certErr2" style="display: none">
+                                </div>
+                            </div>
+                            <div class="col-s-1 col-form-label"><label>Date of Birth</label></div>
+                            <div class="col">
+                                <input type="date" name="dateofbirth" required />
+                            </div>
+                            <div class="col-s-1 col-form-label"><label>NRIC</label></div>
+                            <div class="col">
+                                <input class="form-control" type="text" name="nric" placeholder="nric" required>
+                            </div>
+                        </div>
+                        <br>
+                        <hr>
+                        <br>
+                        <h5 class="card-title mb-4">Tutor Account information</h5>
+                        <br>
+                        <div class="form-group form-row">
+                            <label class="col-md-3 col-form-label">
+                                Username
+                            </label>
+                            <div class="col">
+                                <input class="form-control" id="username" name="username" placeholder="username">
+                            </div>
+                            <div class="col-s-1 col-form-label">
+                                <label>Password</label>
+                            </div>
+                            <div class="col">
+                                <p>Password will be generated. Highly recommended for tutors to change after logging in.
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div> --}}
-                <div class="form-group form-row">
-                    <label class="col-md-3 col-form-label">Description</label>
-                    <div class="col-9">
-                        <textarea class="form-control" id="description" name="description" rows="3" placeholder="Share a bit about your work experience, cool projects you’ve completed, and your area of expertise."></textarea>
+                    <div class="form-group form-row">
+                        <div class="col-md-3 col-form-label" style="padding-left:30px;">
+                            <label>Email</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input class="form-control" id="email" name="email" placeholder="your tutor's email">
+                        </div>
                     </div>
-                </div>
-              {{!-- <div class="form-group form-row">
-                  <label class="col-md-3 col-form-label">Languages</label>
-                  <div class="col">
-                      <input class="form-control"  id="language" name="language">
-                  </div>
-                  <div>
-                      <input class="form-control"  id="profficency" name="profficiency">
-                  </div>
-              </div> --}}
-                <br>
-                <hr>
-                <br>
-                <h5 class="card-title mb-4">Occupation Information</h5>
-                <div class="form-group form-row">
-                    <label class="col-md-3 col-form-label">Your Occupation</label>
-                    <div class="col">
-                        <input class="form-control" type="text" id="occupation "name="occupation" placeholder ="Current occupation" required>
-                    </div>
-                    <div class="col-s-1 col-form-label">
-                        <label>From</label>
-                    </div>
-                    <div class="col">
-                        <input class="form-control" type="text" id="fromyear"name="fromyear" placeholder ="year" required>
-                    </div>
-                    <div class="col-s-1 col-form-label">
-                        <label>To</label>
-                    </div>
-                    <div class="col">
-                        <input class="form-control" type="text" id="toyear" name="toyear" placeholder ="year" required>
-                    </div>
-                </div>
-                <div class="form-group form-row">
-                    <label class="col-md-3 col-form-label">Education</label>
-                    <div class="col-md-2">
-                        <select id="college_country" name = "college_country" class="form-control" aria-label="Default select example" required>
-                        <option disabled selected hidden>Country of College/University</option>
-                        <option value="Afganistan">Afghanistan</option>
-                        <option value="Albania">Albania</option>
-                        <option value="Algeria">Algeria</option>
-                        <option value="American Samoa">American Samoa</option>
-                        <option value="Andorra">Andorra</option>
-                        <option value="Angola">Angola</option>
-                        <option value="Anguilla">Anguilla</option>
-                        <option value="Antigua & Barbuda">Antigua & Barbuda</option>
-                        <option value="Argentina">Argentina</option>
-                        <option value="Armenia">Armenia</option>
-                        <option value="Aruba">Aruba</option>
-                        <option value="Australia">Australia</option>
-                        <option value="Austria">Austria</option>
-                        <option value="Azerbaijan">Azerbaijan</option>
-                        <option value="Bahamas">Bahamas</option>
-                        <option value="Bahrain">Bahrain</option>
-                        <option value="Bangladesh">Bangladesh</option>
-                        <option value="Barbados">Barbados</option>
-                        <option value="Belarus">Belarus</option>
-                        <option value="Belgium">Belgium</option>
-                        <option value="Belize">Belize</option>
-                        <option value="Benin">Benin</option>
-                        <option value="Bermuda">Bermuda</option>
-                        <option value="Bhutan">Bhutan</option>
-                        <option value="Bolivia">Bolivia</option>
-                        <option value="Bonaire">Bonaire</option>
-                        <option value="Bosnia & Herzegovina">Bosnia & Herzegovina</option>
-                        <option value="Botswana">Botswana</option>
-                        <option value="Brazil">Brazil</option>
-                        <option value="British Indian Ocean Ter">British Indian Ocean Ter</option>
-                        <option value="Brunei">Brunei</option>
-                        <option value="Bulgaria">Bulgaria</option>
-                        <option value="Burkina Faso">Burkina Faso</option>
-                        <option value="Burundi">Burundi</option>
-                        <option value="Cambodia">Cambodia</option>
-                        <option value="Cameroon">Cameroon</option>
-                        <option value="Canada">Canada</option>
-                        <option value="Canary Islands">Canary Islands</option>
-                        <option value="Cape Verde">Cape Verde</option>
-                        <option value="Cayman Islands">Cayman Islands</option>
-                        <option value="Central African Republic">Central African Republic</option>
-                        <option value="Chad">Chad</option>
-                        <option value="Channel Islands">Channel Islands</option>
-                        <option value="Chile">Chile</option>
-                        <option value="China">China</option>
-                        <option value="Christmas Island">Christmas Island</option>
-                        <option value="Cocos Island">Cocos Island</option>
-                        <option value="Colombia">Colombia</option>
-                        <option value="Comoros">Comoros</option>
-                        <option value="Congo">Congo</option>
-                        <option value="Cook Islands">Cook Islands</option>
-                        <option value="Costa Rica">Costa Rica</option>
-                        <option value="Cote DIvoire">Cote DIvoire</option>
-                        <option value="Croatia">Croatia</option>
-                        <option value="Cuba">Cuba</option>
-                        <option value="Curaco">Curacao</option>
-                        <option value="Cyprus">Cyprus</option>
-                        <option value="Czech Republic">Czech Republic</option>
-                        <option value="Denmark">Denmark</option>
-                        <option value="Djibouti">Djibouti</option>
-                        <option value="Dominica">Dominica</option>
-                        <option value="Dominican Republic">Dominican Republic</option>
-                        <option value="East Timor">East Timor</option>
-                        <option value="Ecuador">Ecuador</option>
-                        <option value="Egypt">Egypt</option>
-                        <option value="El Salvador">El Salvador</option>
-                        <option value="Equatorial Guinea">Equatorial Guinea</option>
-                        <option value="Eritrea">Eritrea</option>
-                        <option value="Estonia">Estonia</option>
-                        <option value="Ethiopia">Ethiopia</option>
-                        <option value="Falkland Islands">Falkland Islands</option>
-                        <option value="Faroe Islands">Faroe Islands</option>
-                        <option value="Fiji">Fiji</option>
-                        <option value="Finland">Finland</option>
-                        <option value="France">France</option>
-                        <option value="French Guiana">French Guiana</option>
-                        <option value="French Polynesia">French Polynesia</option>
-                        <option value="French Southern Ter">French Southern Ter</option>
-                        <option value="Gabon">Gabon</option>
-                        <option value="Gambia">Gambia</option>
-                        <option value="Georgia">Georgia</option>
-                        <option value="Germany">Germany</option>
-                        <option value="Ghana">Ghana</option>
-                        <option value="Gibraltar">Gibraltar</option>
-                        <option value="Great Britain">Great Britain</option>
-                        <option value="Greece">Greece</option>
-                        <option value="Greenland">Greenland</option>
-                        <option value="Grenada">Grenada</option>
-                        <option value="Guadeloupe">Guadeloupe</option>
-                        <option value="Guam">Guam</option>
-                        <option value="Guatemala">Guatemala</option>
-                        <option value="Guinea">Guinea</option>
-                        <option value="Guyana">Guyana</option>
-                        <option value="Haiti">Haiti</option>
-                        <option value="Hawaii">Hawaii</option>
-                        <option value="Honduras">Honduras</option>
-                        <option value="Hong Kong">Hong Kong</option>
-                        <option value="Hungary">Hungary</option>
-                        <option value="Iceland">Iceland</option>
-                        <option value="Indonesia">Indonesia</option>
-                        <option value="India">India</option>
-                        <option value="Iran">Iran</option>
-                        <option value="Iraq">Iraq</option>
-                        <option value="Ireland">Ireland</option>
-                        <option value="Isle of Man">Isle of Man</option>
-                        <option value="Israel">Israel</option>
-                        <option value="Italy">Italy</option>
-                        <option value="Jamaica">Jamaica</option>
-                        <option value="Japan">Japan</option>
-                        <option value="Jordan">Jordan</option>
-                        <option value="Kazakhstan">Kazakhstan</option>
-                        <option value="Kenya">Kenya</option>
-                        <option value="Kiribati">Kiribati</option>
-                        <option value="Korea North">Korea North</option>
-                        <option value="Korea Sout">Korea South</option>
-                        <option value="Kuwait">Kuwait</option>
-                        <option value="Kyrgyzstan">Kyrgyzstan</option>
-                        <option value="Laos">Laos</option>
-                        <option value="Latvia">Latvia</option>
-                        <option value="Lebanon">Lebanon</option>
-                        <option value="Lesotho">Lesotho</option>
-                        <option value="Liberia">Liberia</option>
-                        <option value="Libya">Libya</option>
-                        <option value="Liechtenstein">Liechtenstein</option>
-                        <option value="Lithuania">Lithuania</option>
-                        <option value="Luxembourg">Luxembourg</option>
-                        <option value="Macau">Macau</option>
-                        <option value="Macedonia">Macedonia</option>
-                        <option value="Madagascar">Madagascar</option>
-                        <option value="Malaysia">Malaysia</option>
-                        <option value="Malawi">Malawi</option>
-                        <option value="Maldives">Maldives</option>
-                        <option value="Mali">Mali</option>
-                        <option value="Malta">Malta</option>
-                        <option value="Marshall Islands">Marshall Islands</option>
-                        <option value="Martinique">Martinique</option>
-                        <option value="Mauritania">Mauritania</option>
-                        <option value="Mauritius">Mauritius</option>
-                        <option value="Mayotte">Mayotte</option>
-                        <option value="Mexico">Mexico</option>
-                        <option value="Midway Islands">Midway Islands</option>
-                        <option value="Moldova">Moldova</option>
-                        <option value="Monaco">Monaco</option>
-                        <option value="Mongolia">Mongolia</option>
-                        <option value="Montserrat">Montserrat</option>
-                        <option value="Morocco">Morocco</option>
-                        <option value="Mozambique">Mozambique</option>
-                        <option value="Myanmar">Myanmar</option>
-                        <option value="Nambia">Nambia</option>
-                        <option value="Nauru">Nauru</option>
-                        <option value="Nepal">Nepal</option>
-                        <option value="Netherland Antilles">Netherland Antilles</option>
-                        <option value="Netherlands">Netherlands (Holland, Europe)</option>
-                        <option value="Nevis">Nevis</option>
-                        <option value="New Caledonia">New Caledonia</option>
-                        <option value="New Zealand">New Zealand</option>
-                        <option value="Nicaragua">Nicaragua</option>
-                        <option value="Niger">Niger</option>
-                        <option value="Nigeria">Nigeria</option>
-                        <option value="Niue">Niue</option>
-                        <option value="Norfolk Island">Norfolk Island</option>
-                        <option value="Norway">Norway</option>
-                        <option value="Oman">Oman</option>
-                        <option value="Pakistan">Pakistan</option>
-                        <option value="Palau Island">Palau Island</option>
-                        <option value="Palestine">Palestine</option>
-                        <option value="Panama">Panama</option>
-                        <option value="Papua New Guinea">Papua New Guinea</option>
-                        <option value="Paraguay">Paraguay</option>
-                        <option value="Peru">Peru</option>
-                        <option value="Phillipines">Philippines</option>
-                        <option value="Pitcairn Island">Pitcairn Island</option>
-                        <option value="Poland">Poland</option>
-                        <option value="Portugal">Portugal</option>
-                        <option value="Puerto Rico">Puerto Rico</option>
-                        <option value="Qatar">Qatar</option>
-                        <option value="Republic of Montenegro">Republic of Montenegro</option>
-                        <option value="Republic of Serbia">Republic of Serbia</option>
-                        <option value="Reunion">Reunion</option>
-                        <option value="Romania">Romania</option>
-                        <option value="Russia">Russia</option>
-                        <option value="Rwanda">Rwanda</option>
-                        <option value="St Barthelemy">St Barthelemy</option>
-                        <option value="St Eustatius">St Eustatius</option>
-                        <option value="St Helena">St Helena</option>
-                        <option value="St Kitts-Nevis">St Kitts-Nevis</option>
-                        <option value="St Lucia">St Lucia</option>
-                        <option value="St Maarten">St Maarten</option>
-                        <option value="St Pierre & Miquelon">St Pierre & Miquelon</option>
-                        <option value="St Vincent & Grenadines">St Vincent & Grenadines</option>
-                        <option value="Saipan">Saipan</option>
-                        <option value="Samoa">Samoa</option>
-                        <option value="Samoa American">Samoa American</option>
-                        <option value="San Marino">San Marino</option>
-                        <option value="Sao Tome & Principe">Sao Tome & Principe</option>
-                        <option value="Saudi Arabia">Saudi Arabia</option>
-                        <option value="Senegal">Senegal</option>
-                        <option value="Seychelles">Seychelles</option>
-                        <option value="Sierra Leone">Sierra Leone</option>
-                        <option value="Singapore">Singapore</option>
-                        <option value="Slovakia">Slovakia</option>
-                        <option value="Slovenia">Slovenia</option>
-                        <option value="Solomon Islands">Solomon Islands</option>
-                        <option value="Somalia">Somalia</option>
-                        <option value="South Africa">South Africa</option>
-                        <option value="Spain">Spain</option>
-                        <option value="Sri Lanka">Sri Lanka</option>
-                        <option value="Sudan">Sudan</option>
-                        <option value="Suriname">Suriname</option>
-                        <option value="Swaziland">Swaziland</option>
-                        <option value="Sweden">Sweden</option>
-                        <option value="Switzerland">Switzerland</option>
-                        <option value="Syria">Syria</option>
-                        <option value="Tahiti">Tahiti</option>
-                        <option value="Taiwan">Taiwan</option>
-                        <option value="Tajikistan">Tajikistan</option>
-                        <option value="Tanzania">Tanzania</option>
-                        <option value="Thailand">Thailand</option>
-                        <option value="Togo">Togo</option>
-                        <option value="Tokelau">Tokelau</option>
-                        <option value="Tonga">Tonga</option>
-                        <option value="Trinidad & Tobago">Trinidad & Tobago</option>
-                        <option value="Tunisia">Tunisia</option>
-                        <option value="Turkey">Turkey</option>
-                        <option value="Turkmenistan">Turkmenistan</option>
-                        <option value="Turks & Caicos Is">Turks & Caicos Is</option>
-                        <option value="Tuvalu">Tuvalu</option>
-                        <option value="Uganda">Uganda</option>
-                        <option value="United Kingdom">United Kingdom</option>
-                        <option value="Ukraine">Ukraine</option>
-                        <option value="United Arab Erimates">United Arab Emirates</option>
-                        <option value="United States of America">United States of America</option>
-                        <option value="Uraguay">Uruguay</option>
-                        <option value="Uzbekistan">Uzbekistan</option>
-                        <option value="Vanuatu">Vanuatu</option>
-                        <option value="Vatican City State">Vatican City State</option>
-                        <option value="Venezuela">Venezuela</option>
-                        <option value="Vietnam">Vietnam</option>
-                        <option value="Virgin Islands (Brit)">Virgin Islands (Brit)</option>
-                        <option value="Virgin Islands (USA)">Virgin Islands (USA)</option>
-                        <option value="Wake Island">Wake Island</option>
-                        <option value="Wallis & Futana Is">Wallis & Futana Is</option>
-                        <option value="Yemen">Yemen</option>
-                        <option value="Zaire">Zaire</option>
-                        <option value="Zambia">Zambia</option>
-                        <option value="Zimbabwe">Zimbabwe</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <input class="form-control" type="text" name="collegename" placeholder ="College/University Name" required> 
-                    </div>
-                </div>
-                <div class="form-group form-row">
-                    <label class="col-md-3 col-form-label"></label>
-                    <div class="col">
-                        <input class="form-control" type="text" name="major" placeholder ="Major" required> 
-                    </div>
-                    <div class="col-md-1">
-                        <input class="form-control" type="text" name="graduateyear" placeholder ="year" required> 
-                    </div>
-                </div>
-                <div class="form-group form-row">
-                    <label class="col-md-3 col-form-label">Certification <br> <p class="text-muted" style="max-width:200px;">For verification purposes, this will remain private</p>  </label>
-                    <div class="col">
-                        <input type="file" name="profilePictureUpload2" id="profilePictureUpload2">
-                        <input type="hidden" id='trueFileCertName2' name="trueFileCertName2">
-                        <div class="font-weight-bold text-danger small" id="certErr2" style="display:none"></div>
-                    </div>
-                    <div class="col-s-1 col-form-label"><label>Date of Birth</label></div>
-                    <div class="col">
-                        <input type="date" name="dateofbirth" required/>
-                    </div>
-                    <div class="col-s-1 col-form-label"><label>NRIC</label></div>
-                    <div class="col">
-                        <input class="form-control" type="text" name="nric" placeholder ="nric" required> 
-                    </div>
+                    <br><br>
                 </div>
                 <br>
-                <hr>
-                <br>
-                    <h5 class="card-title mb-4">Tutor Account information</h5>
-                    <br>
-                <div class="form-group form-row">
-                    <label class="col-md-3 col-form-label">
-                        Username
-                    </label>
-                    <div class="col">
-                        <input class="form-control"  id="username" name="username" placeholder="username">
-                    </div>
-                    <div class="col-s-1 col-form-label">
-                        <label>Password</label>
-                    </div>
-                    <div class="col">
-                        <p>Password will be generated. Highly recommended for tutors to change after logging in.</p>
-                    </div>
-                    </div>
-                </div>
-                <div class="form-group form-row">
-                    <div class="col-md-3 col-form-label" style="padding-left:30px;">
-                        <label>Email</label>
-                    </div>
-                    <div class="col-md-3">
-                        <input class="form-control"  id="email" name="email" placeholder="your tutor's email">
-                    </div>
-                </div>
+                <button class="btn btn-primary float-right" type="submit">Submit</button>
+                <br><br><br>
+
+        </div>
+        </form>
+
+
+        <div id="Paris" class="tabcontent">
+            {{#if PITutor}}
+            <div>
+                <div class="container" height="35%;">
+
+                    <!-- {{views/partials/_errors.handlebars}} -->
+                    <div class="row">
+                        <aside class="col-md-3">
+                            <!-- COMPONENTS SIDEBAR -->
+                            <output>
+                                <div class="card" style="width: 270px;">
+                                    <article class="filter-group">
+                                        <header class="card-header">
+                                            <a href="#" data-toggle="collapse" data-target="#collapse_aside1">
+                                                <i class="icon-control fa fa-chevron-down"></i>
+                                                <h6 class="title">Tutors who applied</h6>
+                                            </a>
+                                        </header>
+                                        <div class="filter-content collapse show" id="collapse_aside1">
+                                            <div class="card-body"
+                                                style="width:100%; height: 300px;display: block; overflow: scroll;">
+                                                <p></p>
+                                                <ul class="list-group">
+                                                    {{!-- <button class="list-group-item"> My Account </button>
+                                                    <button class="list-group-item"> Change Password</button> --}}
+                                                    {{#each PITutor}}
+                                                    {{#ifEquals @index 0}}
+                                                    <button class="list-group-item active"
+                                                        onclick="openCity2(event, '{{pending_institution__tutor_id}}')">{{Username}}</button>
+                                                    {{else}}
+                                                    <button class="list-group-item"
+                                                        onclick="openCity2(event, '{{pending_institution__tutor_id}}')">{{Username}}</button>
+                                                    {{/ifEquals}}
+                                                    {{/each}}
+                                                </ul>
+                                            </div> <!-- card-body.// -->
+                                            <!-- ===================================================== -->
+                                        </div>
+                                    </article>
+                                </div> <!-- card.// -->
+                            </output>
+                            <!-- COMPONENTS SIDEBAR END .// -->
+                        </aside>
+
+
+
+                        <main class="col-md-9">
+
+
+                            <!-- ============================ COMPONENT 1  ================================= -->
+                            <article class="card card-product-list">
+                                <div class="row no-gutters">
+
+                                    <!-- ========================= SECTION INTRO ========================= -->
+                                    <section class="section-intro">
+                                        {{#each PITutor}}
+                                        {{#ifEquals @index 0}}
+                                        <div id="{{pending_institution__tutor_id}}" class="w3-container city2">
+                                            <button type="button" class="btn btn-primary float-left" data-toggle="modal"
+                                                data-target="#gohere{{pending_institution__tutor_id}}"
+                                                name="approvetutor" value="approvetutor" style="margin: 10px;">Approve
+                                                application</button>
+                                            <button type="button" class="btn btn-danger float-left" data-toggle="modal"
+                                                data-target="#reject{{pending_institution__tutor_id}}"
+                                                name="rejecttutor" value="rejecttutor"
+                                                style="margin: 10px;">Reject</button>
+                                            <br><br>
+                                            <main class="col-md-12" style="margin-left: 100px;">
+                                                <article class="mb-3">
+                                                    <br>
+                                                    <section class="container-fluid padding-y"
+                                                        style="min-height:84vh; width:100%;">
+                                                        <!-- ============================ COMPONENT LOGIN   ================================= -->
+
+                                                        <div class="col-md-12 mx-auto">
+                                                            <div class="bg-white shadow rounded overflow-hidden">
+                                                                <div class="px-4 pt-0 pb-4 cover">
+                                                                    <div class="media align-items-end profile-head">
+                                                                        <div class="profile mr-3"><img
+                                                                                src="/images/profilepictures/{{user.Profile_pic}}"
+                                                                                alt="..." width="130"
+                                                                                class="rounded mb-2 img-thumbnail">
+                                                                        </div>
+                                                                        <div class="media-body mb-5"
+                                                                            style="color: grey">
+                                                                            <h4 class="mt-0 mb-0">{{Username}}</h4>
+                                                                            <p class="small mb-4"> {{user.Email}}</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div
+                                                                    class="bg-light p-4 d-flex justify-content-end text-center">
+                                                                    <ul class="list-inline mb-0">
+                                                                        <li class="list-inline-item">
+                                                                            <h5 class="font-weight-bold mb-0 d-block">0
+                                                                            </h5><small class="text-muted"> <i
+                                                                                    class="fas fa-image mr-1"></i>No. of
+                                                                                Sessions</small>
+                                                                        </li>
+                                                                        <li class="list-inline-item">
+                                                                            <h5 class="font-weight-bold mb-0 d-block">0
+                                                                            </h5><small class="text-muted"> <i
+                                                                                    class="fas fa-user mr-1"></i>Total
+                                                                                No. of Hours</small>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+                                                                <div class="px-4 py-3">
+                                                                    <h5 class="mb-0">About</h5>
+                                                                    <div class="p-4 rounded shadow-sm bg-light">
+                                                                        {{#if user.description}}
+                                                                        {{user.description}}
+                                                                        {{else}}
+                                                                        The user has not written a description of
+                                                                        themself.
+                                                                        {{/if}}
+                                                                    </div>
+                                                                </div>
+                                                                <div class="py-4 px-4"></div>
+                                                                {{#if (ifSame user.AccountTypeID 1)}}
+                                                                <div
+                                                                    class="d-flex align-items-center justify-content-between mb-3">
+                                                                    <h5 class="mb-0">My Courses</h5>
+                                                                </div>
+                                                                <div class="slider-items-owl owl-carousel owl-theme"
+                                                                    style="margin-left:2em;">
+                                                                    {{#each PITutorCourse }}
+                                                                    <div class="item-slide">
+                                                                        <figure class="card card-product-grid"
+                                                                            style="width: 18rem;">
+                                                                            <img class="card-img-top"
+                                                                                src="/images/coursethumbnails/{{Course_thumbnail}}"
+                                                                                height="140" width="240">
+                                                                            <div class="widget-header">
+                                                                                <a href="#" class="ml-3 icontext"
+                                                                                    data-toggle="dropdown"
+                                                                                    data-offset="20,10">
+                                                                                    <div class="icon"><img
+                                                                                            class="icon icon-xs rounded-circle"
+                                                                                            src="/images/profilepictures/{{user.Profile_pic}}">
+                                                                                    </div>
+                                                                                    <div class="text">
+                                                                                        <small
+                                                                                            class="text-muted">{{user.FirstName}}
+                                                                                            {{user.LastName}}</small>
+                                                                                        <br>
+                                                                                    </div>
+                                                                                </a>
+                                                                            </div>
+                                                                            <figcaption class="info-wrap">
+                                                                                <h4 class="title"
+                                                                                    style="font-size:1.3em; height:58px">
+                                                                                    <a
+                                                                                        href="/course/updatecourse/{{course_id}}">{{Title}}</a>
+                                                                                </h4>
+                                                                                <p class="text-muted"
+                                                                                    style="font-size:0.9em; height:58px">
+                                                                                    {{Short_description}}
+                                                                                </p>
+                                                                                <br>
+                                                                                <h5>${{Hourlyrate}}/Hour</h5>
+                                                                            </figcaption>
+                                                                        </figure> <!-- card // -->
+                                                                    </div>
+                                                                    {{/each}}
+                                                                </div>
+                                                                {{/if}}
+                                                            </div>
+                                                        </div>
+                                                        <br><br><br>
+                                                        <div class="row">
+                                                            <div class="col">
+                                                                <h3>Reason of Application</h3>
+                                                                <br>
+                                                                <label>{{reason}}</label>
+                                                            </div>
+                                                        </div>
+                                                        <br><br>
+                                                        <div class="row">
+                                                            <div class="col">
+                                                                <h3>{{Username}}'s Resume</h3>
+                                                                <br>
+                                                                <label><a href="/pendingresumes/{{resume}}"
+                                                                        download>Download Resume</a></label>
+                                                            </div>
+                                                        </div>
+                                                    </section>
+
+                                                </article> <!-- card.// -->
+                                            </main>
+                                        </div>
+                                        {{else}}
+                                        <div id="{{pending_institution__tutor_id}}" class="w3-container city2"
+                                            style="display:none">
+                                            <button type="button" class="btn btn-primary float-left" data-toggle="modal"
+                                                data-target="#gohere{{pending_institution__tutor_id}}"
+                                                name="approvetutor" value="approvetutor" style="margin: 10px;">Approve
+                                                application</button>
+                                            <button type="button" class="btn btn-danger float-left" data-toggle="modal"
+                                                data-target="#reject{{pending_institution__tutor_id}}"
+                                                name="rejecttutor" value="rejecttutor"
+                                                style="margin: 10px;">Reject</button>
+                                            <br><br>
+                                            <main class="col-md-12" style="margin-left: 100px;">
+                                                <article class="mb-3">
+                                                    <br>
+                                                    <section class="container-fluid padding-y"
+                                                        style="min-height:84vh; width:100%;">
+                                                        <!-- ============================ COMPONENT LOGIN   ================================= -->
+
+                                                        <div class="col-md-12 mx-auto">
+                                                            <div class="bg-white shadow rounded overflow-hidden">
+                                                                <div class="px-4 pt-0 pb-4 cover">
+                                                                    <div class="media align-items-end profile-head">
+                                                                        <div class="profile mr-3"><img
+                                                                                src="/images/profilepictures/{{user.Profile_pic}}"
+                                                                                alt="..." width="130"
+                                                                                class="rounded mb-2 img-thumbnail">
+                                                                        </div>
+                                                                        <div class="media-body mb-5"
+                                                                            style="color: grey">
+                                                                            <h4 class="mt-0 mb-0">{{Username}}</h4>
+                                                                            <p class="small mb-4"> {{user.Email}}</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div
+                                                                    class="bg-light p-4 d-flex justify-content-end text-center">
+                                                                    <ul class="list-inline mb-0">
+                                                                        <li class="list-inline-item">
+                                                                            <h5 class="font-weight-bold mb-0 d-block">0
+                                                                            </h5><small class="text-muted"> <i
+                                                                                    class="fas fa-image mr-1"></i>No. of
+                                                                                Sessions</small>
+                                                                        </li>
+                                                                        <li class="list-inline-item">
+                                                                            <h5 class="font-weight-bold mb-0 d-block">0
+                                                                            </h5><small class="text-muted"> <i
+                                                                                    class="fas fa-user mr-1"></i>Total
+                                                                                No. of Hours</small>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+                                                                <div class="px-4 py-3">
+                                                                    <h5 class="mb-0">About</h5>
+                                                                    <div class="p-4 rounded shadow-sm bg-light">
+                                                                        {{#if user.description}}
+                                                                        {{user.description}}
+                                                                        {{else}}
+                                                                        The user has not written a description of
+                                                                        themself.
+                                                                        {{/if}}
+                                                                    </div>
+                                                                </div>
+                                                                <div class="py-4 px-4"></div>
+                                                                {{#if (ifSame user.AccountTypeID 1)}}
+                                                                <div
+                                                                    class="d-flex align-items-center justify-content-between mb-3">
+                                                                    <h5 class="mb-0">My Courses</h5>
+                                                                </div>
+                                                                <div class="slider-items-owl owl-carousel owl-theme"
+                                                                    style="margin-left:2em;">
+                                                                    {{#each PITutorCourse }}
+                                                                    <div class="item-slide">
+                                                                        <figure class="card card-product-grid"
+                                                                            style="width: 18rem;">
+                                                                            <img class="card-img-top"
+                                                                                src="/images/coursethumbnails/{{Course_thumbnail}}"
+                                                                                height="140" width="240">
+                                                                            <div class="widget-header">
+                                                                                <a href="#" class="ml-3 icontext"
+                                                                                    data-toggle="dropdown"
+                                                                                    data-offset="20,10">
+                                                                                    <div class="icon"><img
+                                                                                            class="icon icon-xs rounded-circle"
+                                                                                            src="/images/profilepictures/{{user.Profile_pic}}">
+                                                                                    </div>
+                                                                                    <div class="text">
+                                                                                        <small
+                                                                                            class="text-muted">{{user.FirstName}}
+                                                                                            {{user.LastName}}</small>
+                                                                                        <br>
+                                                                                    </div>
+                                                                                </a>
+                                                                            </div>
+                                                                            <figcaption class="info-wrap">
+                                                                                <h4 class="title"
+                                                                                    style="font-size:1.3em; height:58px">
+                                                                                    <a
+                                                                                        href="/course/updatecourse/{{course_id}}">{{Title}}</a>
+                                                                                </h4>
+                                                                                <p class="text-muted"
+                                                                                    style="font-size:0.9em; height:58px">
+                                                                                    {{Short_description}}
+                                                                                </p>
+                                                                                <br>
+                                                                                <h5>${{Hourlyrate}}/Hour</h5>
+                                                                            </figcaption>
+                                                                        </figure> <!-- card // -->
+                                                                    </div>
+                                                                    {{/each}}
+                                                                </div>
+                                                                {{/if}}
+                                                            </div>
+                                                        </div>
+                                                        <br><br><br>
+                                                        <div class="row">
+                                                            <div class="col">
+                                                                <h3>Reason of Application</h3>
+                                                                <br>
+                                                                <label>{{reason}}</label>
+                                                            </div>
+                                                        </div>
+                                                        <br><br>
+                                                        <div class="row">
+                                                            <div class="col">
+                                                                <h3>{{Username}}'s Resume</h3>
+                                                                <br>
+                                                                <label><a href="/pendingresumes/{{resume}}"
+                                                                        download>Download Resume</a></label>
+                                                            </div>
+                                                        </div>
+                                                    </section>
+
+                                                </article> <!-- card.// -->
+                                            </main>
+                                        </div>
+                                        {{/ifEquals}}
+                                        
+                                        {{/each}}
+                                        {{#each PITutor}}
+                                        
+                                            <div class="modal fade" id="gohere{{pending_institution__tutor_id}}"
+                                                tabindex="-1" role="dialog" aria-labelledby="addbannerslabel"
+                                                aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="addbannerslabel">Approving
+                                                                {{Username}}.......</h5>
+                                                            <button type="button" class="close" data-dismiss="modal"
+                                                                aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <form class="block-register" action="/institution_admin/registertutor/approvetutor" method="POST">
+                                                        <div class="modal-body">
+                                                            <br>
+                                                            <div class="col-md-12">
+                                                                <h6>Are you sure you wish to add {{Username}} to your
+                                                                    institution?</h6>
+                                                            </div>
+                                                            <input type="hidden" value="{{institutionInstitutionId}}"
+                                                                name="institutionid" id="institutionid">
+                                                            </input>
+                                                            <input type="hidden" value="{{userUserId}}"
+                                                                name="approvethetutor" id="approvethetutor"></input>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-dismiss="modal">Close</button>
+                                                            <button type="submit"
+                                                                class="btn btn-primary">Approve</button>
+                                                        </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        
+                                            <div class="modal fade" id="reject{{pending_institution__tutor_id}}"
+                                                tabindex="-1" role="dialog" aria-labelledby="addbannerslabel"
+                                                aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="addbannerslabel">Rejecting
+                                                                {{Username}}.......</h5>
+                                                            <button type="button" class="close" data-dismiss="modal"
+                                                                aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <form class="block-register" action="/institution_admin/registertutor/rejecttutor" method="POST">
+                                                        <div class="modal-body">
+                                                            <br>
+                                                            <div class="col-md-12">
+                                                                <h6>Are you sure you wish to reject {{Username}}'s'
+                                                                    application?</h6>
+                                                            </div>
+                                                            <input type="hidden" value="{{pending_institution__tutor_id}}"
+                                                                name="rejectthetutor" id="rejectthetutor">
+                                                            </input>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-dismiss="modal">Close</button>
+                                                            <button type="submit" class="btn btn-danger"
+                                                                >Reject</button>
+                                                        </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        
+                                        {{/each}}
+                                    </section>
+
+                                    <!-- ========================= SECTION  END// ========================= -->
+
+                                    <!-- ========================= FOOTER ========================= -->
+
+                                    <!-- ========================= FOOTER END // ========================= -->
+
+                                </div> <!-- row.// -->
+                            </article> <!-- card-product .// -->
+                            <!-- ============================ COMPONENT 1  END .// ================================= -->
+
+                            <!-- ============================ COMPONENT 3 .//END ================================= -->
+                        </main> <!-- col.// -->
+                    </div> <!-- row.// -->
+
+
+                </div> <!-- container .//  -->
+            </div>
+
+        </div>
+        {{else}}
+        <div class="card-banner" style="height:500px;">
+            <div class="p-4" style="width:50%; margin-top: 200px;">
+                <h2 class="card-title">Oops. No Tutors have applied to your institution</h2>
+                <h6>This page will be available if there are Tutors who applied to your institution.</h6>
             </div>
             <br>
-            <button class="btn btn-primary float-right" type="submit">Submit</button>
+            <img src="/images/banners/nopage.png" height="500px;" class="img-bg">
         </div>
-    </form>
-    <br>
-</section>
+        {{/if}}
+    </section>
 </section>
 <script>
+    function openCity2(evt, cityName) {
+        var i, tablinks;
+        var x = document.getElementsByClassName("city2");
+        tablinks = document.getElementsByClassName("list-group-item");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        for (i = 0; i < x.length; i++) {
+            x[i].style.display = "none";
+        }
+        document.getElementById(cityName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+
+    function openCity(evt, cityName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(cityName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+
+    // Get the element with id="defaultOpen" and click on it
+    document.getElementById("defaultOpen").click();
+
     $('#datepicker').datepicker({
         format: 'dd/mm/yyyy',
         value: new Date().toLocaleDateString(),
@@ -454,7 +1029,7 @@
                     $('#certErr2').hide();
                 }
             },
-            error: function (xhr,errorType,exception) {
+            error: function (xhr, errorType, exception) {
                 //responseText = jQuery.parseJSON(xhr.responseText);
                 alert(" Can't do because: ", errorType);
             }

@@ -6,32 +6,32 @@ const path = require('path');
 const storageForUploads = multer.diskStorage({
     destination: './public/pendingcerts',
     filename: function(req, file, cb) { //cb is a callback function (null, destination string)
-        cb(null,req.user.user_id +'-'+ file.fieldname + '-' + Date.now() + path.extname(file.originalname))//callback(err, ) we dont want error so we just put null
+        cb(null, req.user.user_id + '-' + file.fieldname + '-' + Date.now() + path.extname(file.originalname)) //callback(err, ) we dont want error so we just put null
     }
 });
 
 //Init upload
-const upload  = multer({
+const upload = multer({
     storage: storageForUploads,
-    limits: {fileSize:  10000000},
-    fileFilter: function(req,file,cb){
+    limits: { fileSize: 10000000 },
+    fileFilter: function(req, file, cb) {
         checkFileType(file, cb);
     }
 }).single('profilePictureUpload')
 
-function checkFileType(file, cb){
+function checkFileType(file, cb) {
     //Allowed ext
-    const filetypes =  /doc|docx|odt|pdf/; //reqex
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());//test the file ext on all the allowed file types
-  
+    const filetypes = /doc|docx|odt|pdf|zip/; //reqex
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase()); //test the file ext on all the allowed file types
+
     const mimetype = filetypes.test(file.mimetype);
-  
-    if(mimetype && extname){
-        return cb(null,true);
-    } else{
+
+    if (mimetype && extname) {
+        return cb(null, true);
+    } else {
         cb('Accepted file types: pdf, doc or docx')
     }
-  
+
 };
 
 

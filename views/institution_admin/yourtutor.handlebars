@@ -14,11 +14,11 @@
     <div class="row">
       <div class="col-md-12">
         <!-- ============================ COMPONENT BANNER 7 ================================= -->
-        <div class="card-banner text-center" style="min-height:200px;">
-          <div style="margin-left: 400px;">
+        <div class="card-banner justify-content-center" style="min-height:200px;">
+          <div class="text-center">
             <br>
             <br>
-            <h1 class="card-title" style="font-size: 60px;">Your Tutors</h1>
+            <h1 class="card-title float-middle" style="font-size: 60px;">Your Tutor</h1>
             <p>Look at all the tutors under your institution.</p>
           </div>
         </div>
@@ -92,9 +92,10 @@
         <td>{{LastName}}</td>
         <td>{{Username}}</td>
         <td>{{Email}}</td>
-        <td>{{Description}}</td>
+        <td>{{description}}</td>
         <td>
-          {{Profile_pic}}
+          <img src="/images/profilepictures/{{Profile_pic}}"
+                      width="170" height="135" class="border">
           <br>
           <br>
           <span>
@@ -113,18 +114,18 @@
         </td>
       </tr>
 
-      <form class="block-register" action="/institution_admin/yourtutor/updatetutortable" method="POST">
-        <div class="modal fade" id="updatetutortable{{user_id}}" tabindex="-1" role="dialog"
-          aria-labelledby="updatetutortablelabel" aria-hidden="true">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="updatetutortablelabel">Update {{FirstName}} {{LastName}}'s Details</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span
-                    aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body">
+      <div class="modal fade" id="updatetutortable{{user_id}}" tabindex="-1" role="dialog"
+        aria-labelledby="updatetutortablelabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="updatetutortablelabel">Update {{FirstName}} {{LastName}}'s Details</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span
+                  aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form class="block-register" action="/institution_admin/yourtutor/updatetutortable" method="POST">
                 <div class="form-group form-row">
                   <div class="col-md-6">
                     <label>Tutor's profile</label>
@@ -132,7 +133,7 @@
                     <img id='profileThumbnail' name="profileThumbnail" src="/images/profilepictures/{{Profile_pic}}"
                       width="240" height="135" class="border">
                     <div style="position:relative; "></div>
-                    <input type="file" name="profilePictureUpload4" id="profilePictureUpload4" value="{{Profile_pic}}">
+                    <input type="file" name="profilePictureUpload4" id="profilePictureUpload4" value="{{Profile_pic}}" accept="image/png, image/jpeg, image/jpg, image/gif">
                     <input type="hidden" id='trueFileInstitutionProfileName' name="trueFileInstitutionProfileName"
                       value="{{Profile_pic}}">
                     <input type="hidden" id='deletetutortableid' name="deletetutortableid" value="{{user_id}}">
@@ -149,7 +150,7 @@
                   </div>
                   <div class="col-s-1">
                     <input class="form-control" type="text" name="FirstName" placeholder="first name"
-                      value="{{FirstName}}" required>
+                      value="{{FirstName}}" >
                   </div>
                   <br>
                 </div>
@@ -159,7 +160,7 @@
                   </div>
                   <div class="col-s-1">
                     <input class="form-control" type="text" name="LastName" placeholder="Last name" value="{{LastName}}"
-                      required>
+                      >
                   </div>
                 </div>
                 <div class="form-group form-row">
@@ -168,7 +169,7 @@
                   </div>
                   <div class="col-s-1">
                     <input class="form-control" type="text" name="Username" placeholder="Username" value="{{Username}}"
-                      required>
+                      >
                   </div>
                 </div>
                 <div class="form-group form-row">
@@ -176,43 +177,59 @@
                     <label>Email: </label>
                   </div>
                   <div class="col-s-1">
-                    <input class="form-control" type="text" name="Email" placeholder="Email" value="{{Email}}" required>
+                    <input class="form-control" type="text" name="Email" placeholder="Email" value="{{Email}}" >
                   </div>
                 </div>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary">Update Changes</button>
-              </div>
+                <div class="form-group form-row">
+                  <div class="col-s-1 col-form-label">
+                    <label>Description: </label>
+                  </div>
+                  <div class="col-s-1">
+                    <textarea class="form-control" name="Description" value="{{description}}"
+                      placeholder="Tell me about your tutor!" >{{description}}</textarea>
+                  </div>
+                </div>
             </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Update Changes</button>
+            </div>
+            </form>
           </div>
         </div>
-      </form>
+      </div>
 
-      <form class="block-register" action="/institution_admin/yourtutor/deletetutortable" method="POST">
-        <div class="modal fade" id="deletetutortable{{user_id}}" tabindex="-1" role="dialog"
-          aria-labelledby="deletetutortablelabel" aria-hidden="true">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="deletetutortablelabel">Selected {{FirstName}} {{LastName}} to be deleted..
-                </h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span
-                    aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body">
-                <h4>Are you sure you want to remove {{Username}} from your institution?</h4>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-danger" name="removetutortable" value="{{user_id}}">Remove
-                  Tutor</button>
-              </div>
+
+      <div class="modal fade" id="deletetutortable{{user_id}}" tabindex="-1" role="dialog"
+        aria-labelledby="deletetutortablelabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="deletetutortablelabel">Selected {{FirstName}} {{LastName}} to be deleted..
+              </h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span
+                  aria-hidden="true">&times;</span>
+              </button>
             </div>
+            <form class="block-register" action="/institution_admin/yourtutor/deletetutortable" method="POST">
+            <div class="modal-body">
+              <h4>Are you sure you want to remove {{Username}} from your institution?</h4>
+              <br>
+              <p>If so, please state a reason of the removal. An email notification will be sent to {{Username}}
+                informing the removal of their account along with the reason.</p>
+              <textarea class="form-control" name="removalreason" value="{{removalreason}}"
+                placeholder="What is the reason for the removal of the tutor...." required></textarea>
+              <input type="hidden" id='tutoremail' name="tutoremail" value="{{Email}}">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-danger" name="removetutortable" value="{{user_id}}">Remove
+                Tutor</button>
+            </div>
+            </form>
           </div>
         </div>
-      </form>
+      </div>
       {{/each}}
     </tbody>
     <tfoot>
@@ -227,7 +244,24 @@
     </tfoot>
   </table>
   {{else}}
-  <h3>There are currently no registered Tutor under your institution.</h3>
+  
+      <br><br>
+<section class="container-fluid" style="min-height: 84vh; width: 90%">
+    <br>
+<div class="col-md-12">
+        <!-- ============================ COMPONENT ITEM BG ================================= -->
+        <div class="card-banner"style="height:500px;">
+            <div class="p-4" style="width:40%; margin-top: 180px;">
+                <h2 class="card-title" style="font-size: 31px;">Oops. Looks like there are currently no registered Tutor under your institution.</h2>
+                <h6>Register your tutors now to view their details.</h6>
+                <br>
+            </div>
+            <br>
+            <img src="/images/banners/completion.png" height="500px;" class="img-bg">
+        </div>
+        <!-- ============================ COMPONENT ITEM BG  END .// =========================== -->
+    </div> <!-- col.// -->
+</section>
   {{/if}}
 </section>
 <script>
@@ -258,28 +292,38 @@
   });
 
   $('#profilePictureUpload4').on('change', function () {
-    alert("are you going here?");
-    let image = $("#profilePictureUpload4")[0].files[0];
-    let formdata = new FormData();
-    formdata.append('profilePictureUpload', image);
-    alert("What about here?");
-    $.ajax({
-      url: '/institution_admin/profilePictureUpload4',
-      data: formdata,
-      contentType: false,
-      processData: false,
-      type: 'POST',
-      'success': (data) => {
-        console.log(data);
-        $('#profileThumbnail').attr('src', data.path);
-        $('#trueFileInstitutionProfileName').attr('value', data.file);
-        if (data.err) {
-          $('#profileErr').show();
-          $('#profileErr').text(data.err.message);
-        } else {
-          $('#profileErr').hide();
-        }
-      }
-    });
-  });
+		alert("hello");
+		var file = $("#profilePictureUpload4")[0].files[0];
+		var formdata = new FormData();
+		formdata.append('profilePictureUpload', file);
+
+		$.ajax({
+			url: '/institution_admin/profilePictureUpload4',
+			data: formdata,
+			contentType: false,
+			processData: false,
+			type: 'POST',
+			'success': (data) => {
+				console.log(data);
+				console.log(data.path);
+				$('#profileThumbnail').attr('src', data.path);
+
+				$('#trueFileInstitutionProfileName').attr('value', data.file);
+        alert(trueFileInstitutionProfileName);
+				if (data.err) {
+					$('#profileErr').show();
+					$('#profileErr').text(data.err.message);
+				}
+				else {
+					$('#profileErr').hide();
+				}
+			},
+			error: function (xhr, errorType, exception) {
+				//responseText = jQuery.parseJSON(xhr.responseText);
+				alert(" Can't do because: ", errorType);
+			}
+		});
+		//alert(data.file);
+	});
+
 </script>

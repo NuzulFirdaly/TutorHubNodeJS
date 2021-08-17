@@ -6,8 +6,10 @@ const profupload = require('../helpers/imageUploads');
 const User = require('../models/User');
 const alertMessage = require('../helpers/messenger');
 const professionalProfile = require('../models/professionalProfile');
+const ensureAuthenticated = require('../helpers/auth');
 
-router.get('/viewProfile/:id', async(req, res) => {
+
+router.get('/viewProfile/:id', ensureAuthenticated, async(req, res) => {
     var id = req.params.id;
     var tutor = await User.findOne({ where: { user_id: id } });
     var extra = await professionalProfile.findOne({ where: { userUserId: id } });
@@ -40,7 +42,7 @@ router.get('/viewProfile/:id', async(req, res) => {
     }
 })
 
-router.get('/Settings', async(req, res) => {
+router.get('/Settings', ensureAuthenticated, async(req, res) => {
     if (req.user !== null) {
         var extra = await professionalProfile.findOne({ where: { userUserId: req.user.dataValues.user_id } });
         console.log("bleh bleh bleh", extra);
@@ -70,7 +72,7 @@ router.get('/Settings', async(req, res) => {
     }
 });
 
-router.get('/editProfile', async(req, res) => {
+router.get('/editProfile', ensureAuthenticated, async(req, res) => {
     if (req.user !== null) {
         var extra = await professionalProfile.findOne({ where: { userUserId: req.user.dataValues.user_id } });
         if (req.user.AccountTypeID == 1) {

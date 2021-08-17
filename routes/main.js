@@ -181,7 +181,7 @@ router.post('/registerPost', [
                                 User.create({ FirstName, LastName, Username, Email, Password: hashedpassword })
                                     .then(user => {
                                         alertMessage(res, 'success', user.Username + ' added.Please login', 'fas fa-sign-in-alt', true);
-                                        professionalProfile.create({ color: white, background: null, userUserId: user.dataValues.user_id })
+                                        professionalProfile.create({ color: "white", background: null, userUserId: user.dataValues.user_id })
                                             .then(() => { res.redirect('/Login'); })
                                     }).catch(err => console.log(err));
                             }

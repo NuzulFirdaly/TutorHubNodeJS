@@ -11,6 +11,8 @@ const Widget = require("../models/widgets");
 const FeaturedTutor = require("../models/featuredinstitutiontutor");
 const CourseListing = require("../models/CoursesListing");
 const FeaturedCourse = require("../models/featuredinstitutioncourses");
+const ItemListing = require("../models/ItemListing");
+const PendingInstitutionTutor = require("../models/PendingInstitutionTutor");
 
 console.log("Retrieve messenger helper flash");
 const alertMessage = require('../helpers/messenger');
@@ -46,7 +48,7 @@ const { error } = require('console');
 
 // Email
 const nodemailer = require('nodemailer');
-const { google } = require('googleapis');
+const { google, containeranalysis_v1alpha1 } = require('googleapis');
 const CLIENT_ID = '993285737810-tfpuqq5vhfdjk5s5ng5v6vcbc3cht53s.apps.googleusercontent.com';
 const CLIENT_SECRET = 'uvWjFqdiAgVK_sFq_uaYcbGV';
 const REDIRECT_URI = 'https://developers.google.com/oauthplayground';
@@ -91,6 +93,141 @@ async function sendMailRegisterTutor(custom_mailemail,
     }
 }
 
+async function sendMailRemoveCourse(custom_mailemail, coursename,
+    removealreason) {
+    try {
+        const accessToken = await oAuth2Client.getAccessToken();
+
+        const transport = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                type: 'OAuth2',
+                user: 'adm.tutorhub@gmail.com',
+                clientId: CLIENT_ID,
+                clientSecret: CLIENT_SECRET,
+                refreshToken: REFRESH_TOKEN,
+                accessToken: accessToken,
+            },
+        });
+
+        const mailOptions = {
+            from: 'TutorHub Administrator 👨‍🏫<adm.tutorhub@gmail.com>',
+            to: custom_mailemail,
+            subject: "Removal of your course: " + coursename,
+            html: "<h3> Unfortunately, your course: </h3>" + coursename + " was removed by your institution. \
+            <br> <p>This is the reason why your course was remove.</p>" + removealreason + "<br><p>If there was a mistake, please inform your administrator immediately.</p>"
+        };
+
+        const result = await transport.sendMail(mailOptions)
+        return result;
+
+    } catch (error) {
+        return error;
+    }
+}
+
+async function sendMailRemoveTutor(custom_mailemail, removealreason, institution) {
+    try {
+        const accessToken = await oAuth2Client.getAccessToken();
+
+        const transport = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                type: 'OAuth2',
+                user: 'adm.tutorhub@gmail.com',
+                clientId: CLIENT_ID,
+                clientSecret: CLIENT_SECRET,
+                refreshToken: REFRESH_TOKEN,
+                accessToken: accessToken,
+            },
+        });
+
+        const mailOptions = {
+            from: 'TutorHub Administrator 👨‍🏫<adm.tutorhub@gmail.com>',
+            to: custom_mailemail,
+            subject: "You have been removed from  " + institution,
+            html: "<h3> Unfortunately, " + institution + " removed you from their institution. Due to the removal and security purposes, your account has been deleted. \
+            <br> <p>This is the reason why you were removed.</p>" + removealreason + "<br><p>If there was a mistake, please inform your administrator immediately.</p>"
+        };
+
+        const result = await transport.sendMail(mailOptions)
+        return result;
+
+    } catch (error) {
+        return error;
+    }
+}
+
+async function sendMailUpdateCourse(custom_mailemail, coursename,
+    thumbnail, shortdescription, description, hourylrate) {
+    try {
+        const accessToken = await oAuth2Client.getAccessToken();
+
+        const transport = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                type: 'OAuth2',
+                user: 'adm.tutorhub@gmail.com',
+                clientId: CLIENT_ID,
+                clientSecret: CLIENT_SECRET,
+                refreshToken: REFRESH_TOKEN,
+                accessToken: accessToken,
+            },
+        });
+
+        const mailOptions = {
+            from: 'TutorHub Administrator 👨‍🏫<adm.tutorhub@gmail.com>',
+            to: custom_mailemail,
+            subject: "Your course " + coursename + " has been updated by your administrator",
+            html: "<h3>Here are the details of your updated course. </h3>" + "<br> \
+            <p>Title: </p>" + coursename + "<br><p>Short Description: </p>" + shortdescription + "<br> \
+            <p>description: </p>" + description + "<br><p><Hourly rate: /p>" + hourylrate + "<br> \
+            <p>Thumbnail File: </p>" + thumbnail + "<br><p>If there was a mistake, please inform your administrator immediately.</p>"
+        };
+
+        const result = await transport.sendMail(mailOptions)
+        return result;
+
+    } catch (error) {
+        return error;
+    }
+}
+
+async function sendMailUpdateTutor(custom_mailemail, profilepic, firstname, lastname, username, email, description) {
+    try {
+        const accessToken = await oAuth2Client.getAccessToken();
+
+        const transport = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                type: 'OAuth2',
+                user: 'adm.tutorhub@gmail.com',
+                clientId: CLIENT_ID,
+                clientSecret: CLIENT_SECRET,
+                refreshToken: REFRESH_TOKEN,
+                accessToken: accessToken,
+            },
+        });
+
+        const mailOptions = {
+            from: 'TutorHub Administrator 👨‍🏫<adm.tutorhub@gmail.com>',
+            to: custom_mailemail,
+            subject: "Your Account details have been updated by your administrator",
+            html: "<h3>Here are the updated details of your account.</h3>" + "<br> \
+            <p>First Name: </p>" + firstname + "<br> <p>Last Name: </p>" + lastname + "<br> \
+            <p>Username: </p>" + username + "<br><p>Email: </p>" + email + "<br><p>Description: </p>" + description + "\
+            <br><p>Profile picture file: </p>" + profilepic + " \
+            <br><p>If there was a mistake, please inform your administrator immediately.</p>"
+        };
+
+        const result = await transport.sendMail(mailOptions)
+        return result;
+
+    } catch (error) {
+        return error;
+    }
+}
+
 
 // ---------------------------------------------
 router.use(express.urlencoded({
@@ -106,27 +243,24 @@ var allfeaturetutors;
 var allcourselistings;
 var allfeaturedcourse;
 
+var pendITTutor;
+var pendITTutCourse;
+
+
+
+
 // show edit home page  -- Main overall page
 router.get('/showyourpage', async(req, res) => {
     if ((req.user) && (req.user.AccountTypeID == 2)) {
-        console.log("Fetching admin id.....");
+        // obtaining the institution Admin id in order for them to edit their specific institution page
+        console.log("Fetching Institution Admin Id....................");
         institutionadminid = req.user.dataValues.user_id;
-        console.log(institutionadminid);
-        console.log("Fetching adminid successful");
-        // Institution.findOne({
-        // 	where: {
-        // 		user_id: req.params.institutionadminid
-        // 	},
-        // 	raw: true,
-        // 	// order: [[]]
-        // })
-        // .then(institutionadmin => {
-        // 	if(institutionadmin.user_id == req.user.user_id) {
-        // 		res.render('institution_admin/yourpage', {title: "Your institution", layout: 'institution_admin_base'})
-        // 	}
-        // });,
-        // ----
-        console.log("Finding institution.........");
+        console.log("This is the admin id: ", institutionadminid);
+        console.log("Fetching Institution Admin Id successful............................");
+
+        // Finding the institution associated with the admin.
+        // for security purposes (in order for others not to be able to edit other pages), Institution and admin id will not need to be pass through URL
+        console.log("Finding institution associated with admin.........");
         Institution.findOne({
                 where: {
                     AdminUserID: institutionadminid
@@ -134,11 +268,15 @@ router.get('/showyourpage', async(req, res) => {
                 raw: true
             })
             .then(async(institute) => {
+                //getting the institution id to be used to get the items under it
                 console.log("fetching institution id........");
                 institutionid = institute.institution_id;
                 console.log("Institution id: ", institutionid);
-                console.log("Fetching institutionid complete...");
+                console.log("Fetching institutionid complete......");
+
+                //Getting all items from the models and putting into array
                 if (institute) {
+                    // if institution is found it will go here
                     // getting all banners
                     console.log("Fetching all institution banners.........");
                     await Banner.findAll({
@@ -150,18 +288,12 @@ router.get('/showyourpage', async(req, res) => {
                         .then((banners) => {
                             console.log("Putting banners into bannerarray....");
                             console.log(banners);
-                            // res.render('institution_admin/yourpage', {
-                            //     title: "Your institution",
-                            //     layout: 'institution_admin_base',
-                            //     user: req.user.dataValues,
-                            //     bannerarray: banners
-                            // });
                             banneritems = banners
                             console.log("successfully put banners into bannerarray..");
                         }).catch(err => console.log(err));
 
                     // getting all institution tutors
-                    console.log("Fetching all institution's tutors");
+                    console.log("Fetching all institution's tutors.....");
                     await User.findAll({
                             where: {
                                 AccountTypeID: 1,
@@ -177,7 +309,7 @@ router.get('/showyourpage', async(req, res) => {
                         }).catch(err => console.log(err));
 
                     // getting institution's description
-                    console.log("Fetching institution's descriptions")
+                    console.log("Fetching institution's descriptions......")
                     await Description.findAll({
                             where: {
                                 institutionInstitutionId: institutionid
@@ -185,7 +317,7 @@ router.get('/showyourpage', async(req, res) => {
                             raw: true
                         })
                         .then(founddescription => {
-                            console.log("Putting descriptions into descriptionarray");
+                            console.log("Putting descriptions into descriptionarray......");
                             console.log(founddescription);
                             bothdescriptions = founddescription
                             console.log("successfully put descriptions into descriptionarray...");
@@ -200,10 +332,10 @@ router.get('/showyourpage', async(req, res) => {
                             raw: true
                         })
                         .then(foundwidget => {
-                            console.log("putting widget into widgetarray");
+                            console.log("putting widget into widgetarray......");
                             console.log(foundwidget);
                             allwidgets = foundwidget
-                            console.log("successfully put widgets into widgetsarray..");
+                            console.log("successfully put widgets into widgetsarray.....");
                         }).catch(err => console.log(err));
 
                     // getting institution's seminar
@@ -215,10 +347,10 @@ router.get('/showyourpage', async(req, res) => {
                             raw: true
                         })
                         .then(foundseminar => {
-                            console.log("putting seminar into seminaraaray");
+                            console.log("putting seminar into seminaraaray.....");
                             console.log(foundseminar);
                             allseminars = foundseminar
-                            console.log("successfully put seminar into seminararray");
+                            console.log("successfully put seminar into seminararray......");
                         }).catch(err => console.log(err));
 
                     // getting institution's featured tutors
@@ -229,10 +361,10 @@ router.get('/showyourpage', async(req, res) => {
                             raw: true
                         })
                         .then(foundfeaturetutor => {
-                            console.log("Putting featured tutors into array");
+                            console.log("Putting featured tutors into array.....");
                             console.log(foundfeaturetutor);
                             allfeaturetutors = foundfeaturetutor
-                            console.log("successfully put featured tutor in array");
+                            console.log("successfully put featured tutor in array.....");
                         }).catch(err => console.log(err));
 
                     // getting institution's courses
@@ -243,10 +375,10 @@ router.get('/showyourpage', async(req, res) => {
                             include: { model: User }
                         })
                         .then(foundcourse => {
-                            console.log("Putting course into courselistingarray");
+                            console.log("Putting course into courselistingarray.....");
                             console.log(foundcourse);
                             allcourselistings = foundcourse;
-                            console.log("Successfully put courses into array.");
+                            console.log("Successfully put courses into array.......");
                         }).catch(err => console.log(err));
 
                     // getting institution featured courses
@@ -257,12 +389,15 @@ router.get('/showyourpage', async(req, res) => {
                             raw: true
                         })
                         .then(foundfeaturecourse => {
-                            console.log("Putting course into allfeaturedcoursearray");
+                            console.log("Putting course into allfeaturedcoursearray.....");
                             console.log(foundfeaturecourse);
                             allfeaturedcourse = foundfeaturecourse;
-                            console.log("Successfully put courses into array.");
+                            console.log("Successfully put courses into array.......");
                         });
-
+                    // if (logincount == 0) {
+                    //     await alertMessage(res, 'success', 'Successfully Logged in. Welcome Back!', 'fas fa-sign-in-alt', true);
+                    //     logincount++;
+                    // }
                     // render page
                     res.render('institution_admin/yourpage', {
                         title: "Your institution",
@@ -278,20 +413,27 @@ router.get('/showyourpage', async(req, res) => {
                         allfeaturedcoursearray: allfeaturedcourse
                     });
                 } else {
+                    //institution does not exist.
                     console.log("Unable to find institution");
+                    alertMessage(res, 'danger', 'Institution does not exist!', 'fas fa-sign-in-alt', true);
+                    res.redirect("/")
                 }
             }).catch(err => console.log(err));
     } else {
+        alertMessage(res, 'danger', 'You do not have access to that page!', 'fas fa-sign-in-alt', true);
         res.redirect("/")
     };
 });
 
+// -----------------------------------------------------------------------------------
 
 
 
-// show edit main school logo -------------------------------
+
+// show edit main school logo ----------------------------------------------------------
 router.get('/showeditmainlogo', (req, res) => {
     if ((req.user) && (req.user.AccountTypeID == 2)) {
+        // getting the institution's admin to be used
         console.log("Fetching admin id.....");
         institutionadminid = req.user.dataValues.user_id;
         console.log(institutionadminid);
@@ -305,12 +447,13 @@ router.get('/showeditmainlogo', (req, res) => {
                 raw: true
             })
             .then((foundinstitution) => {
-                console.log("fetching institution id........");
-                institutionid = foundinstitution.institution_id;
-                console.log("Institution id: ", institutionid)
-                console.log("Fetching institutionid complete...");
-
                 if (foundinstitution) {
+                    //Institution that the admin is under has been found
+                    console.log("fetching institution id........");
+                    institutionid = foundinstitution.institution_id;
+                    console.log("Institution id: ", institutionid)
+                    console.log("Fetching institutionid complete...");
+
                     console.log("fetching main logo of institution and putting it into an array..");
                     res.render('institution_admin/editmainlogo', {
                         title: "Your institution",
@@ -318,75 +461,105 @@ router.get('/showeditmainlogo', (req, res) => {
                         user: req.user.dataValues,
                         mainlogoarray: foundinstitution
                     });
+                } else {
+                    // institution does not exist
+                    alertMessage(res, 'danger', 'Institution does not exist!', 'fas fa-sign-in-alt', true);
+                    res.redirect("/")
                 }
             });
     } else {
+        alertMessage(res, 'danger', 'You do not have access to that page!', 'fas fa-sign-in-alt', true);
         res.redirect("/")
     };
 });
 
-router.post('/editmainlogo/editlogo', [body('trueFileLogoName').not().isEmpty().trim().escape().withMessage("Please upload a logo image")], (req, res) => {
-    console.log("request edit main logo form........");
-    console.log(req.body);
-    let { trueFileLogoName } = req.body;
-    //console.log(trueFileLogoName);
-    let errors = [];
-    const validatorErrors = validationResult(req);
-    if (!validatorErrors.isEmpty()) {
-        console.log("There are errors uploading the logo. Please try again.");
-        validatorErrors.array().forEach(error => {
-            console.log(error);
-            errors.push({ text: error.msg })
-        })
-        Institution.findOne({
-                where: {
-                    AdminUserID: institutionadminid
-                },
-                raw: true
-            })
-            .then((foundinstitution) => {
-                console.log("fetching institution id........");
-                institutionid = foundinstitution.institution_id;
-                console.log("Institution id: ", institutionid)
-                console.log("Fetching institutionid complete...");
+//process upload form
+router.post('/editmainlogo/editlogo', [
+        body('trueFileLogoName').not().isEmpty().trim().escape().withMessage("Please upload a proper Image. Only accept the following format: jpeg, jpg, png, gif")
+    ],
+    (req, res) => {
+        //get the data from the form
+        console.log("request edit main logo form........");
+        console.log(req.body);
+        let { trueFileLogoName } = req.body;
+        //console.log(trueFileLogoName);
+        let errors = [];
+        const validatorErrors = validationResult(req);
 
-                if (foundinstitution) {
-                    console.log("fetching main logo of institution and putting it into an array..");
-                    res.render('institution_admin/editmainlogo', {
-                        title: "Your institution",
-                        layout: 'institution_admin_base',
-                        user: req.user.dataValues,
-                        mainlogoarray: foundinstitution,
-                        errors
-                    });
-                }
-            });
-    } else {
-        console.log("There are no errors found.");
-        userid = req.user.dataValues.user_id;
-        console.log("User id: ", userid);
-        Institution.findOne({
-                where: {
-                    AdminUserID: userid
-                },
-                order: [
-                    ['name', 'ASC']
-                ]
+        // validation if there are errors
+        if (!validatorErrors.isEmpty()) {
+            console.log("There are errors uploading the logo. Please try again.");
+            validatorErrors.array().forEach(error => {
+                console.log(error);
+                errors.push({ text: error.msg })
             })
-            .then(updateinstit => {
-                if (updateinstit) {
-                    console.log("This is the file: ", trueFileLogoName);
-                    updateinstit.update({ mainlogo: trueFileLogoName })
-                        .catch(err => console.log(err));
-                    console.log("Update main logo successfully");
-                    res.redirect('/institution_admin/showeditmainlogo');
-                } else {
-                    console.log("Updating main logo UNSUCCESSFUL.");
-                }
-            }).catch(err => console.log(err));
-    }
-});
 
+            // I didn't make the mainlogoarray a global variable, thus i have to find the image and put it in the array once more
+            Institution.findOne({
+                    where: {
+                        AdminUserID: institutionadminid
+                    },
+                    raw: true
+                })
+                .then((foundinstitution) => {
+                    console.log("fetching institution id........");
+                    institutionid = foundinstitution.institution_id;
+                    console.log("Institution id: ", institutionid)
+                    console.log("Fetching institutionid complete...");
+
+                    if (foundinstitution) {
+                        console.log("fetching main logo of institution and putting it into an array..");
+                        res.render('institution_admin/editmainlogo', {
+                            title: "Your institution",
+                            layout: 'institution_admin_base',
+                            user: req.user.dataValues,
+                            mainlogoarray: foundinstitution,
+                            errors
+                        });
+                    } else {
+                        // institution does not exist
+                        alertMessage(res, 'danger', 'Institution does not exist!', 'fas fa-sign-in-alt', true);
+                        res.redirect("/")
+                    }
+                });
+        } else {
+            //Uploading the institution new main logo image
+            console.log("There are no errors found.");
+            userid = req.user.dataValues.user_id;
+            console.log("User id: ", userid);
+            Institution.findOne({
+                    where: {
+                        AdminUserID: userid
+                    },
+                    order: [
+                        ['name', 'ASC']
+                    ]
+                })
+                .then(updateinstit => {
+                    if (updateinstit) {
+                        //institution is found
+                        console.log("This is the file: ", trueFileLogoName);
+
+                        updateinstit.update({
+                                mainlogo: trueFileLogoName
+                            })
+                            .catch(err => console.log(err));
+
+                        console.log("Update main logo successfully");
+                        res.redirect('/institution_admin/showeditmainlogo');
+                    } else {
+                        //institution not found
+                        console.log("Updating main logo UNSUCCESSFUL.");
+                        alertMessage(res, 'danger', 'Institution does not exist!', 'fas fa-sign-in-alt', true);
+                        res.redirect("/")
+
+                    }
+                })
+                .catch(err => console.log(err));
+        }
+    });
+
+//router for uploading main logo
 router.post('/institutionMainLogoUpload', (req, res) => {
     console.log("Attempting to upload main institution logo...");
     institutionMainLogoUpload(req, res, async(err) => {
@@ -405,42 +578,51 @@ router.post('/institutionMainLogoUpload', (req, res) => {
     });
 });
 
-// ------------------------------------------------------
+// -------------------------------------------------------------------------------------
+
 
 
 
 
 // show register tutor page -------------------------------------------------
-router.get('/showregistertutor', (req, res) => {
+router.get('/showregistertutor', async(req, res) => {
     if ((req.user) && (req.user.AccountTypeID == 2)) {
+        //get institution id
+        console.log("Getting institution's id.....");
+        institutionid = req.user.dataValues.institutionInstitutionId;
+        console.log("This is the institution id: ", institutionid);
+        console.log("Fetched of institution id compeleted");
+
+        await PendingInstitutionTutor.findAll({
+                where: {
+                    institutionInstitutionId: institutionid
+                },
+                include: { model: User }
+            })
+            .then(pendinginstitT => {
+                console.log("Here are the tutors who applied: ", pendinginstitT);
+                pendITTutor = pendinginstitT;
+            })
+            .catch(err => console.log(err));
+
+        await CourseListing.findAll({})
+            .then(tutorcourse => {
+                console.log("Here are all the courses: ", tutorcourse);
+                pendITTutCourse = tutorcourse;
+            })
+            .catch(err => console.log(err));
+
+
         res.render('institution_admin/registertutor', {
             title: "Your institution",
-            layout: 'institution_admin_base'
+            layout: 'institution_admin_base',
+            PITutor: pendITTutor,
+            PITutorCourse: pendITTutCourse
         });
     } else {
         res.redirect("/")
     };
 });
-
-// router.post("/profilePictureUpload", (req, res) => {
-//     profilePictureUpload(req, res, async (err) => {
-//         console.log("profile picture upload printing req.file.filename")
-//         console.log(req.file)
-//         if (err) {
-//             res.json({ err: err });
-//         } else {
-//             if (req.file === undefined) {
-//                 res.json({ err: err });
-//             } else {
-//                 res.json({ file: `${req.file.filename}`, path: '/images/profilepictures/' + `${req.file.filename}` });
-//                 //check to see if the course record exist or not if so just update it with the new picture
-//                 // await User.findOne({where: {user_id:  req.user.user_id } }).then(user => {
-//                 //     user.update({Profile_pic:req.file.filename})
-//                 // })
-//             }
-//         }
-//     });
-// })
 
 router.post('/pendingcertUpload2', (req, res) => {
     pendingcertsUpload(req, res, async(err) => {
@@ -461,7 +643,7 @@ router.post('/pendingcertUpload2', (req, res) => {
     });
 })
 
-router.post('/registertutor', [
+router.post('/registertutor/byadmin', [
     body('firstname').not().isEmpty().trim().escape().withMessage("First name is invalid"),
     body('lastname').not().isEmpty().trim().escape().withMessage("Last name is invalid"),
     body('description').not().isEmpty().trim().escape().withMessage("description is invalid"),
@@ -492,7 +674,7 @@ router.post('/registertutor', [
         }
         return true;
     }),
-    body('profilePictureUpload2').not().isEmpty().trim().escape().withMessage("Please upload a cert"),
+    body('profilePictureUpload2').not().isEmpty().trim().escape().withMessage("Please upload a proper Image. Only accept the following format: jpeg, jpg, png, gif"),
     body('username').not().isEmpty().trim().escape().withMessage("Username is invalid"),
     body('email').trim().isEmail().withMessage("Email must be a valid email").normalizeEmail().toLowerCase()
 ], ensureAuthenticated, (req, res) => {
@@ -505,7 +687,25 @@ router.post('/registertutor', [
         validatorErrors.array().forEach(error => {
             console.log(error);
             errors.push({ text: error.msg })
-        })
+        });
+        res.render('institution_admin/registertutor', {
+            title: "Your institution",
+            layout: 'institution_admin_base',
+            errors,
+            firstname,
+            lastname,
+            description,
+            username,
+            email,
+            occupation,
+            college_country,
+            collegename,
+            major,
+            nric,
+            toyear,
+            fromyear,
+            graduateyear
+        });
 
     } else {
         console.log("Creating instititution tutor...........");
@@ -514,6 +714,8 @@ router.post('/registertutor', [
             .then(user => {
                 if (user) {
                     res.render('institution_admin/registertutor', {
+                        title: "Your institution",
+                        layout: 'institution_admin_base',
                         error: email + ' already registered.',
                         firstname,
                         lastname,
@@ -566,6 +768,94 @@ router.post('/registertutor', [
             })
     }
 })
+
+var uploadnone = multer();
+router.post('/registertutor/approvetutor', [
+    body('approvethetutor').not().isEmpty().trim().escape().withMessage("Please select a tutor to approve")
+], uploadnone.none(), (req, res) => {
+    console.log("Processing approvable of tutor.....");
+    // console.log(req.body);
+    // let {approvethetutor, institutionid} = req.body;
+    let approvethetutor = req.body.approvethetutor;
+    let institutionid = req.body.institutionid;
+    console.log(approvethetutor);
+    let errors = [];
+    const validatorErrors = validationResult(req);
+    if (!validatorErrors.isEmpty()) { //if isEmpty is false
+        console.log("There are errors")
+        validatorErrors.array().forEach(error => {
+            console.log(error);
+            errors.push({ text: error.msg })
+        });
+        res.render('institution_admin/registertutor', {
+            title: "Your institution",
+            layout: 'institution_admin_base',
+            errors
+        });
+
+    } else {
+        PendingInstitutionTutor.findOne({
+            where: {
+                userUserId: approvethetutor
+            }
+        }).then(pendtut => {
+            if (pendtut) {
+                pendtut.destroy({})
+                User.findOne({
+                    where: {
+                        user_id: approvethetutor
+                    }
+                }).then(theuser => {
+                    theuser.update({ institutionInstitutionId: institutionid })
+                    alertMessage(res, 'success', "Successfully added.", 'fas fa-sign-in-alt', true);
+                    res.redirect("/institution_admin/showregistertutor")
+                }).catch(err => console.log(err));
+            } else {
+                console.log("User does not exist");
+            }
+        }).catch(err => console.log(err));
+    }
+
+});
+
+router.post('/registertutor/rejecttutor', [
+    body('rejectthetutor').not().isEmpty().trim().escape().withMessage("Please select a tutor to reject")
+], (req, res) => {
+    console.log("Processing approvable of tutor.....");
+    let { rejectthetutor } = req.body;
+    let errors = [];
+    const validatorErrors = validationResult(req);
+    if (!validatorErrors.isEmpty()) { //if isEmpty is false
+        console.log("There are errors")
+        validatorErrors.array().forEach(error => {
+            console.log(error);
+            errors.push({ text: error.msg })
+        });
+        res.render('institution_admin/registertutor', {
+            title: "Your institution",
+            layout: 'institution_admin_base',
+            errors
+        });
+
+    } else {
+        PendingInstitutionTutor.findOne({
+            where: {
+                pending_institution__tutor_id: rejectthetutor
+            }
+        }).then(pendtut => {
+            if (pendtut) {
+                console.log("Reject tutor...");
+                pendtut.destroy({})
+                alertMessage(res, 'success', "Successfully rejected.", 'fas fa-sign-in-alt', true);
+                res.redirect("/institution_admin/showregistertutor");
+            } else {
+                console.log("User does not exist");
+            }
+        }).catch(err => console.log(err));
+    }
+
+});
+
 
 router.get('/tutorcompletion', (req, res) => {
     if ((req.user) && (req.user.AccountTypeID == 2)) {
@@ -662,11 +952,57 @@ router.post('/profilePictureUpload4', (req, res) => {
             }
         }
     });
-})
+});
 
-router.post('/yourtutor/deletetutortable', uploadnone.none(), [body('removetutortable').not().isEmpty().escape().withMessage("Pleas select a tutor")], (req, res) => {
+router.post('/yourtutor/updatetutortable', [body('trueFileInstitutionProfileName').isEmpty().trim().escape().withMessage("Please upload a proper Image. Only accept the following format: jpeg, jpg, png, gif")], [body('FirstName').isEmpty().trim().escape().withMessage("Please enter a firstname")], [body('LastName').isEmpty().trim().escape().withMessage("Please enter a lastname")], [body('Username').isEmpty().trim().escape().withMessage("Please enter a username")], [body('Email').isEmpty().trim().escape().withMessage("Please enter a email")], [body('Description').isEmpty().trim().escape().withMessage("Please enter a description")],
+    (req, res) => {
+        console.log("Retrieving update tutor table");
+        let { trueFileInstitutionProfileName, FirstName, LastName, Username, Email, deletetutortableid, Description } = req.body;
+        let errors = [];
+        const validatorErrors = validationResult(req);
+        if (validatorErrors.isEmpty()) {
+            console.log("There are errors when deleting the tutor");
+            validatorErrors.array().forEach(error => {
+                console.log(error);
+                errors.push({ text: error.msg })
+            })
+            res.render('institution_admin/yourtutor', {
+                title: "Your institution",
+                layout: 'institution_admin_base',
+                user: req.user.dataValues,
+                institutiontutorarray: alloftutors,
+                errors
+            });
+        } else {
+            console.log("Updating tutor table...");
+            userid = req.user.dataValues.user_id;
+            Institution.findOne({
+                    where: {
+                        AdminUserID: userid
+                    }
+                })
+                .then(foundinstitution => {
+                    User.findOne({
+                        where: {
+                            institutionInstitutionId: foundinstitution.institution_id,
+                            user_id: deletetutortableid
+                        }
+                    }).then(updatetutor => {
+                        updatetutor.update({ Username: Username, FirstName: FirstName, LastName: LastName, Email: Email, Profile_pic: trueFileInstitutionProfileName, description: Description })
+                            .catch(err => console.log(err));
+                    }).catch(err => console.log(err));
+                }).catch(err => console.log(err));
+            sendMailUpdateTutor(Email, trueFileInstitutionProfileName, FirstName, LastName, Username, Email, Description)
+                .then((result) => console.log("Email sent...", result))
+                .catch((error) => console.log(error.message));
+            alertMessage(res, 'success', "Successfully updated.", 'fas fa-sign-in-alt', true);
+            res.redirect('/institution_admin/showyourtutors');
+        }
+    });
+
+router.post('/yourtutor/deletetutortable', uploadnone.none(), [body('removetutortable').not().isEmpty().escape().withMessage("Pleas select a tutor")], async(req, res) => {
     console.log("request delete tutor table form......");
-    let { removetutortable } = req.body;
+    let { removetutortable, tutoremail, removalreason } = req.body;
     console.log(removetutortable);
     let errors = [];
     const validatorErrors = validationResult(req);
@@ -691,20 +1027,44 @@ router.post('/yourtutor/deletetutortable', uploadnone.none(), [body('removetutor
                     AdminUserID: userid
                 }
             })
-            .then(deletebannerinst => {
+            .then(async(deletebannerinst) => {
+                console.log("this is the institution: ", deletebannerinst);
                 console.log("Attempting to delete tutor chosen.....");
                 console.log("tutor id to be deleted: ", removetutortable);
-                User.destroy({
+                await User.destroy({
                     where: {
                         institutionInstitutionId: deletebannerinst.institution_id,
                         user_id: removetutortable
                     }
                 }).catch(err => console.log(err));
 
-                res.redirect('/institution_admin/yourtutor');
+                await CourseListing.destroy({
+                    where: {
+                        institutionInstitutionId: deletebannerinst.institution_id,
+                        userUserId: removetutortable
+                    }
+                }).catch(err => console.log(err));
 
-                console.log("Successfully deleted the banner.");
-            })
+                await FeaturedTutor.destroy({
+                    where: {
+                        institutionInstitutionId: deletebannerinst.institution_id,
+                        User_id: removetutortable
+                    }
+                }).catch(err => console.log(err));
+
+                await ItemListing.destroy({
+                    where: {
+                        userUserId: removetutortable
+                    }
+                }).catch(err => console.log(err));
+                sendMailRemoveTutor(tutoremail, removalreason, deletebannerinst.name)
+                    .then((result) => console.log("Email sent...", result))
+                    .catch((error) => console.log(error.message));
+                alertMessage(res, 'success', "Successfully removed.", 'fas fa-sign-in-alt', true);
+                res.redirect('/institution_admin/showyourtutors');
+
+                console.log("Successfully deleted the tutor");
+            }).catch(err => console.log(err));
     }
 });
 // -----------------------------------------------------------------------
@@ -716,14 +1076,137 @@ router.post('/yourtutor/deletetutortable', uploadnone.none(), [body('removetutor
 // show your course page ----------------------------------------------------
 router.get('/showyourcourses', (req, res) => {
     if ((req.user) && (req.user.AccountTypeID == 2)) {
-        res.render('institution_admin/yourcourse', {
-            title: "Your institution",
-            layout: 'institution_admin_base'
-        });
+        institutionadminid = req.user.dataValues.user_id;
+        Institution.findOne({
+            where: {
+                AdminUserID: institutionadminid
+            },
+            raw: true
+        }).then(async(institute) => {
+            console.log("fetching institution id........");
+            institutionid = institute.institution_id;
+            console.log("Institution id: ", institutionid);
+            console.log("Fetching institutionid complete...");
+            if (institute) {
+                await CourseListing.findAll({
+                        where: {
+                            institutionInstitutionId: institutionid
+                        },
+                        include: { model: User }
+                    })
+                    .then(foundcourse => {
+                        console.log("Putting course into courselistingarray");
+                        console.log(foundcourse);
+                        allcourselistings = foundcourse;
+                        console.log("Successfully put courses into array.");
+                    }).catch(err => console.log(err));
+
+                res.render('institution_admin/yourcourse', {
+                    title: "Your institution",
+                    layout: 'institution_admin_base',
+                    user: req.user.dataValues,
+                    allinstcoursearray: allcourselistings
+                });
+            }
+        })
+
     } else {
         res.redirect("/");
     }
 });
+
+router.post('/yourcourse/updatecoursetable', [body('trueFileName').isEmpty().trim().escape().withMessage("Please upload a proper Image. Only accept the following format: jpeg, jpg, png, gif")], [body('coursetitle').isEmpty().trim().escape().withMessage("Please add a title")], [body('courseshortdescription').isEmpty().trim().escape().withMessage("Please add a short description")], [body('Description').isEmpty().trim().escape().withMessage("Please add a description")], [body('hourlyrate').isEmpty().trim().escape().withMessage("Please add a hourly rate")],
+
+    (req, res) => {
+        console.log("Retrieving update course table");
+        let { trueFileName, coursetitle, courseshortdescription, Description, hourlyrate, deletecoursetableid, courseemail } = req.body;
+        const validatorErrors = validationResult(req);
+        if (validatorErrors.isEmpty()) {
+            console.log("There are errors when deleting the course");
+            validatorErrors.array().forEach(error => {
+                console.log(error);
+                errors.push({ text: error.msg })
+            })
+            res.render('institution_admin/yourcourse', {
+                title: "Your institution",
+                layout: 'institution_admin_base',
+                user: req.user.dataValues,
+                allinstcoursearray: allcourselistings,
+                errors
+            });
+        } else {
+            console.log("updating course table...");
+            userid = req.user.dataValues.user_id;
+            Institution.findOne({
+                    where: {
+                        AdminUserID: userid
+                    }
+                })
+                .then(foundinstitution => {
+                    CourseListing.findOne({
+                        where: {
+                            institutionInstitutionId: foundinstitution.institution_id,
+                            course_id: deletecoursetableid
+                        }
+                    }).then(updatecourse => {
+                        updatecourse.update({ Title: coursetitle, Short_description: courseshortdescription, Description: Description, Hourlyrate: hourlyrate, Course_thumbnail: trueFileName })
+                            .catch(err => console.log(err));
+                    }).catch(err => console.log(err));
+                }).catch(err => console.log(err));
+            sendMailUpdateCourse(courseemail, coursetitle, trueFileName, courseshortdescription, Description, hourlyrate)
+                .then((result) => console.log("Email sent...", result))
+                .catch((error) => console.log(error.message));
+            alertMessage(res, 'success', "Successfully updated.", 'fas fa-sign-in-alt', true);
+            res.redirect('/institution_admin/showyourcourses');
+        }
+    });
+
+router.post('/yourcourse/deletecoursetable', uploadnone.none(), [body('removalreason').not().isEmpty().escape().withMessage("Please add a reason")], [body('removecoursetable').not().isEmpty().escape().withMessage("Pleas select a course")], [body('coursename').not().isEmpty().escape().withMessage("Pleas select a course")], [body('courseemail').not().isEmpty().escape().withMessage("please have an email")],
+    (req, res) => {
+        console.log("request delete course from table form ...");
+        let { removalreason, removecoursetable, coursename, courseemail } = req.body;
+        let errors = [];
+        const validatorErrors = validationResult(req);
+        if (!validatorErrors.isEmpty()) {
+            console.log("There are errors when deleting the course");
+            validatorErrors.array().forEach(error => {
+                console.log(error);
+                errors.push({ text: error.msg })
+            })
+            res.render('institution_admin/yourcourse', {
+                title: "Your institution",
+                layout: 'institution_admin_base',
+                user: req.user.dataValues,
+                allinstcoursearray: allcourselistings,
+                errors
+            });
+        } else {
+            console.log("There are no errors");
+            userid = req.user.dataValues.user_id;
+            Institution.findOne({
+                    where: {
+                        AdminUserID: userid
+                    }
+                })
+                .then(deletecourse => {
+                    console.log("Attempting to delete course chosen.....");
+                    console.log("course id to be deleted: ", removecoursetable);
+                    CourseListing.destroy({
+                        where: {
+                            institutionInstitutionId: deletecourse.institution_id,
+                            course_id: removecoursetable
+                        }
+                    }).catch(err => console.log(err));
+                    sendMailRemoveCourse(courseemail, coursename, removalreason)
+                        .then((result) => console.log("Email sent...", result))
+                        .catch((error) => console.log(error.message));
+                    alertMessage(res, 'success', "Successfully removed. Email has been sent to the tutor.", 'fas fa-sign-in-alt', true);
+                    res.redirect('/institution_admin/showyourcourses');
+
+                    console.log("Successfully deleted the tutor");
+                })
+        }
+    });
 // ------------------------------------------------------------------------
 
 
@@ -735,7 +1218,7 @@ router.get('/showyourcourses', (req, res) => {
 
 // CRUD for banner - Create -------------------------------------------------------------
 //var uploadB = multer({dest: 'public/images/Institutionpictures/banner/'});
-router.post('/yourpage/addbanner', [body('trueFileInstitutionName').not().isEmpty().trim().escape().withMessage("Please upload a banner image")], (req, res) => {
+router.post('/yourpage/addbanner', [body('trueFileInstitutionName').not().isEmpty().trim().escape().withMessage("Please upload a proper Image. Only accept the following format: jpeg, jpg, png, gif")], (req, res) => {
     console.log("request banner form.....");
     console.log(req.body);
     let { trueFileInstitutionName } = req.body;
@@ -750,6 +1233,8 @@ router.post('/yourpage/addbanner', [body('trueFileInstitutionName').not().isEmpt
             errors.push({ text: error.msg })
         })
         res.render('institution_admin/yourpage', {
+            title: "Your institution",
+            layout: 'institution_admin_base',
             user: req.user.dataValues,
             errors,
             bannerarray: banneritems,
@@ -821,6 +1306,9 @@ router.post('/yourpage/deletebanner', uploadnone.none(), [body('uploaddeletebann
             errors.push({ text: error.msg })
         })
         res.render('institution_admin/yourpage', {
+
+            title: "Your institution",
+            layout: 'institution_admin_base',
             user: req.user.dataValues,
             errors,
             bannerarray: banneritems,
@@ -849,7 +1337,7 @@ router.post('/yourpage/deletebanner', uploadnone.none(), [body('uploaddeletebann
                         banner_id: uploaddeletebanner
                     }
                 }).catch(err => console.log(err));
-
+                alertMessage(res, 'success', "Banner deleted.", 'fas fa-sign-in-alt', true);
                 res.redirect('/institution_admin/showyourpage');
 
                 console.log("Successfully deleted the banner.");
@@ -877,6 +1365,9 @@ router.post('/yourpage/editdescription',
                 errors.push({ text: error.msg });
             })
             res.render('institution_admin/yourpage', {
+
+                title: "Your institution",
+                layout: 'institution_admin_base',
                 user: req.user.dataValues,
                 errors,
                 bannerarray: banneritems,
@@ -915,6 +1406,7 @@ router.post('/yourpage/editdescription',
                             }
                         }).catch(err => console.log(err));
                 }).catch(err => console.log(err));
+            alertMessage(res, 'success', "Description updated.", 'fas fa-sign-in-alt', true);
             res.redirect('/institution_admin/showyourpage');
         }
     });
@@ -926,7 +1418,7 @@ router.post('/yourpage/editdescription',
 
 //CRUD for Widget -------------------------------------------------------------------------
 // var uploadSM = multer({ dest: 'public/images/Institutionpictures/socialmedia/' });
-router.post('/yourpage/addwidget', [body('trueFileWidgetName').not().isEmpty().trim().escape().withMessage("Please upload a widget image")], [body('widgeturl').not().isEmpty().withMessage("Please enter url")], (req, res) => {
+router.post('/yourpage/addwidget', [body('trueFileWidgetName').not().isEmpty().trim().escape().withMessage("Please upload a proper Image. Only accept the following format: jpeg, jpg, png, gif")], [body('widgeturl').not().isEmpty().withMessage("Please enter url")], (req, res) => {
     console.log("Requesting widget form....");
     let { trueFileWidgetName, widgeturl } = req.body;
     let errors = [];
@@ -939,6 +1431,9 @@ router.post('/yourpage/addwidget', [body('trueFileWidgetName').not().isEmpty().t
             errors.push({ text: error.msg })
         });
         res.render('institution_admin/yourpage', {
+
+            title: "Your institution",
+            layout: 'institution_admin_base',
             user: req.user.dataValues,
             errors,
             bannerarray: banneritems,
@@ -967,6 +1462,7 @@ router.post('/yourpage/addwidget', [body('trueFileWidgetName').not().isEmpty().t
                 Widget.create({ widgetimage: trueFileWidgetName, widgeturl: widgeturl, institutionInstitutionId: institution.institution_id })
                     .catch(err => console.log(err));
                 console.log("redirecting back to show your page");
+                alertMessage(res, 'success', "Widget added.", 'fas fa-sign-in-alt', true);
                 res.redirect('/institution_admin/showyourpage');
             } else {
                 console.log("Unable to find institution id. Error in uploading.");
@@ -994,7 +1490,7 @@ router.post('/institutionWidgetUpload', (req, res) => {
 
 });
 
-router.post("/yourpage/updatewidget", [body('trueFileWidgetName2').isEmpty().trim().escape().withMessage("Please upload a seminar image")], [body('widgeturl').isEmpty().withMessage("Please enter a url")], uploadnone.none(),
+router.post("/yourpage/updatewidget", [body('trueFileWidgetName2').isEmpty().trim().escape().withMessage("Please upload a proper Image. Only accept the following format: jpeg, jpg, png, gif")], [body('widgeturl').isEmpty().withMessage("Please enter a url")], uploadnone.none(),
     ensureAuthenticated, (req, res) => {
         console.log("Retireving update widget form....");
         let { trueFileWidgetName2, widgeturl, widgetid } = req.body;
@@ -1006,6 +1502,9 @@ router.post("/yourpage/updatewidget", [body('trueFileWidgetName2').isEmpty().tri
                 errors.push({ text: error.msg });
             })
             res.render('institution_admin/yourpage', {
+
+                title: "Your institution",
+                layout: 'institution_admin_base',
                 user: req.user.dataValues,
                 errors,
                 bannerarray: banneritems,
@@ -1036,6 +1535,7 @@ router.post("/yourpage/updatewidget", [body('trueFileWidgetName2').isEmpty().tri
                             updatewidgets.update({ widgetimage: trueFileWidgetName2, widgeturl: widgeturl })
                         }).catch(err => console.log(err));
                 }).catch(err => console.log(err));
+            alertMessage(res, 'success', "Widget updated.", 'fas fa-sign-in-alt', true);
             res.redirect('/institution_admin/showyourpage');
         }
     });
@@ -1054,6 +1554,9 @@ router.post('/yourpage/deletewidget', uploadnone.none(), [body('deletewidget').n
             errors.push({ text: error.msg });
         });
         res.render('institution_admin/yourpage', {
+
+            title: "Your institution",
+            layout: 'institution_admin_base',
             user: req.user.dataValues,
             errors,
             bannerarray: banneritems,
@@ -1082,7 +1585,7 @@ router.post('/yourpage/deletewidget', uploadnone.none(), [body('deletewidget').n
                         widget_id: deletewidget
                     }
                 }).catch(err => console.log(err));
-
+                alertMessage(res, 'success', "Widget deleted.", 'fas fa-sign-in-alt', true);
                 res.redirect('/institution_admin/showyourpage');
                 console.log("Successfully deleted the widget");
             }).catch(err => console.log(err));
@@ -1106,6 +1609,9 @@ router.post('/yourpage/featuretutor', uploadnone.none(), [body('featuretutor').n
             errors.push({ text: error.msg });
         });
         res.render('institution_admin/yourpage', {
+
+            title: "Your institution",
+            layout: 'institution_admin_base',
             user: req.user.dataValues,
             errors,
             bannerarray: banneritems,
@@ -1136,6 +1642,7 @@ router.post('/yourpage/featuretutor', uploadnone.none(), [body('featuretutor').n
                             FeaturedTutor.create({ Username: addfeaturetutor.Username, FirstName: addfeaturetutor.FirstName, LastName: addfeaturetutor.LastName, Profile_pic: addfeaturetutor.Profile_pic, User_id: featuretutor, institutionInstitutionId: fft.institution_id })
                                 .catch(err => console.log(err));
                             console.log("featured tutors added complete.");
+                            alertMessage(res, 'success', "Successfully Featured.", 'fas fa-sign-in-alt', true);
                             res.redirect('/institution_admin/showyourpage');
                         } else {
                             console.log("Tutor does not exist.");
@@ -1158,6 +1665,9 @@ router.post('/yourpage/removefeaturetutor', uploadnone.none(), [body('removefeat
             errors.push({ text: error.msg });
         });
         res.render('institution_admin/yourpage', {
+
+            title: "Your institution",
+            layout: 'institution_admin_base',
             user: req.user.dataValues,
             errors,
             bannerarray: banneritems,
@@ -1185,7 +1695,7 @@ router.post('/yourpage/removefeaturetutor', uploadnone.none(), [body('removefeat
                         User_id: removefeaturetutor
                     }
                 }).catch(err => console.log(err));
-
+                alertMessage(res, 'success', "Successfully removed.", 'fas fa-sign-in-alt', true);
                 res.redirect('/institution_admin/showyourpage');
                 console.log("Successfully deleted the featured tutor");
             });
@@ -1208,6 +1718,9 @@ router.post('/yourpage/featurecourses', uploadnone.none(), [body('featurecourse'
             errors.push({ text: error.msg });
         });
         res.render('institution_admin/yourpage', {
+
+            title: "Your institution",
+            layout: 'institution_admin_base',
             user: req.user.dataValues,
             errors,
             bannerarray: banneritems,
@@ -1240,6 +1753,8 @@ router.post('/yourpage/featurecourses', uploadnone.none(), [body('featurecourse'
                                 user_id: addfeaturecourse.userUserId
                             }
                         }).then(courseuser => {
+                            console.log("Course id: ", courseuser.FirstName);
+                            console.log("Course thumbnail: ", addfeaturecourse.Course_thumbnail);
                             FeaturedCourse.create({
                                 course_id: featurecourse,
                                 Title: addfeaturecourse.Title,
@@ -1249,9 +1764,11 @@ router.post('/yourpage/featurecourses', uploadnone.none(), [body('featurecourse'
                                 FirstName: courseuser.FirstName,
                                 LastName: courseuser.LastName,
                                 Profile_pic: courseuser.Profile_pic,
+                                Course_thumbnail: addfeaturecourse.Course_thumbnail,
                                 institutionInstitutionId: fic.institution_id
                             }).catch(err => console.log(err));
                             console.log("Successfully created feature courses");
+                            alertMessage(res, 'success', "Successfully featured.", 'fas fa-sign-in-alt', true);
                             res.redirect('/institution_admin/showyourpage');
                         })
                         // res.redirect('/institution_admin/showyourpage');
@@ -1272,6 +1789,9 @@ router.post('/yourpage/deletefeaturecourse', uploadnone.none(), [body('removefea
             errors.push({ text: error.msg });
         });
         res.render('institution_admin/yourpage', {
+
+            title: "Your institution",
+            layout: 'institution_admin_base',
             user: req.user.dataValues,
             errors,
             bannerarray: banneritems,
@@ -1298,6 +1818,7 @@ router.post('/yourpage/deletefeaturecourse', uploadnone.none(), [body('removefea
                     }
                 }).catch(err => console.log(err));
                 console.log("Successfully created feature courses");
+                alertMessage(res, 'success', "Successfully removed.", 'fas fa-sign-in-alt', true);
                 res.redirect('/institution_admin/showyourpage');
 
                 // res.redirect('/institution_admin/showyourpage');
@@ -1330,7 +1851,7 @@ router.post('/institutionSeminarUpload', (req, res) => {
 });
 
 
-router.post("/yourpage/addseminar", [body('trueFileSeminarName').not().isEmpty().withMessage("Please upload a seminar image")], [body('seminartitle').not().isEmpty().trim().escape().withMessage("Please write a title")], [body('seminardescription').not().isEmail().trim().escape().withMessage("Please enter a description")], [body('seminarurl').not().isEmpty().withMessage("Please enter a url")], uploadnone.none(),
+router.post("/yourpage/addseminar", [body('trueFileSeminarName').not().isEmpty().withMessage("Please upload a proper Image. Only accept the following format: jpeg, jpg, png, gif")], [body('seminartitle').not().isEmpty().trim().escape().withMessage("Please write a title")], [body('seminardescription').not().isEmail().trim().escape().withMessage("Please enter a description")], [body('seminarurl').not().isEmpty().withMessage("Please enter a url")], uploadnone.none(),
     ensureAuthenticated, (req, res) => {
         console.log("Requesting seminar form..........");
         let { trueFileSeminarName, seminartitle, seminardescription, seminarurl } = req.body;
@@ -1345,6 +1866,9 @@ router.post("/yourpage/addseminar", [body('trueFileSeminarName').not().isEmpty()
                 errors.push({ text: error.msg })
             });
             res.render('institution_admin/yourpage', {
+
+                title: "Your institution",
+                layout: 'institution_admin_base',
                 user: req.user.dataValues,
                 errors,
                 bannerarray: banneritems,
@@ -1372,6 +1896,7 @@ router.post("/yourpage/addseminar", [body('trueFileSeminarName').not().isEmpty()
                     SeminarEvent.create({ SEImage: trueFileSeminarName, SETitle: seminartitle, SEDescription: seminardescription, SEUrl: seminarurl, institutionInstitutionId: foundinstitution.institution_id })
                         .catch(err => console.log(err));
                     console.log("redirecting back to show your page");
+                    alertMessage(res, 'success', "Successfully Added seminar.", 'fas fa-sign-in-alt', true);
                     res.redirect('/institution_admin/showyourpage');
                 } else {
                     console.log("Unable to find institution id. Error in uploading.");
@@ -1380,7 +1905,7 @@ router.post("/yourpage/addseminar", [body('trueFileSeminarName').not().isEmpty()
         }
     });
 
-router.post("/yourpage/updateseminar", [body('trueFileSeminarName2').isEmpty().trim().escape().withMessage("Please upload a seminar image")], [body('seminartitle').isEmpty().trim().escape().withMessage("Please write a title")], [body('seminardescription').isEmpty().trim().escape().withMessage("Please enter a description")], [body('seminarurl').isEmpty().withMessage("Please enter a url")], uploadnone.none(),
+router.post("/yourpage/updateseminar", [body('trueFileSeminarName2').isEmpty().trim().escape().withMessage("Please upload a proper Image. Only accept the following format: jpeg, jpg, png, gif")], [body('seminartitle').isEmpty().trim().escape().withMessage("Please write a title")], [body('seminardescription').isEmpty().trim().escape().withMessage("Please enter a description")], [body('seminarurl').isEmpty().withMessage("Please enter a url")], uploadnone.none(),
     ensureAuthenticated, (req, res) => {
         console.log("Retrieving update seminar form..");
         let { trueFileSeminarName2, seminartitle, seminardescription, seminarurl, seminarid } = req.body;
@@ -1396,6 +1921,9 @@ router.post("/yourpage/updateseminar", [body('trueFileSeminarName2').isEmpty().t
                 errors.push({ text: error.msg });
             })
             res.render('institution_admin/yourpage', {
+
+                title: "Your institution",
+                layout: 'institution_admin_base',
                 user: req.user.dataValues,
                 errors,
                 bannerarray: banneritems,
@@ -1428,6 +1956,7 @@ router.post("/yourpage/updateseminar", [body('trueFileSeminarName2').isEmpty().t
                                 .catch(err => console.log(err));
                         }).catch(err => console.log(err));
                 }).catch(err => console.log(err));
+            alertMessage(res, 'success', "Successfully updated.", 'fas fa-sign-in-alt', true);
             res.redirect('/institution_admin/showyourpage');
         }
     })
@@ -1444,6 +1973,9 @@ router.post("/yourpage/deleteseminar", uploadnone.none(), [body('deleteseminar')
             errors.push({ text: error.msg });
         });
         res.render('institution_admin/yourpage', {
+
+            title: "Your institution",
+            layout: 'institution_admin_base',
             user: req.user.dataValues,
             errors,
             bannerarray: banneritems,
@@ -1471,10 +2003,137 @@ router.post("/yourpage/deleteseminar", uploadnone.none(), [body('deleteseminar')
                         seminarevents_id: deleteseminar
                     }
                 }).catch(err => console.log(err));
+                alertMessage(res, 'success', "Successfully deleted.", 'fas fa-sign-in-alt', true);
                 res.redirect('/institution_admin/showyourpage');
                 console.log("Successfully deleted the seminar");
             }).catch(err => console.log(err));
     }
 });
 // -------------------------------------------------------------------------------
+
+//admin profile ------------------------------------------------------------------
+router.get('/showadminprofile', (req, res) => {
+    if ((req.user) && (req.user.AccountTypeID == 2)) {
+        res.render('institution_admin/adminprofile', {
+            title: "Your institution",
+            layout: 'institution_admin_base'
+
+        });
+    } else {
+        res.redirect("/")
+    };
+});
+
+router.post("/adminprofile/updateprofile", [body('username').isEmpty().trim().escape().withMessage("please enter username")], [body('firstname').isEmpty().trim().escape().withMessage("Please enter firstname")], [body('lastname').isEmpty().trim().escape().withMessage("Please enter lastname")], [body('trueFileProfile').isEmpty().withMessage("Please upload a proper Image. Only accept the following format: jpeg, jpg, png, gif")],
+    uploadnone.none(),
+    ensureAuthenticated, (req, res) => {
+        console.log("retrieving update admin profile form...");
+        let { username, firstname, lastname, trueFileProfile, profileid } = req.body;
+        console.log("This is the image: ", trueFileProfile);
+        let errors = [];
+        const validatorErrors = validationResult(req);
+        if (validatorErrors.isEmpty()) {
+            console.log("There are errors uploading the profile. Please try again.");
+            validatorErrors.array().forEach(error => {
+                console.log(error);
+                errors.push({ text: error.msg });
+            })
+            res.render('institution_admin/adminprofile', {
+                title: "Your institution",
+                layout: 'institution_admin_base',
+                errors,
+                username,
+                firstname,
+                lastname,
+                trueFileProfile,
+
+            });
+        } else {
+            //findOne function returns a promise 
+            User.findOne({
+                where: {
+                    user_id: profileid
+                }
+            }).then(adminuser => {
+                adminuser.update({ Username: username, FirstName: firstname, LastName: lastname, lastname, Profile_pic: trueFileProfile })
+            }).catch(err => console.log(err));
+            alertMessage(res, 'success', "Successfully updated.", 'fas fa-sign-in-alt', true);
+            res.redirect('/institution_admin/showadminprofile');
+
+
+        }
+    });
+
+router.post("/adminprofile/changepassword", [body('password').isLength({ min: 8 }).withMessage("Password must be at least 8 Character").matches(
+        /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[a-zA-Z\d@$.!%*#?&]/
+    ).withMessage("Password must contain at least 1 uppercase letter, 1 lowercase letter and 1 special character"),
+    body('ConfirmPassword').custom((value, { req }) => {
+        if (value !== req.body.password) {
+            throw new Error('Passwords do not match')
+        }
+        return true
+    })
+], ensureAuthenticated, (req, res) => {
+    console.log("retrieving change password for admin...");
+    let { password, profileid } = req.body;
+    let errors = [];
+    const validatorErrors = validationResult(req);
+    if (!validatorErrors.isEmpty()) {
+        console.log("There are errors changing password Please try again.");
+        validatorErrors.array().forEach(error => {
+            console.log(error);
+            errors.push({ text: error.msg });
+        })
+        res.render('institution_admin/adminprofile', {
+            title: "Your institution",
+            layout: 'institution_admin_base',
+            errors,
+            password
+
+        });
+    } else {
+        bcrypt.genSalt(10, function(err, salt) {
+            bcrypt.hash(password, salt, function(err, hash) {
+                // Store hash in your password DB.
+                if (err) {
+                    throw err;
+                } else {
+                    hashedpassword = hash;
+                    console.log("This is hashed pasword \n", hashedpassword);
+                    // Create new user record
+                    User.findOne({
+                        where: {
+                            user_id: profileid
+                        }
+                    }).then(adminuser => {
+                        adminuser.update({ Password: hashedpassword })
+                    }).catch(err => console.log(err));
+                    alertMessage(res, 'success', "Successfully updated.", 'fas fa-sign-in-alt', true);
+                    res.redirect('/institution_admin/showadminprofile');
+                }
+            });
+        });
+    }
+});
+
+
+
+
+
+// forum ??? (extra - yet to implement)
+router.get('/showforum', (req, res) => {
+    if ((req.user) && (req.user.AccountTypeID == 2)) {
+        res.render('institution_admin/forum', {
+            title: "Your institution",
+            layout: 'institution_admin_base'
+
+        });
+    } else {
+        res.redirect("/")
+    };
+});
+
+
+
+
 module.exports = router;

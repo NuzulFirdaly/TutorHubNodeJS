@@ -1,0 +1,211 @@
+<section class="padding-y bg">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <!-- ============================ COMPONENT BANNER 7 ================================= -->
+                <div class="card-banner justify-content-center" style="min-height:250px;">
+                    <div class="text-center">
+                        <br>
+                        <br>
+                        <h1 class="card-title float-middle" style="font-size: 60px;">My Profile</h1>
+                        <p>Here are your personal details.</p>
+                    </div>
+                </div>
+                <!-- ============================ COMPONENT BANNER 7  END .// =========================== -->
+            </div> <!-- col.// -->
+        </div>
+    </div>
+</section>
+<!-- ========================= SECTION INTRO END// ========================= -->
+
+<!-- ========================= SECTION CONTENT ========================= -->
+{{>_errors}}
+<section class="section-content padding-y">
+    <div class="container">
+
+        <div class="row">
+            <aside class="col-md-3">
+                <ul class="list-group">
+                    {{!-- <button class="list-group-item"> My Account </button>
+                    <button class="list-group-item"> Change Password</button> --}}
+                    <button class="list-group-item active" onclick="openCity(event, 'London')">Profile</button>
+                    <button class="list-group-item" onclick="openCity(event, 'Paris')">Change Password</button>
+                </ul>
+            </aside> <!-- col.// -->
+            <br><br>
+
+
+            <div id="London" class="w3-container city">
+                <main class="col-md-12" style="margin-left: 15px;">
+
+                <article class="card mb-3">
+                    <div class="card-body">
+
+                        <figure class="icontext">
+                            <div class="icon">
+                                <img class="icon icon-lg rounded-circle" src="/images/profilepictures/{{user.Profile_pic}}">
+                            </div>
+                            <div class="text">
+                                <span class="text-muted" style="font-size: x-large;">{{user.FirstName}} {{user.LastName}}</span> <br>
+                            </div>
+                        </figure>
+                        <hr>
+                        <br>
+                        <section class="container-fluid padding-y" style="min-height:84vh; width:90%;">
+                            <!-- ============================ COMPONENT LOGIN   ================================= -->
+                            <div class="card mx-auto">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col">
+                                            <h2 class="card-title mb-4">Edit My Profile</h2>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <br>
+                                    <form class='block-register' action="/institution_admin/adminprofile/updateprofile" method="POST">
+                                        <div class="form-group form-row">
+                                            <label class="col-md-2 col-form-label">Username</label>
+                                            <div class="col-md-7">
+                                                <input class="form-control" type="text" id="username" name="username" value="{{user.Username}}" placeholder="enter username" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group form-row">
+                                            <label class="col-md-2 col-form-label">First Name</label>
+                                            <div class="col-md-3">
+                                                <input class="form-control" type="text" id="firstname" name="firstname" value="{{user.FirstName}}" placeholder="enter first name" required>
+                                            </div>
+                                            <label class="col-md-2 col-form-label">Last Name</label>
+                                            <div class="col-md-3">
+                                                <input class="form-control" type="text" id="lastname" name="lastname" value="{{user.LastName}}" placeholder="enter last name" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group form-row">
+                                            <label class="col-md-2 col-form-label">Profile Picture</label>
+                                            <div class='col-md-3'>
+                                                {{!-- <img src="/images/profilepictures/{{user.Profile_pic}}"
+                                                    class="img-md rounded-circle border">
+                                                <div style="position:relative;">
+                                                    <input type="file" name="image" id="image">
+                                                </div> --}}
+                                                <img id='profilePicture' name="profilePicture" src="/images/profilepictures/{{user.Profile_pic}}" class="img-md rounded-circle border">
+                                                <div style="position:relative; "></div>
+                                                <input type="file" name="profilePictureUpload" id="profilePictureUpload" accept="image/png, image/jpeg, image/jpg, image/gif">
+                                                <input type="hidden" id='trueFileProfile' name="trueFileProfile">
+                                                <input type="hidden" id='profileid' name="profileid" value="{{user.user_id}}">
+                                                {{!-- <input type="text" id="imgFilename" name="imgFilename" > --}}
+                                                <div class="font-weight-bold text-danger small" id="profileErr" style="display:none">
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <hr>
+                                        <br>
+                                        <div class="form-group form-row">
+                                            <label class="col-md-2 col-form-label">Email</label>
+                                            <div class="col-md-9">
+                                                {{!-- <input class="form-control" type="email" id="email" name="email" value="{{user.Email}}" placeholder="enter Email" required> --}}
+                                            <label>{{user.Email}} <br><span>(To change Email, request to the TutorHub Administrator</span>)</label>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-primary float-right" type="submit">Save Changes</button>
+
+                                    </form>
+                                </div>
+                            </div>
+                            <br><br>
+                            <!-- ============================ COMPONENT LOGIN  END.// ================================= -->
+
+
+                        </section>
+
+
+                    </div> <!-- card-body .// -->
+                </article> <!-- card.// -->
+            </main> 
+            </div>
+
+            <div id="Paris" class="w3-container city" style="display:none">
+                <main class="col-md-12" style="margin-left: 15px;">
+
+                <article class="card mb-3">
+                    <div class="card-body">
+
+                        <figure class="icontext">
+                            <div class="text">
+                                <span class="text-muted" style="font-size: x-large;">Change Password</span> <br>
+                            </div>
+                        </figure>
+                        <hr>
+                        <br>
+                        <section class="container-fluid padding-y" style="min-height:34vh; width:90%;">
+                            <!-- ============================ COMPONENT LOGIN   ================================= -->
+                                    <br>
+                                    <form class='block-register' action="/institution_admin/adminprofile/changepassword" method="POST">
+                                        <div class="form-group form-row">
+                                            <label class="col-md-2 col-form-label">Password</label>
+                                            <div class="col-md-4">
+                                                <input class="form-control" type="password" id="password" name="password" value="" placeholder="enter password" required>
+                                            </div>
+                                            <label class="col-md-2 col-form-label">Re-enter password</label>
+                                            <div class="col-md-3">
+                                                <input class="form-control" type="password" id="ConfirmPassword" name="ConfirmPassword" value="" placeholder="re-enter your password" required>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" id='profileid' name="profileid" value="{{user.user_id}}">
+                                        <button class="btn btn-primary float-right" type="submit">change</button>
+
+                                    </form>
+                            <br><br>
+                            <!-- ============================ COMPONENT LOGIN  END.// ================================= -->
+
+
+                        </section>
+
+
+                    </div> <!-- card-body .// -->
+                </article> <!-- card.// -->
+            </main> 
+            </div>
+        </div>
+
+    </div> <!-- container .//  -->
+</section>
+<script>
+    $('#profilePictureUpload').on('change', function () {
+        let image = $("#profilePictureUpload")[0].files[0];
+        let formdata = new FormData();
+        formdata.append('profilePictureUpload', image);
+        $.ajax({
+            url: '/tutor_onboarding/profilePictureUpload',
+            data: formdata,
+            contentType: false,
+            processData: false,
+            type: 'POST',
+            'success': (data) => {
+                console.log(data);
+                $('#profilePicture').attr('src', data.path);
+                $('#trueFileProfile').attr('value', data.file);
+                if (data.err) {
+                    $('#profilePictureErr').show();
+                    $('#profilePictureErr').text(data.err.message);
+                } else {
+                    $('#profilePictureErr').hide();
+                }
+            }
+        });
+    });
+    function openCity(evt, cityName) {
+        var i, tablinks;
+        var x = document.getElementsByClassName("city");
+        tablinks = document.getElementsByClassName("list-group-item");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        for (i = 0; i < x.length; i++) {
+            x[i].style.display = "none";
+        }
+        document.getElementById(cityName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+
+</script>

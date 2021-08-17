@@ -1,14 +1,161 @@
+<head>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css" rel="stylesheet" />
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css" rel="stylesheet" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+	<script src="js/script.js" type="text/javascript"></script>
+
+	<script type="text/javascript">
+		/// some script
+
+		$('.carousel .carousel-item').each(function () {
+			var minPerSlide = 3;
+			var next = $(this).next();
+			if (!next.length) {
+				next = $(this).siblings(':first');
+			}
+			next.children(':first-child').clone().appendTo($(this));
+
+			for (var i = 0; i < minPerSlide; i++) {
+				next = next.next();
+				if (!next.length) {
+					next = $(this).siblings(':first');
+				}
+
+				next.children(':first-child').clone().appendTo($(this));
+			}
+		});
+
+
+		// jquery ready start
+		$(document).ready(function () {
+			$('.slick').slick({
+				slidesToShow: 2,
+				slidesToScroll: 2,
+				autoplay: false,
+				infinite: true,
+			});
+
+			// When the filter values are changed, 
+			// apply the filter to slick.
+			$('form.filter select').on('change', filter);
+			$('#slidename').on("keyup", filter);
+
+			$('form.filter2 select').on('change', filter2);
+			$('#slidename2').on("keyup", filter2);
+
+
+			/**
+			 * Add a filter group row.
+			 */
+			$('.add-filter').on('click', function (event) {
+				event.preventDefault()
+				$('form.filter .filter-group').first().clone(true).insertBefore($('form.filter .add-filter'));
+			});
+		});
+
+		function filter() {
+			// Declare variabl
+			const filter = jQuery("#slidename").val();
+			const category = $('.filter-group select').val();
+
+			$('.slick').slick('slickUnfilter');
+			$('.slick').slick('slickFilter', function () {
+				let content = jQuery(this).find("a").text().toLowerCase();
+
+				return content.indexOf(filter) > -1;
+
+			});
+		}
+		function filter2() {
+			// Declare variabl
+			const filter = jQuery("#slidename2").val();
+			const category = $('.filter-group select').val();
+
+			$('.slick').slick('slickUnfilter');
+			$('.slick').slick('slickFilter', function () {
+				let content = jQuery(this).find("a").text().toLowerCase();
+
+				return content.indexOf(filter) > -1;
+
+			});
+		}
+// jquery end
+	</script>
+	<style>
+		/** Just some styling to make it more readable. */
+
+
+		.filter {
+			margin: 1rem 0;
+		}
+
+		.active-filter {
+			margin: 1rem 0;
+		}
+
+		.slick {
+			width: 600px;
+			padding-left: 15px;
+		}
+
+		.slick .slide {
+			width: 200px;
+			height: 300px;
+			padding-left: 1rem;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			text-align: center;
+		}
+
+		.slick-prev:before,
+		.slick-next:before {
+			color: black;
+		}
+
+
+
+		#myslides {
+			/* Remove default list styling */
+			list-style-type: none;
+			padding: 15px;
+			margin: 0;
+		}
+
+		#myslides li a {
+			/* Add a border to all links */
+			margin-top: 50px;
+			/* Prevent double borders */
+			/* Grey background color */
+			padding: 1px;
+			/* Add some padding */
+			text-decoration: none;
+			/* Remove default text underline */
+			font-size: 18px;
+			/* Increase the font-size */
+			display: block;
+		}
+
+		#myslides li a card:hover:not(.header) {
+			background-color: #eee;
+			/* Add a hover effect to all links, except for headers */
+		}
+		
+	</style>
+</head>
 <section class="padding-y bg">
 	<div class="container">
 		<div class="row">
 			<div class="col-md-12">
 				<!-- ============================ COMPONENT BANNER 7 ================================= -->
-				<div class="card-banner text-center" style="min-height:200px;">
-					<div style="margin-left: 400px;">
+				<div class="card-banner justify-content-center" style="min-height:250px;">
+					<div class="text-center">
 						<br>
 						<br>
-						<h1 class="card-title" style="font-size: 60px;">Your Page</h1>
-						<p>Edit your institution page and let it be seen by everyone.</p>
+						<h1 class="card-title float-middle" style="font-size: 60px;">Your Page</h1>
+						<p>Customize your page and let it be seen by everyone.</p>
+						<p>Parts that have yet to be edited, will not be displayed at the main page.</p>
 					</div>
 				</div>
 				<!-- ============================ COMPONENT BANNER 7  END .// =========================== -->
@@ -16,9 +163,11 @@
 		</div>
 	</div>
 </section>
+{{>_errors}}
 <section class="section-content padding-y bg">
-	<div class="container">
-		{{>_errors}} {{!-- views/partials/_errors.handlebars --}}
+	<div class="container" height="35%;">
+
+		<!-- {{views/partials/_errors.handlebars}} -->
 		<div class="row">
 			<aside class="col-md-3">
 				<!-- COMPONENTS SIDEBAR -->
@@ -49,7 +198,7 @@
 										<div class="modal-dialog" role="document">
 											<div class="modal-content">
 												<div class="modal-header">
-													<h5 class="modal-title" id="addbannerslabel">Add Image</h5>
+													<h5 class="modal-title" id="addbannerslabel">Add Banner(s)</h5>
 													<button type="button" class="close" data-dismiss="modal"
 														aria-label="Close">
 														<span aria-hidden="true">&times;</span>
@@ -58,7 +207,7 @@
 												<div class="modal-body">
 													<div class="form-group form-row">
 														<div class="col-md-6">
-															<label>Upload your Banner image here</label>
+															<label>Upload your image here.</label>
 															<br>
 															<img id='bannerThumbnail' name="bannerThumbnail"
 																src="\images\Institutionpictures\banner\2.jpg"
@@ -73,11 +222,16 @@
 															</div>
 														</div>
 													</div>
+													<br>
+													<div class="col-md-12">
+														<h6>If you wish to not add any banners to your page. A default
+															banner will be created for you.</h6>
+													</div>
 												</div>
 												<div class="modal-footer">
 													<button type="button" class="btn btn-secondary"
 														data-dismiss="modal">Close</button>
-													<button type="submit" class="btn btn-primary">Upload Image</button>
+													<button type="submit" class="btn btn-primary">Upload</button>
 												</div>
 											</div>
 										</div>
@@ -91,7 +245,7 @@
 									<div class="modal-dialog" role="document">
 										<div class="modal-content">
 											<div class="modal-header">
-												<h5 class="modal-title" id="deletebannerlabel">Delete Banner Image
+												<h5 class="modal-title" id="deletebannerlabel">Delete your banner(s)
 												</h5>
 												<button type="button" class="close" data-dismiss="modal"
 													aria-label="Close">
@@ -118,8 +272,7 @@
 												</form>
 												{{/each}}
 												{{else}}
-												<h3>There are no banners to delete. please make your way to the add
-													banner.</h3>
+												<h3>There is nothing here to delete.</h3>
 												{{/if}}
 											</div>
 											<div class="modal-footer">
@@ -157,8 +310,7 @@
 											<form class="block-register"
 												action="/institution_admin/yourpage/editdescription" method="POST">
 												<div class="modal-header">
-													<h5 class="modal-title" id="addaboutlabel">Edit your about
-														description</h5>
+													<h5 class="modal-title" id="addaboutlabel">Edit your About</h5>
 													<button type="button" class="close" data-dismiss="modal"
 														aria-label="Close">
 														<span aria-hidden="true">&times;</span>
@@ -166,8 +318,8 @@
 												</div>
 												<div class="modal-body">
 													<div class="form-group form-row">
-														<div class="col-md-6">
-															<label>Edit your about</label>
+														<div class="col-md-12">
+															<label>Tell users what is your institution about.</label>
 															<br>
 															<textarea class="form-control" name="instituteAbout"
 																value="{{instituteAbout}}"
@@ -176,17 +328,15 @@
 														</div>
 													</div>
 												</div>
-												<br>
-												<hr>
-												<br>
 												<div class="modal-header">
-													<h5 class="modal-title" id="addmycourselabel">Edit your courses
-														description</h5>
+													<h5 class="modal-title" id="addmycourselabel">Edit your offered
+														courses</h5>
 												</div>
 												<div class="modal-body">
 													<div class="form-group form-row">
-														<div class="col-md-6">
-															<label>Edit your courses description</label>
+														<div class="col-md-12">
+															<label>Tell users all the courses your institution
+																offers.</label>
 															<br>
 															<textarea class="form-control" name="instituteMyCourse"
 																value="{{instituteMyCourse}}"
@@ -198,7 +348,7 @@
 												<div class="modal-footer">
 													<button type="button" class="btn btn-secondary"
 														data-dismiss="modal">Close</button>
-													<button type="submit" class="btn btn-primary">Upload about</button>
+													<button type="submit" class="btn btn-primary">Update</button>
 												</div>
 											</form>
 											{{/each}}
@@ -215,7 +365,7 @@
 												</div>
 												<div class="modal-body">
 													<div class="form-group form-row">
-														<div class="col-md-6">
+														<div class="col-md-8">
 															<label>Edit your about</label>
 															<br>
 															<textarea class="form-control" name="instituteAbout"
@@ -234,7 +384,7 @@
 												</div>
 												<div class="modal-body">
 													<div class="form-group form-row">
-														<div class="col-md-6">
+														<div class="col-md-8">
 															<label>Edit your courses description</label>
 															<br>
 															<textarea class="form-control" name="instituteMyCourse"
@@ -295,8 +445,8 @@
 												</div>
 												<div class="modal-body">
 													<div class="form-group form-row">
-														<div class="col-md-6">
-															<label>Upload your Widget's image here</label>
+														<div class="col-md-8">
+															<label>Upload your Widget's image here.</label>
 															<br>
 															<img id='widgetThumbnail' name="widgetThumbnail"
 																src="/images/Institutionpictures/socialmedia/2.jpg"
@@ -313,7 +463,7 @@
 													</div>
 													<div class="form-group form-row">
 														<div class="col-md-8">
-															<label>Enter the widget's url</label>
+															<label>Enter the widget's url.</label>
 															<br>
 															<input class="form-control" type="url" name="widgeturl"
 																value="{{widgeturl}}" placeholder="awebsite.com"
@@ -324,7 +474,7 @@
 												<div class="modal-footer">
 													<button type="button" class="btn btn-secondary"
 														data-dismiss="modal">Close</button>
-													<button type="submit" class="btn btn-primary">Upload Image</button>
+													<button type="submit" class="btn btn-primary">Create</button>
 												</div>
 											</div>
 										</div>
@@ -338,15 +488,15 @@
 									<div class="modal-dialog" role="document">
 										<div class="modal-content">
 											<div class="modal-header">
-												<h5 class="modal-title" id="updatewidgetlabel">Update your widget
-													details</h5>
+												<h5 class="modal-title" id="updatewidgetlabel">Update displayed
+													widget(s)</h5>
 												<button type="button" class="close" data-dismiss="modal"
 													aria-label="Close"> <span aria-hidden="true">&times;</span></button>
 											</div>
 											<div class="modal-body">
 												{{#if widgetarray}}
 												<div class="row">
-													<label>Choose a widget you wish to Update.</label>
+													<label>Choose a widget you wish to update.</label>
 													<br>
 												</div>
 												<br>
@@ -361,16 +511,15 @@
 																		src="/images/Institutionpictures/socialmedia/{{widgetimage}}">
 																	<br>
 																</div>
+																<br>
 																<div class="row d-flex justify-content-center">
 																	<p style="color: #000;">URL: {{widgeturl}}</p>
 																</div>
 															</div>
 														</span>
 													</a>
+													<hr>
 												</p>
-												<br>
-												<br>
-												<br>
 												<br>
 												<!-- Second model -->
 												<form class="block-register"
@@ -392,12 +541,12 @@
 																	<div class="form-group form-row">
 																		<div class="col-md-8">
 																			<label>Edit any of the following
-																				details.</label>
+																				details:</label>
 																		</div>
 																	</div>
 																	<div class="form-group form-row">
-																		<div class="col-md-6">
-																			<label>Upload your Widget's image
+																		<div class="col-md-8">
+																			<label>Change your Widget's image
 																				here</label>
 																			<br>
 																			<img id='widgetThumbnail2'
@@ -407,10 +556,14 @@
 																			<div style="position:relative; "></div>
 																			<input type="file"
 																				name="institutionWidgetUpload2"
-																				id="institutionWidgetUpload2" value="{{widgetimage}}">
-																			<input type="hidden" id='trueFileWidgetName2'
-																				name="trueFileWidgetName2" value="{{widgetimage}}">
-																			<input type="hidden" id='widgetid' name="widgetid" value="{{widget_id}}">
+																				id="institutionWidgetUpload2"
+																				value="{{widgetimage}}">
+																			<input type="hidden"
+																				id='trueFileWidgetName2'
+																				name="trueFileWidgetName2"
+																				value="{{widgetimage}}">
+																			<input type="hidden" id='widgetid'
+																				name="widgetid" value="{{widget_id}}">
 																			<div class="font-weight-bold text-danger small"
 																				id="widgetErr2" style="display:none">
 																			</div>
@@ -418,7 +571,7 @@
 																	</div>
 																	<div class="form-group form-row">
 																		<div class="col-md-8">
-																			<label>Enter the widget's url</label>
+																			<label>Change the widget's url here</label>
 																			<br>
 																			<input class="form-control" type="url"
 																				name="widgeturl" value="{{widgeturl}}"
@@ -438,7 +591,7 @@
 												</form>
 												{{/each}}
 												{{else}}
-												<h3>There is nothing here to update. Please add a widget.</h3>
+												<h3>There is nothing here to update.</h3>
 												{{/if}}
 											</div>
 											<div class="modal-footer">
@@ -481,11 +634,11 @@
 														</div>
 														<br>
 													</form>
+													<hr>
 													{{/each}}
 												</form>
 												{{else}}
-												<h3>There are no banners to delete. please make your way to the add
-													banner.</h3>
+												<h3>There is nothing here to delete.</h3>
 												{{/if}}
 											</div>
 											<div class="modal-footer">
@@ -502,7 +655,7 @@
 							<header class="card-header">
 								<a href="#" data-toggle="collapse" data-target="#collapse_aside3">
 									<i class="icon-control fa fa-chevron-down"></i>
-									<h6 class="title">Featured Tutors</h6>
+									<h6 class="title">Feature Tutors</h6>
 								</a>
 							</header>
 							<div class="filter-content collapse show" id="collapse_aside3">
@@ -517,7 +670,7 @@
 									method="POST" enctype="multipart/form-data">
 									<div class="modal fade" id="tutadd" tabindex="-1" role="dialog"
 										aria-labelledby="addtutorlabel" aria-hidden="true">
-										<div class="modal-dialog" role="document">
+										<div class="modal-dialog" role="document" style="min-width: 50%;">
 											<div class="modal-content">
 												<div class="modal-header">
 													<h5 class="modal-title" id="addtutorlabel">Select your Tutor to
@@ -528,30 +681,128 @@
 												</div>
 												<div class="modal-body">
 													{{#if institutiontutorarray}}
-													<div class="row">
-														<input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for your Tutor..">
-													</div>
-													<Table id="myTable"
+													{{!-- <div class="row">
+														<input id="myInput" type="search"
+															placeholder="Search Tutor.....">
+													</div> --}}
+													{{!--<Table id="myTable"
 														style="border-collapse: collapse; width: 100%; font-size: 18px;">
 														{{#each institutiontutorarray}}
 														<tr>
 															<td>
-																<img class="img-sm rounded-circle mx-auto" src="/images/profilepictures/{{Profile_pic}}" />
+																<img class="img-sm rounded-circle mx-auto"
+																	src="/images/profilepictures/{{Profile_pic}}" />
 															</td>
 															<td>
 																{{Username}}
 															</td>
 															<td>
-																<button type="submit"
-																	class="btn btn-primary float-right"
-																	name="featuretutor" value="{{user_id}}"><span
-																		class="col-md-1">feature</span></button>
+
 															</td>
 														</tr>
 														{{/each}}
-													</Table>
+													</Table> --}}
+													{{!-- <br><br>
+													<div style="margin-left: 50px;" id="myTable">
+														<div class="slider-items-slick row"
+															data-slick='{"slidesToShow": 2, "slidesToScroll": 1}'
+															style="max-width: 500px;" id="myDIV">
+															{{#each institutiontutorarray}}
+															<span>
+																<div class="item-slide p-2">
+																	<div href="#">
+																		<div class="card card-product-grid"
+																			style="height: 250px; width: 200px; color: white;">
+																			{{FirstName}}&nbsp;{{LastName}}
+																			<div class="card-body">
+																				<div
+																					style="height:120px; width: 120px;">
+																					<img class="img-sm rounded-circle"
+																						src="/images/profilepictures/{{Profile_pic}}"
+																						height="50px;" width="20px;">
+																				</div>
+																				<h6 style="color: black;">
+																					{{FirstName}}&nbsp;{{LastName}}</h6>
+																			</div>
+																			{{#if (ifElementInList user_id
+																			../featuretutorarray "User_id")}}
+																			<span class="btn btn-secondary float-right"
+																				name="featuretutor"
+																				value="{{user_id}}"><span
+																					class="col-md-1">featured</span></span>
+																			{{else}}
+																			<button type="submit"
+																				class="btn btn-primary float-right"
+																				name="featuretutor"
+																				value="{{user_id}}"><span
+																					class="col-md-1">feature</span></button>
+																			{{/if}}
+																		</div>
+																	</div>
+																</div>
+															</span>
+															{{/each}}
+														</div>
+													</div> --}}
+													<form class="filter">
+														<input type="text" id="slidename" onkeyup="searchbyname(this)"
+															placeholder="Search by name" />
+													</form>
+
+
+
+													<ul id="myslides" class="slick" style="margin-left: 35px;">
+														{{#each institutiontutorarray}}
+														<li class="slide">
+															<a>
+																<div>
+																	<div class="card card-product-grid"
+																		style="height: 250px; width: 200px; color: white;">
+																		{{FirstName}}&nbsp;{{LastName}}
+																		<div class="card-body">
+																			<div style="height:120px; width: 120px;">
+																				<img class="img-sm rounded-circle"
+																					src="/images/profilepictures/{{Profile_pic}}"
+																					height="50px;" width="20px;">
+																			</div>
+																			<h6 style="color: black;">
+																				{{FirstName}}&nbsp;{{LastName}}</h6>
+																		</div>
+																		{{#if (ifElementInList user_id
+																		../featuretutorarray "User_id")}}
+																		<span class="btn float-right"
+																			name="featuretutor" value="{{user_id}}"
+																			style="background-color: #0E0E72;"><span
+																				class="col-md-1"
+																				style="color: white;">featured</span></span>
+																		{{else}}
+																		<button type="submit"
+																			class="btn btn-primary float-right"
+																			name="featuretutor"
+																			value="{{user_id}}"><span
+																				class="col-md-1">feature</span></button>
+																		{{/if}}
+																	</div>
+																</div>
+															</a>
+														</li>
+														{{/each}}
+														{{!-- <li class="slide"><a href="#">green 1</a></li>
+														<li class="slide"><a href="#">black 1</a></li>
+														<li class="slide"><a href="#">red 1</a></li>
+														<li class="slide"><a href="#">green 2</a></li>
+														<li class="slide"><a href="#">black 2</a></li>
+														<li class="slide"><a href="#">white 2</a></li>
+														<li class="slide"><a href="#">black 3</a></li>
+														<li class="slide"><a href="#">white 3</a></li>
+														<li class="slide"><a href="#">green 3</a></li>
+														<li class="slide"><a href="#">white 4</a></li>
+														<li class="slide"><a href="#">green 4</a></li>
+														<li class="slide"><a href="#">black 4</a></li> --}}
+													</ul>
 													{{else}}
-														<h3>You currently have no tutor under your institution. Please register your tutor</h3>
+													<h3>You currently have no tutors under your institution. Please
+														register your tutor.</h3>
 													{{/if}}
 													<br><br>
 												</div>
@@ -565,16 +816,20 @@
 								</form>
 								<!-- =========================================================== -->
 								<!-- remove feature tutor here ========================================= -->
-								<form class="block-register" action="/institution_admin/yourpage/removefeaturetutor" method="POST"
-									enctype="multipart/form-data">
+								<form class="block-register" action="/institution_admin/yourpage/removefeaturetutor"
+									method="POST" enctype="multipart/form-data">
 									<div class="modal fade" id="deletetut" tabindex="-1" role="dialog"
 										aria-labelledby="deletetutorlabel" aria-hidden="true">
-										<div class="modal-dialog" role="document">
+										<div class="modal-dialog" role="document" style="min-width: 50%;">
 											<div class="modal-content">
 												<div class="modal-header">
-													<h5 class="modal-title" id="deletetutorlabel">Select a tutor to
+													<h5 class="modal-title" id="deletetutorlabel">Select featured tutor
+														to
 														remove</h5>
-													<button type="button" class="close" data-dismiss="modal" aria-label="Close"><spanaria-hidden="true">&times;</span></button>
+													<button type="button" class="close" data-dismiss="modal"
+														aria-label="Close">
+														<spanaria-hidden="true">&times;</span>
+													</button>
 												</div>
 												<div class="modal-body">
 													<br>
@@ -582,15 +837,19 @@
 													{{#if featuretutorarray}}
 													{{#each featuretutorarray}}
 													<div class="form-group form-row">
-														<img class="img-md rounded-circle mx-auto d-flex justify-content-center" src="/images/profilepictures/{{Profile_pic}}">
-														<button type="submit" class="btn btn-primary float-right" name="removefeaturetutor" value="{{User_id}}"><span class="col-md-1">&times;</span></button>
-													</div>	
+														<img class="img-md rounded-circle mx-auto d-flex justify-content-center"
+															src="/images/profilepictures/{{Profile_pic}}">
+														<button type="submit" class="btn btn-primary float-right"
+															name="removefeaturetutor" value="{{User_id}}"><span
+																class="col-md-1">&times;</span></button>
+													</div>
 													<div class="form-group form-row d-flex justify-content-center">
 														<h6>{{FirstName}}&nbsp;{{LastName}}</h6>
 													</div>
 													{{/each}}
 													{{else}}
-													<h3>There are currently no tutors featured to remove. Please add a tutor to feature.</h3>
+													<h3>There are currently no featured tutors to remove. Please add a
+														tutor to feature.</h3>
 													{{/if}}
 													<br><br>
 												</div>
@@ -614,65 +873,152 @@
 							</header>
 							<div class="filter-content collapse show" id="collapse_aside4">
 								<div class="card-body">
-									<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addfeaturecourses" name="addfeaturecourses" value="addfeaturecourses">Feature</button>
-									<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#deletefeaturecourses" name="deletefeaturecourses" value="deletefeaturecourses">Remove</button>
+									<button type="button" class="btn btn-primary" data-toggle="modal"
+										data-target="#addfeaturecourses" name="addfeaturecourses"
+										value="addfeaturecourses">Feature</button>
+									<button type="button" class="btn btn-primary" data-toggle="modal"
+										data-target="#deletefeaturecourses" name="deletefeaturecourses"
+										value="deletefeaturecourses">Remove</button>
 								</div> <!-- card-body.// -->
 								<!-- add feature course here ========================================= -->
-								<form class="block-register" action="/institution_admin/yourpage/featurecourses" method="POST">
+								<form class="block-register" action="/institution_admin/yourpage/featurecourses"
+									method="POST">
 									<div class="modal fade" id="addfeaturecourses" tabindex="-1" role="dialog"
 										aria-labelledby="addtopcourseslabel" aria-hidden="true">
 										<div class="modal-dialog modal-lg" role="document">
 											<div class="modal-content">
 												<div class="modal-header">
-													<h5 class="modal-title" id="addtopcourseslabel">Select a course to feature</h5>
-													<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+													<h5 class="modal-title" id="addtopcourseslabel">Select a course to
+														feature</h5>
+													<button type="button" class="close" data-dismiss="modal"
+														aria-label="Close"><span
+															aria-hidden="true">&times;</span></button>
 												</div>
 												<div class="modal-body">
 													{{#if allinstcoursearray}}
 													<div class="form-group form-row">
-														<input type="text" id="myInput2" onkeyup="mySecondFunction()"
+														<input type="text" id="myInput" onkeyup="myFunction()"
 															placeholder="Search for courses..">
 													</div>
-													<Table id="myTable2" style="border-collapse: collapse; width: 100%; font-size: 18px;">
-													{{#each allinstcoursearray}}
-													<tr>
-														<td>
-															<img class="card-img-top img-lf" style="height: 100px; width: 200px;" src="/images/coursethumbnails/{{Course_thumbnail}}">
-														</td>
-														<td>
-															{{Title}}
-														</td>
-														<td>
-															{{user.Username}}
-														</td>
-														<td>
-															<button type="submit" class="btn btn-primary float-right" name="featurecourse" value="{{course_id}}"><span class="col-md-1">feature</span></button>
-														</td>
-													</tr>
-													{{/each}}
+													<Table id="myTable" style="width: 100%; font-size: 18px;">
+														<thead>
+															<tr>
+																<th>Course thumbnail</th>
+																<th>Course Name</th>
+																<th>Tutor's Username</th>
+															</tr>
+														</thead>
+														{{#each allinstcoursearray}}
+														<tr>
+															<td>
+																<img class="card-img-top img-lf"
+																	style="height: 100px; width: 200px;"
+																	src="/images/coursethumbnails/{{Course_thumbnail}}">
+															</td>
+															<td>
+																{{Title}}
+															</td>
+															<td>
+																{{user.Username}}
+															</td>
+															<td>
+																{{#if (ifElementInList course_id
+																../allfeaturedcoursearray "course_id")}}
+																<span class="btn float-right" name="featuretutor"
+																	value="{{course_id}}"
+																	style="background-color: #0E0E72;"><span
+																		class="col-md-1"
+																		style="color: white;">featured</span></span>
+																{{else}}
+																<button type="submit"
+																	class="btn btn-primary float-right"
+																	name="featurecourse" value="{{course_id}}"><span
+																		class="col-md-1">feature</span></button>
+																{{/if}}
+															</td>
+														</tr>
+														{{/each}}
 													</Table>
+													{{!-- <form class="filter2">
+														<input type="text" id="slidename" onkeyup="searchbyname(this)"
+															placeholder="Search by name" />
+													</form>
+
+
+
+													<ul id="myslides2" class="slick"
+														style="margin-left: 15px; width: 700px;">
+														{{#each allinstcoursearray}}
+														<li class="slide">
+															<a>
+																<div>
+																	<div class="card card-product-grid"
+																		style="height: 300px; width: 300px; color: white;">
+																		{{Title}}
+																		<div class="card-body">
+																			<div style="">
+																				<img class="card-img-top img-lf"
+																					style="height: 130px; width: 250px;"
+																					src="/images/coursethumbnails/{{Course_thumbnail}}">
+																			</div>
+																			<h6 style="color: black;">
+																				{{Title}}</h6>
+																			<h6 style="color: black;">{{user.Username}}
+																			</h6>
+																		</div>
+																		{{#if (ifElementInList user_id
+																		../featuretutorarray "User_id")}}
+																		<span class="btn btn-secondary float-right"
+																			name="featuretutor"
+																			value="{{user_id}}"><span
+																				class="col-md-1">featured</span></span>
+																		{{else}}
+																		<button type="submit"
+																			class="btn btn-primary float-right"
+																			name="featuretutor"
+																			value="{{user_id}}"><span
+																				class="col-md-1">feature</span></button>
+																		{{/if}}
+																	</div>
+																</div>
+															</a>
+														</li>
+														{{/each}}
+													</ul> --}}
 													{{else}}
 													<h3>There are currently no courses under your institution.</h3>
 													{{/if}}
 													{{!-- <figure class="card card-product-grid" style="width: 18rem;">
-														<img class="card-img-top" src="/images/coursethumbnails/{{Course_thumbnail}}"height="140" width="240">
+														<img class="card-img-top"
+															src="/images/coursethumbnails/{{Course_thumbnail}}"
+															height="140" width="240">
 														<div class="widget-header">
-																<a href="#" class="ml-3 icontext" data-toggle="dropdown" data-offset="20,10">
-																	<div class="icon"><img class="icon icon-xs rounded-circle" src="/images/profilepictures/{{../user.Profile_pic}}"></div>
-																	<div class="text" >
-																		<small class="text-muted">{{../user.FirstName}} {{../user.LastName}}</small> <br>
-																	</div>
-																</a>
+															<a href="#" class="ml-3 icontext" data-toggle="dropdown"
+																data-offset="20,10">
+																<div class="icon"><img
+																		class="icon icon-xs rounded-circle"
+																		src="/images/profilepictures/{{../user.Profile_pic}}">
+																</div>
+																<div class="text">
+																	<small class="text-muted">{{../user.FirstName}}
+																		{{../user.LastName}}</small> <br>
+																</div>
+															</a>
 														</div>
 														<figcaption class="info-wrap">
-															<h4 class="title"><a href="/course/updatecourse/{{course_id}}">{{Title}}</a></h4>
-															<p class="text-muted" style="font-size:0.9em; height:58px">{{Short_description}}</p>
+															<h4 class="title"><a
+																	href="/course/updatecourse/{{course_id}}">{{Title}}</a>
+															</h4>
+															<p class="text-muted" style="font-size:0.9em; height:58px">
+																{{Short_description}}</p>
 															<br>
 															<h5>${{Hourlyrate}}/Hour</h5>
 														</figcaption>
 													</figure> <!-- card // --> --}}
 													{{!-- <div class="form-group form-row">
-														<img class="card-img-top img-md" style="height: 100px; width: 200px;" src="/images/coursethumbnails/{{Course_thumbnail}}">
+														<img class="card-img-top img-md"
+															style="height: 100px; width: 200px;"
+															src="/images/coursethumbnails/{{Course_thumbnail}}">
 
 													</div> --}}
 													<br><br>
@@ -687,35 +1033,76 @@
 								</form>
 								<!-- =========================================================== -->
 								<!-- delete feature course here ========================================= -->
-								<form class="block-register" action="/institution_admin/yourpage/deletefeaturecourse" method="POST">
-									<div class="modal fade" id="deletefeaturecourses" tabindex="-1" role="dialog" aria-labelledby="deletetopcourseslabel" aria-hidden="true">
-										<div class="modal-dialog" role="document">
+								<form class="block-register" action="/institution_admin/yourpage/deletefeaturecourse"
+									method="POST">
+									<div class="modal fade" id="deletefeaturecourses" tabindex="-1" role="dialog"
+										aria-labelledby="deletetopcourseslabel" aria-hidden="true">
+										<div class="modal-dialog modal-lg" role="document">
 											<div class="modal-content">
 												<div class="modal-header">
-													<h5 class="modal-title" id="deletetopcourseslabel">Select a featured course to remove.</h5>
+													<h5 class="modal-title" id="deletetopcourseslabel">Select a featured
+														course to remove.</h5>
 													<button type="button" class="close" data-dismiss="modal"
 														aria-label="Close"><span
 															aria-hidden="true">&times;</span></button>
 												</div>
 												<div class="modal-body">
 													{{#if allfeaturedcoursearray}}
-													<Table style="border-collapse: collapse; width: 100%; font-size: 18px;">
-													{{#each allfeaturedcoursearray}}
-													<tr>
-														<td>
-															<img class="card-img-top img-lf" style="height: 100px; width: 200px;" src="/images/coursethumbnails/{{Course_thumbnail}}">
-														</td>
-														<td>
-															{{Title}}
-														</td>
-														<td>
-															{{FIrstName}} {{LastName}}
-														</td>
-														<td>
-															<button type="submit" class="btn btn-primary float-right" name="removefeaturedcourse" value="{{featuredcourse_id}}"><span class="col-md-1">remove</span></button>
-														</td>
-													</tr>
-													{{/each}}
+													{{!-- <Table
+														style="border-collapse: collapse; width: 100%; font-size: 18px;">
+														{{#each allfeaturedcoursearray}}
+														<tr style="margin:30px;">
+															<td>
+																<img class="card-img-top img-lf"
+																	style="height: 100px; width: 200px;"
+																	src="/images/coursethumbnails/{{Course_thumbnail}}">
+															</td>
+															<td>
+																{{Title}}
+															</td>
+															<td>
+																{{FIrstName}} {{LastName}}
+															</td>
+															<td>
+																<button type="submit"
+																	class="btn btn-primary float-right"
+																	name="removefeaturedcourse"
+																	value="{{featuredcourse_id}}"><span
+																		class="col-md-1">remove</span></button>
+															</td>
+														</tr>
+														{{/each}}
+													</Table> --}}
+													<Table style="width: 100%; font-size: 18px;">
+														<thead>
+															<tr>
+																<th>Course thumbnail</th>
+																<th>Course Name</th>
+																<th>Tutor's Full Name</th>
+															</tr>
+														</thead>
+														{{#each allfeaturedcoursearray}}
+														<tr>
+															<td>
+																<img class="card-img-top img-lf"
+																	style="height: 100px; width: 200px;"
+																	src="/images/coursethumbnails/{{Course_thumbnail}}">
+															</td>
+															<td>
+																{{Title}}
+															</td>
+															<td>
+																{{FirstName}} {{LastName}}
+															</td>
+															<td>
+																<button type="submit"
+																	class="btn btn-primary float-right"
+																	name="removefeaturedcourse"
+																	value="{{featuredcourse_id}}"><span
+																		class="col-md-1">remove</span></button>
+															</td>
+														</tr>
+														{{/each}}
 													</Table>
 													{{else}}
 													<h3>There are currently no featured courses.</h3>
@@ -751,49 +1138,66 @@
 										value="deleteseminar">Delete</button>
 								</div> <!-- card-body.// -->
 								<!-- add seminar model here ========================================= -->
-								<form class="block-register" action="/institution_admin/yourpage/addseminar" method="POST">
-									<div class="modal fade" id="addsemin" tabindex="-1" role="dialog" aria-labelledby="addseminarslabel" aria-hidden="true">
+								<form class="block-register" action="/institution_admin/yourpage/addseminar"
+									method="POST">
+									<div class="modal fade" id="addsemin" tabindex="-1" role="dialog"
+										aria-labelledby="addseminarslabel" aria-hidden="true">
 										<div class="modal-dialog" role="document">
 											<div class="modal-content">
 												<div class="modal-header">
-													<h5 class="modal-title" id="addseminarslabel">Add seminars/Events</h5>
-													<button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span>
+													<h5 class="modal-title" id="addseminarslabel">Add
+														seminar(s)/Event(s)
+													</h5>
+													<button type="button" class="close" data-dismiss="modal"
+														aria-label="Close"> <span aria-hidden="true">&times;</span>
 													</button>
 												</div>
 												<div class="modal-body">
 													<div class="form-group form-row">
 														<div class="col-md-8">
-															<label for="seminarimage">Upload an image for the event.</label><br>
-															<img id='seminarThumbnail' name="seminarThumbnail" src="/images/Institutionpictures/seminar/2.jpg" width="240" height="135" class="border">
+															<label for="seminarimage">Upload an image for the
+																event.</label><br>
+															<img id='seminarThumbnail' name="seminarThumbnail"
+																src="/images/Institutionpictures/seminar/2.jpg"
+																width="240" height="135" class="border">
 															<div style="position:relative; "></div>
-															<input type="file" name="institutionSeminarUpload" id="institutionSeminarUpload">
-															<input type="hidden" id='trueFileSeminarName' name="trueFileSeminarName">
-															<div class="font-weight-bold text-danger small" id="seminarErr" style="display:none">
+															<input type="file" name="institutionSeminarUpload"
+																id="institutionSeminarUpload">
+															<input type="hidden" id='trueFileSeminarName'
+																name="trueFileSeminarName">
+															<div class="font-weight-bold text-danger small"
+																id="seminarErr" style="display:none">
 															</div>
 														</div>
 													</div>
 													<div class="form-group form-row">
-														<div class="col-md-6">
-															<label>Title of Seminar:</label><br>
-															<input class="form-control" type="text" name="seminartitle" value="{{seminartitle}}" placeholder="title of the event" required>
+														<div class="col-md-8">
+															<label>Title of Seminar/Event:</label><br>
+															<input class="form-control" type="text" name="seminartitle"
+																value="{{seminartitle}}"
+																placeholder="title of the event" required>
 														</div>
 													</div>
 													<div class="form-group form-row">
-														<div class="col-md-6">
-															<label>Seminar's Description:</label><br>
-															<textarea class="form-control" name="seminardescription" value="{{seminardescription}}" required></textarea>
+														<div class="col-md-8">
+															<label>Description:</label><br>
+															<textarea class="form-control" name="seminardescription"
+																value="{{seminardescription}}" required></textarea>
 														</div>
 													</div>
 													<div class="form-group form-row">
-														<div class="col-md-6">
-															<label>Seminar's url:</label><br>
-															<input class="form-control" type="url" name="seminarurl" value="{{seminarurl}}" placeholder="yourwebsite.com" required>
+														<div class="col-md-8">
+															<label>url:</label><br>
+															<input class="form-control" type="url" name="seminarurl"
+																value="{{seminarurl}}" placeholder="yourwebsite.com"
+																required>
 														</div>
 													</div>
 												</div>
 												<div class="modal-footer">
-													<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-													<button type="submit" class="btn btn-primary">Create Seminar/Event</button>
+													<button type="button" class="btn btn-secondary"
+														data-dismiss="modal">Close</button>
+													<button type="submit" class="btn btn-primary">Publish</button>
 												</div>
 											</div>
 										</div>
@@ -801,7 +1205,7 @@
 								</form>
 								<!-- ================================================================ -->
 								<!-- Model for Update seminar here ===================================== -->
-							
+
 								<div class="modal fade" id="updatesemin" tabindex="-1" role="dialog"
 									aria-labelledby="updateseminarlabel" aria-hidden="false">
 									<div class="modal-dialog" role="document">
@@ -809,7 +1213,8 @@
 											<div class="modal-header">
 												<h5 class="modal-title" id="updateseminarlabel">Update your
 													seminars/events</h5>
-												<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+												<button type="button" class="close" data-dismiss="modal"
+													aria-label="Close"><span aria-hidden="true">&times;</span></button>
 											</div>
 											<div class="modal-body">
 												{{#if seminararray}}
@@ -819,10 +1224,12 @@
 												</div>
 												{{#each seminararray}}
 												<br>
-												<a href="#" data-toggle="modal" data-target="#editseminar{{seminarevents_id}}">
+												<a href="#" data-toggle="modal"
+													data-target="#editseminar{{seminarevents_id}}">
 													<div>
 														<div class="form-group form-row d-flex justify-content-center">
-															<img class="col-md-10 img-md" src="/images/Institutionpictures/seminar/{{SEImage}}">
+															<img class="col-md-10 img-md"
+																src="/images/Institutionpictures/seminar/{{SEImage}}">
 														</div>
 														<div class="form-group form-row d-flex justify-content-center">
 															<h5 style="color: #000;">{{SETitle}}</h5>
@@ -832,57 +1239,86 @@
 												<br>
 												<hr>
 												<!-- second model for update social medida -->
-												<form class="block-register" action="/institution_admin/yourpage/updateseminar" method="POST">
-													<div class="modal fade" id="editseminar{{seminarevents_id}}" tabindex="-1" role="dialog" aria-labelledby="upload-avatar-title" aria-hidden="true">
+												<form class="block-register"
+													action="/institution_admin/yourpage/updateseminar" method="POST">
+													<div class="modal fade" id="editseminar{{seminarevents_id}}"
+														tabindex="-1" role="dialog"
+														aria-labelledby="upload-avatar-title" aria-hidden="true">
 														<div class="modal-dialog">
 															<div class="modal-content">
 																<div class="modal-header">
-																	<h4 class="modal-title" id="upload-avatar-title"> Update Seminar/Event selected.</h4>
-																	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+																	<h4 class="modal-title" id="upload-avatar-title">
+																		Update Seminar/Event selected.</h4>
+																	<button type="button" class="close"
+																		data-dismiss="modal"
+																		aria-hidden="true">&times;</button>
 																</div>
 																<div class="modal-body">
 																	<div class="form-group form-row">
 																		<div class="col-md-8">
-																			<label for="smpictureimage">Edit any of the followings</label>
+																			<label for="smpictureimage">Edit any of the
+																				followings</label>
 																			<br>
 																			<hr>
 																		</div>
 																	</div>
 																	<div class="form-group form-row">
 																		<div class="col-md-8">
-																			<label for="seminarimage">Upload an image for the event.</label><br>
-																			<img id='seminarThumbnail2' name="seminarThumbnail2" src="/images/Institutionpictures/seminar/{{SEImage}}" width="240" height="135" class="border">
+																			<label for="seminarimage">Upload an image
+																				for the event.</label><br>
+																			<img id='seminarThumbnail2'
+																				name="seminarThumbnail2"
+																				src="/images/Institutionpictures/seminar/{{SEImage}}"
+																				width="240" height="135" class="border">
 																			<div style="position:relative; "></div>
-																			<input type="file" name="institutionSeminarUpload2" id="institutionSeminarUpload2" value="{{SEImage}}">
-																			<input type="hidden" id='trueFileSeminarName2' name="trueFileSeminarName2" value="{{SEImage}}">
-																			<input type="hidden" id='seminarid' name="seminarid" value="{{seminarevents_id}}">
-																			<div class="font-weight-bold text-danger small" id="seminarErr2" style="display:none">
+																			<input type="file"
+																				name="institutionSeminarUpload2"
+																				id="institutionSeminarUpload2"
+																				value="{{SEImage}}" accept="image/png, image/jpeg, image/jpg, image/gif">
+																			<input type="hidden"
+																				id='trueFileSeminarName2'
+																				name="trueFileSeminarName2"
+																				value="{{SEImage}}">
+																			<input type="hidden" id='seminarid'
+																				name="seminarid"
+																				value="{{seminarevents_id}}">
+																			<div class="font-weight-bold text-danger small"
+																				id="seminarErr2" style="display:none">
 																			</div>
 																		</div>
 																	</div>
 																	<div class="form-group form-row">
 																		<div class="col-md-6">
 																			<label>Title of Seminar:</label><br>
-																			<input class="form-control" type="text" name="seminartitle" value="{{SETitle}}" placeholder="title of the event" required></input>
+																			<input class="form-control" type="text"
+																				name="seminartitle" value="{{SETitle}}"
+																				placeholder="title of the event"
+																				required></input>
 																		</div>
 																	</div>
 																	<div class="form-group form-row">
 																		<div class="col-md-6">
 																			<label>Seminar's Description:</label><br>
-																			<textarea class="form-control" name="seminardescription" value="{{SEDescription}}" required>{{SEDescription}}</textarea>
+																			<textarea class="form-control"
+																				name="seminardescription"
+																				value="{{SEDescription}}"
+																				required>{{SEDescription}}</textarea>
 																		</div>
 																	</div>
 																	<div class="form-group form-row">
 																		<div class="col-md-6">
 																			<label>Seminar's url:</label><br>
-																			<input class="form-control" type="url" name="seminarurl" value="{{SEUrl}}" placeholder="yourwebsite.com" required>
+																			<input class="form-control" type="url"
+																				name="seminarurl" value="{{SEUrl}}"
+																				placeholder="yourwebsite.com" required>
 																		</div>
 																	</div>
 																</div>
 																<div class="modal-footer">
 																	<button type="button" class="btn btn-secondary"
 																		data-dismiss="modal">Close</button>
-																	<button type="submit" class="btn btn-primary">Save changes</button>
+																	<button type="submit" class="btn btn-primary">Save
+																		changes</button>
 																</div>
 															</div>
 														</div>
@@ -891,7 +1327,8 @@
 												</form>
 												{{/each}}
 												{{else}}
-												<h3>There is currently no seminars/events to update. Please add a seminar.</h3>
+												<h3>There is currently no seminars/events to update. Please add a
+													seminar.</h3>
 												{{/if}}
 											</div>
 											<div class="modal-footer">
@@ -903,22 +1340,29 @@
 								</div>
 								<!-- ===================================================================== -->
 								<!-- delete seminar/event here ========================================= -->
-								<div class="modal fade" id="deleteseminar" tabindex="-1" role="dialog" aria-labelledby="deleteseminarlabel" aria-hidden="true">
+								<div class="modal fade" id="deleteseminar" tabindex="-1" role="dialog"
+									aria-labelledby="deleteseminarlabel" aria-hidden="true">
 									<div class="modal-dialog" role="document">
 										<div class="modal-content">
 											<div class="modal-header">
-												<h5 class="modal-title" id="deleteseminarlabel">Select a seminar/event to remove</h5>
-												<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+												<h5 class="modal-title" id="deleteseminarlabel">Select a seminar/event
+													to remove</h5>
+												<button type="button" class="close" data-dismiss="modal"
+													aria-label="Close"><span aria-hidden="true">&times;</span></button>
 											</div>
 											<div class="modal-body">
 												<br>
 												<br>
 												{{#if seminararray}}
 												{{#each seminararray}}
-												<form class="block-register" action="/institution_admin/yourpage/deleteseminar" method="POST">
-													<button type="submit" class="btn btn-primary float-right" name="deleteseminar" value="{{seminarevents_id}}"><span class="col-md-1">&times;</span></button>
-													<div class="row d-flex justify-content-center"> 
-														<img class="col-md-10 img-md" src="/images/Institutionpictures/seminar/{{SEImage}}">
+												<form class="block-register"
+													action="/institution_admin/yourpage/deleteseminar" method="POST">
+													<button type="submit" class="btn btn-primary float-right"
+														name="deleteseminar" value="{{seminarevents_id}}"><span
+															class="col-md-1">&times;</span></button>
+													<div class="row d-flex justify-content-center">
+														<img class="col-md-10 img-md"
+															src="/images/Institutionpictures/seminar/{{SEImage}}">
 														<h5>{{SETitle}}</h5>
 													</div>
 													<hr>
@@ -926,7 +1370,8 @@
 												<br><br>
 												{{/each}}
 												{{else}}
-												<h3>There are no seminars/events to be deleted. Please add an event.</h3>
+												<h3>There are no seminars/events to be deleted. Please add an event.
+												</h3>
 												{{/if}}
 											</div>
 											<div class="modal-footer">
@@ -1049,15 +1494,15 @@
 									<article class="card card-body">
 
 
-										<div class="row">
+										<div class="row d-flex justify-content-center" style="margin-left: 10px;">
 											{{#ifEquals descriptionarray.length 0}}
-											<div class="col-md-4">
+											<div class="col-md-6">
 												<figure class="item-feature">
 													<span class="text-primary"><i
 															class="fa fa-2x fa-graduation-cap"></i></span>
 													<figcaption class="pt-3">
 														<h5 class="title">About Us</h5>
-														<p>Something about your institution</p>
+														<p>Tell the users what is your institution about....</p>
 													</figcaption>
 												</figure> <!-- iconbox // -->
 											</div><!-- col // -->
@@ -1066,7 +1511,7 @@
 													<span class="text-primary"><i class="fa fa-2x fa-book"></i></span>
 													<figcaption class="pt-3">
 														<h5 class="title">Courses we offer</h5>
-														<p>courses you offer are here!
+														<p>courses you offer are here........
 														</p>
 													</figcaption>
 												</figure> <!-- iconbox // -->
@@ -1074,7 +1519,7 @@
 											{{else}}
 											{{#each descriptionarray}}
 
-											<div class="col-md-4">
+											<div class="col-md-6">
 												<figure class="item-feature">
 													<span class="text-primary"><i
 															class="fa fa-2x fa-graduation-cap"></i></span>
@@ -1084,7 +1529,7 @@
 													</figcaption>
 												</figure> <!-- iconbox // -->
 											</div><!-- col // -->
-											<div class="col-md-4">
+											<div class="col-md-6">
 												<figure class="item-feature">
 													<span class="text-primary"><i class="fa fa-2x fa-book"></i></span>
 													<figcaption class="pt-3">
@@ -1096,7 +1541,7 @@
 											</div><!-- col // -->
 											{{/each}}
 											{{/ifEquals}}
-											<div class="col-md-4">
+											{{!-- <div class="col-md-4">
 												<figure class="item-feature">
 													<span class="text-primary"><i class="fa fa-2x fa-users"></i></span>
 													<figcaption class="pt-3">
@@ -1105,7 +1550,7 @@
 														</p>
 													</figcaption>
 												</figure> <!-- iconbox // -->
-											</div> <!-- col // -->
+											</div> <!-- col // --> --}}
 										</div>
 									</article>
 
@@ -1127,7 +1572,8 @@
 												{{#if widgetarray}}
 												{{#each widgetarray}}
 												<div class="list-inline-item">
-													<a href="{{widgeturl}}" target="_blank"><img class="d-block img-sm rounded-circle"
+													<a href="{{widgeturl}}" target="_blank"><img
+															class="d-block img-sm rounded-circle"
 															src="/images/Institutionpictures/socialmedia/{{widgetimage}}"></a>
 												</div>
 												{{/each}}
@@ -1190,49 +1636,135 @@
 								</h5>
 								<br><br>
 								<!-- Top courses-->
-								<div class="row d-flex justify-content-center">
+								<div class="container" style="width: 850px;">
+									{{!-- <div class="row">
+										<div class="slider-items-owl owl-carousel owl-theme">
+											{{#each allfeaturedcoursearray }}
+											<div class="item-slide">
+												<figure class="card card-product-grid"
+													style="height:300px; width:250px;">
+													<div class="img-wrap">
+														<img src="/images/coursethumbnails/{{Course_thumbnail}}"
+															height="140" width="240">
+													</div>
+													<div class="widget-header">
+														<a href="#" class="ml-3 icontext" data-toggle="dropdown"
+															data-offset="20,10">
+															<div class="icon"><img class="icon icon-xs rounded-circle"
+																	src="/images/profilepictures/{{Profile_pic}}">
+															</div>
+															<div class="text">
+																<small class="text-muted">{{FirstName}}
+																	{{LastName}}</small> <br>
+															</div>
+														</a>
+													</div>
+													<figcaption class="info-wrap">
+														<h4 class="title" style="height:58px"><a
+																href="/course/viewcourse/{{course_id}}">{{Title}}</a>
+														</h4>
+														<p class="text-muted" style="height:58px">{{Description}}
+														</p>
+														<br>
+														<h5>${{Hourlyrate}}/Hour</h5>
+													</figcaption>
+												</figure> <!-- card // -->
+											</div>
+											{{/each}}
+										</div>
+									</div> <!-- row.// --> --}}
+									
+									<div class="row d-flex justify-content-center">
+										{{#each allfeaturedcoursearray}}
+										<div class="col-sm-4 mt-3">
+											<figure class="card card-product-grid"
+													style="height:370px; width:250px;">
+													<div class="img-wrap">
+														<img src="/images/coursethumbnails/{{Course_thumbnail}}"
+															height="140" width="240">
+													</div>
+													<div class="widget-header">
+														<a href="#" class="ml-3 icontext" data-toggle="dropdown"
+															data-offset="20,10">
+															<div class="icon"><img class="icon icon-xs rounded-circle"
+																	src="/images/profilepictures/{{Profile_pic}}">
+															</div>
+															<div class="text">
+																<small class="text-muted">{{FirstName}}
+																	{{LastName}}</small> <br>
+															</div>
+														</a>
+													</div>
+													<figcaption class="info-wrap">
+														<h5 class="title" style="height:30px"><a
+																href="/course/viewcourse/{{course_id}}">{{Title}}</a>
+														</h5>
+														<br>
+														<h5>${{Hourlyrate}}/Hour</h5>
+													</figcaption>
+												</figure> <!-- card // -->
+										</div>
+										{{/each}}
+									</div>
 									{{#if allfeaturedcoursearray}}
-									{{#each allfeaturedcoursearray}}
-									<figure class="card card-product-grid" style="width: 18rem; height: 21rem; margin-right: 20px;">
-										<img class="card-img-top" src="/images/coursethumbnails/{{Course_thumbnail}}"height="140" width="240">
-										<div class="widget-header">
-												<a href="#" class="ml-3 icontext" data-toggle="dropdown" data-offset="20,10">
-													<div class="icon"><img class="icon icon-xs rounded-circle" src="/images/profilepictures/{{Profile_pic}}"></div>
-													<div class="text" >
-														<small class="text-muted">{{FirstName}} {{LastName}}</small> <br>
-													</div>
-												</a>
+									{{!-- <div class="slider-items-slick row"
+										data-slick='{"slidesToShow": 4, "slidesToScroll": 1}'>
+										{{#each allfeaturedcoursearray }}
+										<div class="item-slide p-2">
+											<figure class="card card-product-grid" style="height:150px; width:100px;">
+												<div class="img-wrap">
+													<img src="/images/coursethumbnails/{{Course_thumbnail}}"
+														height="140" width="240">
+												</div>
+												<div class="widget-header">
+													<a href="#" class="ml-3 icontext" data-toggle="dropdown"
+														data-offset="20,10">
+														<div class="icon"><img class="icon icon-xs rounded-circle"
+																src="/images/profilepictures/{{Profile_pic}}">
+														</div>
+														<div class="text">
+															<small class="text-muted">{{FirstName}}
+																{{LastName}}</small> <br>
+														</div>
+													</a>
+												</div>
+												<figcaption class="info-wrap">
+													<h4 class="title" style="height:58px"><a
+															href="/course/viewcourse/{{course_id}}">{{Title}}</a>
+													</h4>
+													<p class="text-muted" style="height:58px">{{Description}}
+													</p>
+													<br>
+													<h5>${{Hourlyrate}}/Hour</h5>
+												</figcaption>
+											</figure> <!-- card // -->
 										</div>
-										<figcaption class="info-wrap">
-											<h4 class="title"><a href="/course/viewcourse/{{course_id}}">{{Title}}</a></h4>
-											<p class="text-muted" style="font-size:0.9em;">{{Short_description}}</p>
-											<br>
-											<h5>{{Hourlyrate}}/Hour</h5>
-										</figcaption>
-									</figure>
-									{{/each}}
+										{{/each}}
+									</div> --}}
+									
 									{{else}}
-									<figure class="card card-product-grid" style="width: 18rem; height: 21rem; margin-right: 20px;">
-										<img class="card-img-top" src="/images/coursethumbnails/avatar2.jpg"height="140" width="240">
-										<div class="widget-header">
-												<a href="#" class="ml-3 icontext" data-toggle="dropdown" data-offset="20,10">
-													<div class="icon"><img class="icon icon-xs rounded-circle" src="/images/profilepictures/2.jpg"></div>
-													<div class="text" >
-														<small class="text-muted">Feature your courses here!</small> <br>
-													</div>
-												</a>
+									<div class="row d-flex justify-content-center">
+										<div class="col-sm-4 mt-3">
+											<div class="card">
+												<div class="card-body">
+													<img class="card-img-top"
+														src="/images/Institutionpictures/seminar/TutorHub_logl.png">
+													<hr>
+													<h6 class="card-title" style="font-size: medium;">Feature your
+														Tutor's Courses</h6>
+													<p class="card-text">Let users see the courses you offer!</p>
+													<br>
+													<a href="#" class="btn btn-primary">Learn more!</a>
+												</div>
+											</div>
 										</div>
-										<figcaption class="info-wrap">
-											<h4 class="title"><a href="#">CHoose your favourite/top courses</a></h4>
-											<p class="text-muted" style="font-size:0.9em; height:58px">Let everyone see it here!</p>
-											<br>
-											<h5>1/Hour</h5>
-										</figcaption>
-									</figure> <!-- card // -->
+									</div>
 									{{/if}}
+									<!-- ============== COMPONENT SLIDER ITEMS SLICK .end // ============= -->
 								</div>
 								<!-- end of top courses-->
 								<br><br>
+
 							</section>
 							<br>
 							<section>
@@ -1248,7 +1780,9 @@
 									<div class="col-sm-4 mt-3">
 										<div class="card">
 											<div class="card-body">
-												<img class="card-img-top" src="/images/Institutionpictures/seminar/{{SEImage}}" style="height: 150px;">
+												<img class="card-img-top"
+													src="/images/Institutionpictures/seminar/{{SEImage}}"
+													style="height: 150px;">
 												<hr>
 												<h6 class="card-title" style="font-size: medium;">{{SETitle}}</h6>
 												<p class="card-text">{{SEDescription}}</p>
@@ -1264,10 +1798,13 @@
 									<div class="col-sm-4 mt-3">
 										<div class="card">
 											<div class="card-body">
-												<img class="card-img-top" src="/images/Institutionpictures/seminar/TutorHub_logl.png">
+												<img class="card-img-top"
+													src="/images/Institutionpictures/seminar/TutorHub_logl.png">
 												<hr>
-												<h6 class="card-title" style="font-size: medium;">Upload your Seminar/events here</h6>
-												<p class="card-text"> Let users attending workshops/events you have! let them learn more here.</p>
+												<h6 class="card-title" style="font-size: medium;">Upload your
+													Seminar/events here</h6>
+												<p class="card-text"> Let users attending workshops/events you have! let
+													them learn more here.</p>
 												<br>
 												<a href="#" class="btn btn-primary">Learn more!</a>
 											</div>
@@ -1297,7 +1834,10 @@
 
 	</div> <!-- container .//  -->
 </section>
+
+
 <script>
+
 	function myFunction() {
 		// Declare variables
 		var input, filter, table, tr, td, i, txtValue;
@@ -1320,27 +1860,6 @@
 		}
 	}
 
-	function mySecondFunction() {
-		// Declare variables
-		var input, filter, table, tr, td, i, txtValue;
-		input = document.getElementById("myInput2");
-		filter = input.value.toUpperCase();
-		table = document.getElementById("myTable2");
-		tr = table.getElementsByTagName("tr");
-
-		// Loop through all table rows, and hide those who don't match the search query
-		for (i = 0; i < tr.length; i++) {
-			td = tr[i].getElementsByTagName("td")[1];
-			if (td) {
-				txtValue = td.textContent || td.innerText;
-				if (txtValue.toUpperCase().indexOf(filter) > -1) {
-					tr[i].style.display = "";
-				} else {
-					tr[i].style.display = "none";
-				}
-			}
-		}
-	}
 
 	$('#institutionBannerUpload').on('change', function () {
 		var file = $("#institutionBannerUpload")[0].files[0];
@@ -1446,7 +1965,7 @@
 		});
 	});
 
-	$('#institutionSeminarUpload').on('change', function() {
+	$('#institutionSeminarUpload').on('change', function () {
 		var file = $("#institutionSeminarUpload")[0].files[0];
 		var formdata = new FormData();
 		formdata.append('institutionSeminarUpload', file);
@@ -1479,7 +1998,7 @@
 		//alert(data.file);
 	});
 
-	$('#institutionSeminarUpload2').on('change', function() {
+	$('#institutionSeminarUpload2').on('change', function () {
 		//alert("hello");
 		var file = $("#institutionSeminarUpload2")[0].files[0];
 		var formdata = new FormData();

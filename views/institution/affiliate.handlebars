@@ -1,0 +1,226 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="Bootstrap-ecommerce by Vosidiy">
+
+    <title>UI KIT - Marketplace and Ecommerce html template</title>
+
+    <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
+
+    <!-- jQuery -->
+    <script src="js/jquery-2.0.0.min.js" type="text/javascript"></script>
+
+    <!-- Bootstrap4 files-->
+    <script src="js/bootstrap.bundle.min.js" type="text/javascript"></script>
+    <link href="css/bootstrap.css" rel="stylesheet" type="text/css" />
+
+    <!-- Font awesome 5 -->
+    <link href="fonts/fontawesome/css/all.min.css" type="text/css" rel="stylesheet">
+
+
+    <!-- plugin: slickslider -->
+    <link href="plugins/slickslider/slick.css" rel="stylesheet" type="text/css" />
+    <link href="plugins/slickslider/slick-theme.css" rel="stylesheet" type="text/css" />
+    <script src="plugins/slickslider/slick.min.js"></script>
+
+    <!-- plugin: owl carousel  -->
+    <link href="plugins/owlcarousel/assets/owl.carousel.css" rel="stylesheet">
+    <link href="plugins/owlcarousel/assets/owl.theme.default.css" rel="stylesheet">
+    <script src="plugins/owlcarousel/owl.carousel.min.js"></script>
+
+    <!-- ui style -->
+    <link href="css/ui.css" rel="stylesheet" type="text/css" />
+    <link href="css/responsive.css" rel="stylesheet" />
+
+    <!-- ui javascript -->
+    <script src="js/script.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        /// some script
+
+        // jquery ready start
+        $(document).ready(function () {
+            // jQuery code
+
+
+
+            /////////////////  items slider. /plugins/slickslider/
+            if ($('.slider-items-slick').length > 0) { // check if element exists
+                $('.slider-items-slick').slick({
+                    infinite: true,
+                    swipeToSlide: true,
+                    slidesToShow: 4,
+                    dots: true,
+                    slidesToScroll: 2,
+                    prevArrow: '<button type="button" class="slick-prev"><i class="fa fa-chevron-left"></i></button>',
+                    nextArrow: '<button type="button" class="slick-next"><i class="fa fa-chevron-right"></i></button>',
+                    responsive: [
+                        {
+                            breakpoint: 768,
+                            settings: {
+                                slidesToShow: 2
+                            }
+                        },
+                        {
+                            breakpoint: 640,
+                            settings: {
+                                slidesToShow: 1
+                            }
+                        }
+                    ]
+                });
+            } // end if
+
+
+
+
+        });
+// jquery end
+    </script>
+
+</head>
+
+<body>
+    <section class="padding-y">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <!-- ============================ COMPONENT BANNER 7 ================================= -->
+                    {{!-- <div class="card-banner bg-gradient-green text-white text-center"
+                        style="min-height:300px; background-image: url('images/banners/banner1.jpg');">
+                        <div class="card-title">
+                            <br>
+                            <br>
+                            <br>
+                            <h1 class="card-title" style="font-size: 60px;">Affiliation</h1>
+                            <p>Want to be affiliated under your desired institution? Apply Now!</p>
+                        </div>
+                    </div> --}}
+                    <div class="card-banner text-center"
+                        style="min-height:300px; background-image: url('../images/banners/banner1.jpg');">
+                        <article class="card-body bg-gradient-green text-white">
+                            <div class="card-img-overlay white">
+                                <br>
+                                <br>
+                                <br>
+                                <h1 class="card-title" style="font-size: 60px;">Affiliation</h1>
+                                <p>Want to be affiliated under your desired institution? Apply Now!</p>
+                            </div>
+                        </article>
+                    </div>
+                    <!-- ============================ COMPONENT BANNER 7  END .// =========================== -->
+                </div> <!-- col.// -->
+            </div>
+        </div>
+    </section>
+    <br><br><br><br><br>
+    {{!-- <div class="col-md-12 padding-y">
+        <!-- ============================ COMPONENT ITEM BG ================================= -->
+        <div class="card-banner">
+            <div class="p-4" style="width:100%; height: 250px;">
+                <h2 class="card-title">Be part of the family</h2>
+                <p>Be officially attached and be connected to your desired institution. Just like a normal job, you have
+                    to
+                    apply and wait for approval.</p>
+            </div>
+            <img src="../images/banners/1_hGRxu9D7woRufz8GDLLejA.png" height="250px" width="400px;" class="img-bg">
+        </div>
+        <!-- ============================ COMPONENT ITEM BG  END .// =========================== -->
+    </div> <!-- col.// --> --}}
+    <div class="col-md-12">
+        <!-- ============================ COMPONENT ITEM BG ================================= -->
+        <div class="card-banner">
+            <div class="p-4" style="width:100%; height:300px;">
+                <h2 class="card-title">Be a part of the family</h2>
+                <p>Be officially attached and be connected to your desired institution.<br>Just like a normal job, you
+                    have
+                    to apply and wait for your approval.</p>
+            </div>
+            <br>
+            <img src="../images/banners/greenteacher.png" height="300px;" class="img-bg">
+        </div>
+        <!-- ============================ COMPONENT ITEM BG  END .// =========================== -->
+    </div> <!-- col.// -->
+    {{!-- <section class="section-content padding-y bg"> --}}
+        <!-- ========================= SECTION INTRO END// ========================= -->
+
+        {{!--
+        <!-- ========================= SECTION SPECIAL ========================= -->
+        <section class="section-specials padding-y border-bottom">
+
+        </section>
+        <!-- ========================= SECTION SPECIAL END// ========================= --> --}}
+
+
+
+        <br>
+        <br>
+        <br>
+        <!-- ========================= SECTION  ========================= -->
+        <section class="section-name  padding-y-sm">
+            <div class="container">
+
+                <header class="section-heading">
+                    <br>
+                    <h3 class="card-title mb-4"
+                        style="width: 100%; text-align: center; border-bottom: 1px solid #000; line-height: 0.1em; margin: 10px 0 20px;">
+                        <span style="background:#fff; padding: 0 50px;">Select an institution!</span>
+                    </h3>
+                </header><!-- sect-heading -->
+            </div>
+        </section>
+        <br>
+        <!-- ============== COMPONENT SLIDER ITEMS SLICK  ============= -->
+        <div class="slider-items-slick row" data-slick='{"slidesToShow": 4, "slidesToScroll": 1}'>
+            {{#each institutionarray}}
+            <div class="item-slide p-2">
+                {{!-- <figure class="card card-product-grid mb-0">
+                    <div class="img-wrap">
+                        <span class="badge badge-danger"> NEW </span>
+                        <img src="images/items/1.jpg">
+                    </div>
+                    <figcaption class="info-wrap text-center">
+                        <h6 class="title text-truncate"><a href="#">First item name</a></h6>
+                    </figcaption>
+                </figure> <!-- card // --> --}}
+                <a style="color: unset;" href="/institution/application/{{institution_id}}">
+                    <div class="card card-product-grid">
+                        <label href="/institution/showinstitutionpage/{{institution_id}}" class="img-wrap"> <img
+                                src="/images/Institutionpictures/{{mainlogo}}"> </label>
+                        <figcaption class="info-wrap">
+                            <label class="title">{{name}}</label>
+                        </figcaption>
+                    </div>
+                </a>
+            </div>
+            {{/each}}
+        </div>
+        <!-- ============== COMPONENT SLIDER ITEMS SLICK .end // ============= -->
+        <br><br>
+
+
+
+        </div> <!-- container .//  -->
+    </section>
+    <!-- ========================= SECTION CONTENT END// ========================= -->
+
+    <!-- ========================= FOOTER ========================= -->
+    <footer class="section-footer border-top padding-y">
+        <div class="container">
+            <p class="float-md-right">
+                &copy Copyright 2019 All rights reserved
+            </p>
+            <p>
+                <a href="#">Terms and conditions</a>
+            </p>
+        </div><!-- //container -->
+    </footer>
+    <!-- ========================= FOOTER END // ========================= -->
+
+
+</body>
+
+</html>
