@@ -93,7 +93,9 @@ app.engine('handlebars', exphbs({
             return a == b
         },
         format(date) {
-            dateParsed = new Date(Date.parse(date));
+            date = new Date(Date.parse(date));
+            console.log(Date.parse(date.getFullYear(), date.getMonth(), date.getDate()));
+            dateParsed = date.getFullYear() + '/' + date.getMonth() + '/' + date.getDate();
             // return `${dateParsed.getFullYear()} - ${(dateParsed.getMonth() + 1)} - ${dateParsed.getDate()}`
             return dateParsed
         },

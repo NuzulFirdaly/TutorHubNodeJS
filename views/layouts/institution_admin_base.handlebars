@@ -53,11 +53,12 @@
    {{>_admin_navbar}}
 
     <div class="container">
-      {{>_flashmsg}} {{!-- views/partials/_flashmsg.handlebars --}}
-      {{>_msg}}  
       {{{body}}}
+      
 	  </div>
 
 
 </body>
+ {{>_flashmsg}} {{!-- views/partials/_flashmsg.handlebars --}}
+      {{>_msg}}  
 </html>

@@ -85,7 +85,7 @@
             <div class="form-group form-row">
                 <label class="col-md-5 col-form-label">Price</label>
                 <div class="col-md-9">
-                    <input class="form-control" type="number" min="1" step="any" id="price" name="price"
+                    <input class="form-control" type="number" min="0.1" step="any" id="price" name="price"
                         placeholder="Enter Product Price" required>
                 </div>
             </div>
@@ -116,11 +116,11 @@
         <div class="item-slide">
             <form class='block-register' action="/Shop/ItemDelete/{{this.item_id}}" method="POST"
                 enctype="multipart/form-data">
-                <figure class="card card-product-grid" style="width: 16rem; padding: 30px;">
+                <figure class="card card-product-grid" style="width: 20rem; padding: 30px;">
                     <img class="card-img-top" src="/images/itemlisting/{{ this.Picture }}" height="178" width="140">
                     <figcaption class="info-wrap">
                         <h5 class="title" style="height:58px;">{{ this.Name }}</h5>
-                        <p>
+                        <p style="overflow: auto; height: 80px;" >
                             {{#if this.Description}}
                             {{this.Description}}
                             {{else}}
@@ -172,7 +172,7 @@
                 </div>
                 <figcaption class="info-wrap">
                     <h5 class="title" style="height:58px;">{{this.Name}}</h5>
-                    <p>
+                    <p style="overflow: auto; height: 80px;">
                         {{#if this.Description}}
                         {{this.Description}}
                         {{else}}

@@ -36,17 +36,16 @@ const resumeUpload = require('../helpers/resumeUpload');
 // Email
 const nodemailer = require('nodemailer');
 const { google } = require('googleapis');
-const CLIENT_ID = '993285737810-tfpuqq5vhfdjk5s5ng5v6vcbc3cht53s.apps.googleusercontent.com';
-const CLIENT_SECRET = 'uvWjFqdiAgVK_sFq_uaYcbGV';
+
+const CLIENT_ID = '993285737810-b2086rifaqci7h4ko45g7u4jmk6grp5m.apps.googleusercontent.com';
+const CLIENT_SECRET = 'doF29jucLtQ5-9fbVRCUvUMH';
 const REDIRECT_URI = 'https://developers.google.com/oauthplayground';
-const REFRESH_TOKEN = '1//04NJ-IXlwUJ_7CgYIARAAGAQSNgF-L9Irvecmxx12BMYyPKTIrSjhEroQErhaG49HwPEugWn5nSq3MJAb9py5_yEVmIwNd6gj5A';
+const REFRESH_TOKEN = '1//04Tu6GvZqypctCgYIARAAGAQSNgF-L9IrzUZJi2ZYp6pmGFMAiP4ysKtoX3JaAuIPqMrvveKG1OgDf6lY8QXZMKof2a67sLaEcA';
+
 const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
 oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
 
-async function sendMailinstitution(custom_mailemail,
-    custom_mailsubject, instituteName,
-    instituteAddress, institutePC, instituteEmail, instituteUrl,
-    instituteNo, IAFname, IALname, IANo, IAEmail) {
+async function sendMail(mailOptions) {
     try {
         const accessToken = await oAuth2Client.getAccessToken();
 
@@ -62,25 +61,13 @@ async function sendMailinstitution(custom_mailemail,
             },
         });
 
-        const mailOptions = {
-            from: 'TutorHub Administrator 👨‍🏫<adm.tutorhub@gmail.com>',
-            to: custom_mailemail,
-            subject: custom_mailsubject,
-            html: "<h1> Thank you for registering your institution in TutorHub! </h1> \
-            <br> <p>Below are the details of your registration. Please do note it will take about 2 to 3 business days to approve your registration. Thank you.</p> \
-            <br><h4>Institution Details:</h4> \
-            <br><p>Institution Name: </p>" + instituteName + "\
-            <p>Address: </p>" + instituteAddress + " \
-            <p>Postal Code: </p>" + institutePC + " \
-            <p>Email: </p>" + instituteEmail + " \
-            <p>Your website: </p>" + instituteUrl + "\
-            <p>Office No: </p>" + instituteNo + "\
-            <h4>Administrator details</h4>  \
-            <p>First name: </p>" + IAFname + " \
-            <p>Last name: </p>" + IALname + " \
-            <p>Phone No: </p>" + IANo + " \
-            <p>Email: </p>" + IAEmail
-        };
+        console.log(mailOptions);
+        // const mailOptions = {
+        //     from: 'TutorHub Administrator :man_teacher:<adm.tutorhub@gmail.com>',
+        //     to: 'christophertw2706@gmail.com',
+        //     subject: custom_mailsubject,
+        //     html: custom_mailmessage,
+        // };
 
         const result = await transport.sendMail(mailOptions)
         return result;
@@ -267,6 +254,28 @@ router.post('/institutionregistration', [
                                     })
                                     .catch(err => console.log(err));
                                 console.log("Upload to pending institution completed.");
+                                const mailOptions = {
+                                    from: 'TutorHub Administrator 👨‍🏫<adm.tutorhub@gmail.com>',
+                                    to: instituteEmail,
+                                    subject: "Registration has been submitted.",
+                                    html: "<h1> Thank you for registering your institution in TutorHub! </h1> \
+                                    <br> <p>Below are the details of your registration. Please do note it will take about 2 to 3 business days to approve your registration. Thank you.</p> \
+                                    <br><h4>Institution Details:</h4> \
+                                    <br><p>Institution Name: </p>" + instituteName + "\
+                                    <p>Address: </p>" + instituteAddress + " \
+                                    <p>Postal Code: </p>" + institutePC + " \
+                                    <p>Email: </p>" + instituteEmail + " \
+                                    <p>Your website: </p>" + instituteUrl + "\
+                                    <p>Office No: </p>" + instituteNo + "\
+                                    <h4>Administrator details</h4>  \
+                                    <p>First name: </p>" + IAFname + " \
+                                    <p>Last name: </p>" + IALname + " \
+                                    <p>Phone No: </p>" + IANo + " \
+                                    <p>Email: </p>" + IAEmail
+                                };
+                                sendMail(mailOptions)
+                                    .then((result) => console.log('Email sent...', result))
+                                    .catch((error) => console.log(error.message));
                                 console.log("Registration form process has been completed. Redirecting now...");
                                 res.redirect('/institution/showcompletion');
                             }
@@ -502,11 +511,14 @@ router.post('/userResumeUpload', (req, res) => {
 
 router.post('/affiliationapplication', [body('firstname').not().isEmpty().trim().escape().withMessage("Please enter your first name")], [body('lastname').not().isEmpty().trim().escape().withMessage("Please enter your last name")], [body('username').not().isEmpty().trim().escape().withMessage("Please enter your username")], [body('reason').not().isEmpty().trim().escape().withMessage("Please enter your reason")], [body('trueFileResumeName').not().isEmpty().trim().escape().withMessage("Please upload a proper document. Only accept the following format: doc, docx, odt, pdf, zip")], uploadnone.none(), (req, res) => {
     console.log("processing institution application form now....");
-    let { firstname, lastname, username, reason, trueFileResumeName, userid, useremail, institutionid } = req.body;
+    let { firstname, lastname, username, reason, trueFileResumeName, userid, useremail, institutionid, institutioname } = req.body;
     let errors = [];
     console.log("institutionid: ", institutionid);
     console.log("here is the reason: ", reason);
     console.log("Here is the resume: ", trueFileResumeName);
+    console.log("Here is the user's email: ", useremail);
+    console.log("Here is the institution's name: ", institutioname);
+
     const validatorErrors = validationResult(req);
     if (!validatorErrors.isEmpty()) {
         console.log("There are errors in the form, unable to proceed.");
@@ -527,6 +539,26 @@ router.post('/affiliationapplication', [body('firstname').not().isEmpty().trim()
             userUserId: userid,
             institutionInstitutionId: institutionid
         }).catch(err => console.log(err));
+        // const mailOptions = {
+        //     from: 'TutorHub Administrator 👨‍🏫<adm.tutorhub@gmail.com>',
+        //     to: useremail,
+        //     subject: "Application has been sent.",
+        //     html: "<h1> Thank you for applying to </h1>" + institutioname + "\
+        //     <br> <p>You will receive an email regarding the result of your application. Do look out for our email.</p>"
+        // };
+        // sendMail(mailOptions)
+        // .then((result) => console.log('Email sent...', result))
+        // .catch((error) => console.log(error.message));
+        const mailOptions = {
+            from: 'TutorHub Administrator 👨‍🏫<adm.tutorhub@gmail.com>',
+            to: useremail,
+            subject: "Application has been sent.",
+            html: "<h1> Thank you for applying to </h1>" + institutioname + " <br> <p>You will receive an email regarding the result of your application. Do look out for our email.</p>"
+        };
+        sendMail(mailOptions)
+            .then((result) => console.log('Email sent...', result))
+            .catch((error) => console.log(error.message));
+
         res.redirect('/institution/showapplicationcomplete');
 
     }

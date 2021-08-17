@@ -48,16 +48,17 @@ const { error } = require('console');
 
 // Email
 const nodemailer = require('nodemailer');
-const { google, containeranalysis_v1alpha1 } = require('googleapis');
-const CLIENT_ID = '993285737810-tfpuqq5vhfdjk5s5ng5v6vcbc3cht53s.apps.googleusercontent.com';
-const CLIENT_SECRET = 'uvWjFqdiAgVK_sFq_uaYcbGV';
+const { google } = require('googleapis');
+
+const CLIENT_ID = '993285737810-b2086rifaqci7h4ko45g7u4jmk6grp5m.apps.googleusercontent.com';
+const CLIENT_SECRET = 'doF29jucLtQ5-9fbVRCUvUMH';
 const REDIRECT_URI = 'https://developers.google.com/oauthplayground';
-const REFRESH_TOKEN = '1//04NJ-IXlwUJ_7CgYIARAAGAQSNgF-L9Irvecmxx12BMYyPKTIrSjhEroQErhaG49HwPEugWn5nSq3MJAb9py5_yEVmIwNd6gj5A';
+const REFRESH_TOKEN = '1//04Tu6GvZqypctCgYIARAAGAQSNgF-L9IrzUZJi2ZYp6pmGFMAiP4ysKtoX3JaAuIPqMrvveKG1OgDf6lY8QXZMKof2a67sLaEcA';
+
 const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
 oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
 
-async function sendMailRegisterTutor(custom_mailemail,
-    custom_mailsubject, email, username, password) {
+async function sendMail(mailOptions) {
     try {
         const accessToken = await oAuth2Client.getAccessToken();
 
@@ -73,17 +74,13 @@ async function sendMailRegisterTutor(custom_mailemail,
             },
         });
 
-        const mailOptions = {
-            from: 'TutorHub Administrator 👨‍🏫<adm.tutorhub@gmail.com>',
-            to: custom_mailemail,
-            subject: custom_mailsubject,
-            html: "<h1> Congratulations. Your account is ready to be used.</h1> \
-            <br> <p>Your institution has registered your account and you are now able to login and start using!. Below are the details of your account.</p> \
-            <br><h4>It is highly recommended to immediately change your password once you've logged in.</h4> \
-            <br><p>Your email: </p>" + email + "\
-            <p>Username: </p>" + username + " \
-            <p>Password: </p>" + password
-        };
+        console.log(mailOptions);
+        // const mailOptions = {
+        //     from: 'TutorHub Administrator :man_teacher:<adm.tutorhub@gmail.com>',
+        //     to: 'christophertw2706@gmail.com',
+        //     subject: custom_mailsubject,
+        //     html: custom_mailmessage,
+        // };
 
         const result = await transport.sendMail(mailOptions)
         return result;
@@ -92,142 +89,6 @@ async function sendMailRegisterTutor(custom_mailemail,
         return error;
     }
 }
-
-async function sendMailRemoveCourse(custom_mailemail, coursename,
-    removealreason) {
-    try {
-        const accessToken = await oAuth2Client.getAccessToken();
-
-        const transport = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                type: 'OAuth2',
-                user: 'adm.tutorhub@gmail.com',
-                clientId: CLIENT_ID,
-                clientSecret: CLIENT_SECRET,
-                refreshToken: REFRESH_TOKEN,
-                accessToken: accessToken,
-            },
-        });
-
-        const mailOptions = {
-            from: 'TutorHub Administrator 👨‍🏫<adm.tutorhub@gmail.com>',
-            to: custom_mailemail,
-            subject: "Removal of your course: " + coursename,
-            html: "<h3> Unfortunately, your course: </h3>" + coursename + " was removed by your institution. \
-            <br> <p>This is the reason why your course was remove.</p>" + removealreason + "<br><p>If there was a mistake, please inform your administrator immediately.</p>"
-        };
-
-        const result = await transport.sendMail(mailOptions)
-        return result;
-
-    } catch (error) {
-        return error;
-    }
-}
-
-async function sendMailRemoveTutor(custom_mailemail, removealreason, institution) {
-    try {
-        const accessToken = await oAuth2Client.getAccessToken();
-
-        const transport = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                type: 'OAuth2',
-                user: 'adm.tutorhub@gmail.com',
-                clientId: CLIENT_ID,
-                clientSecret: CLIENT_SECRET,
-                refreshToken: REFRESH_TOKEN,
-                accessToken: accessToken,
-            },
-        });
-
-        const mailOptions = {
-            from: 'TutorHub Administrator 👨‍🏫<adm.tutorhub@gmail.com>',
-            to: custom_mailemail,
-            subject: "You have been removed from  " + institution,
-            html: "<h3> Unfortunately, " + institution + " removed you from their institution. Due to the removal and security purposes, your account has been deleted. \
-            <br> <p>This is the reason why you were removed.</p>" + removealreason + "<br><p>If there was a mistake, please inform your administrator immediately.</p>"
-        };
-
-        const result = await transport.sendMail(mailOptions)
-        return result;
-
-    } catch (error) {
-        return error;
-    }
-}
-
-async function sendMailUpdateCourse(custom_mailemail, coursename,
-    thumbnail, shortdescription, description, hourylrate) {
-    try {
-        const accessToken = await oAuth2Client.getAccessToken();
-
-        const transport = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                type: 'OAuth2',
-                user: 'adm.tutorhub@gmail.com',
-                clientId: CLIENT_ID,
-                clientSecret: CLIENT_SECRET,
-                refreshToken: REFRESH_TOKEN,
-                accessToken: accessToken,
-            },
-        });
-
-        const mailOptions = {
-            from: 'TutorHub Administrator 👨‍🏫<adm.tutorhub@gmail.com>',
-            to: custom_mailemail,
-            subject: "Your course " + coursename + " has been updated by your administrator",
-            html: "<h3>Here are the details of your updated course. </h3>" + "<br> \
-            <p>Title: </p>" + coursename + "<br><p>Short Description: </p>" + shortdescription + "<br> \
-            <p>description: </p>" + description + "<br><p><Hourly rate: /p>" + hourylrate + "<br> \
-            <p>Thumbnail File: </p>" + thumbnail + "<br><p>If there was a mistake, please inform your administrator immediately.</p>"
-        };
-
-        const result = await transport.sendMail(mailOptions)
-        return result;
-
-    } catch (error) {
-        return error;
-    }
-}
-
-async function sendMailUpdateTutor(custom_mailemail, profilepic, firstname, lastname, username, email, description) {
-    try {
-        const accessToken = await oAuth2Client.getAccessToken();
-
-        const transport = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                type: 'OAuth2',
-                user: 'adm.tutorhub@gmail.com',
-                clientId: CLIENT_ID,
-                clientSecret: CLIENT_SECRET,
-                refreshToken: REFRESH_TOKEN,
-                accessToken: accessToken,
-            },
-        });
-
-        const mailOptions = {
-            from: 'TutorHub Administrator 👨‍🏫<adm.tutorhub@gmail.com>',
-            to: custom_mailemail,
-            subject: "Your Account details have been updated by your administrator",
-            html: "<h3>Here are the updated details of your account.</h3>" + "<br> \
-            <p>First Name: </p>" + firstname + "<br> <p>Last Name: </p>" + lastname + "<br> \
-            <p>Username: </p>" + username + "<br><p>Email: </p>" + email + "<br><p>Description: </p>" + description + "\
-            <br><p>Profile picture file: </p>" + profilepic + " \
-            <br><p>If there was a mistake, please inform your administrator immediately.</p>"
-        };
-
-        const result = await transport.sendMail(mailOptions)
-        return result;
-
-    } catch (error) {
-        return error;
-    }
-}
-
 
 // ---------------------------------------------
 router.use(express.urlencoded({
@@ -757,10 +618,22 @@ router.post('/registertutor/byadmin', [
                                 });
 
                                 // send email to tutor
-                                sendMailRegisterTutor(email, 'Your TutorHub Account is ready!', email, username, APassword)
-                                    .then((result) => console.log("Email sent...", result))
+                                const mailOptions = {
+                                    from: 'TutorHub Administrator 👨‍🏫<adm.tutorhub@gmail.com>',
+                                    to: email,
+                                    subject: "Your TutorHub Account is ready!",
+                                    html: "<h1> Congratulations. Your account is ready to be used.</h1> \
+                                    <br> <p>Your institution has registered your account and you are now able to login and start using!. Below are the details of your account.</p> \
+                                    <br><h4>It is highly recommended to immediately change your password once you've logged in.</h4> \
+                                    <br><p>Your email: </p>" + email + "\
+                                    <p>Username: </p>" + username + " \
+                                    <p>Password: </p>" + APassword
+                                };
+                                sendMail(mailOptions)
+                                    .then((result) => console.log('Email sent...', result))
                                     .catch((error) => console.log(error.message));
                                 res.redirect('/institution_admin/tutorcompletion');
+                                res.sendStatus(200);
                             }
                         });
                     });
@@ -778,7 +651,9 @@ router.post('/registertutor/approvetutor', [
     // let {approvethetutor, institutionid} = req.body;
     let approvethetutor = req.body.approvethetutor;
     let institutionid = req.body.institutionid;
+    let email = req.body.approveemail;
     console.log(approvethetutor);
+    console.log(email);
     let errors = [];
     const validatorErrors = validationResult(req);
     if (!validatorErrors.isEmpty()) { //if isEmpty is false
@@ -807,8 +682,17 @@ router.post('/registertutor/approvetutor', [
                     }
                 }).then(theuser => {
                     theuser.update({ institutionInstitutionId: institutionid })
+                    const mailOptions = {
+                        from: 'TutorHub Administrator 👨‍🏫<adm.tutorhub@gmail.com>',
+                        to: email,
+                        subject: "Congratulations! Your institution application has been approved.",
+                        html: "You are now official part of the family. Check your account now!"
+                    };
+                    sendMail(mailOptions)
+                        .then((result) => console.log('Email sent...', result))
+                        .catch((error) => console.log(error.message));
                     alertMessage(res, 'success', "Successfully added.", 'fas fa-sign-in-alt', true);
-                    res.redirect("/institution_admin/showregistertutor")
+                    res.redirect("/institution_admin/showregistertutor");
                 }).catch(err => console.log(err));
             } else {
                 console.log("User does not exist");
@@ -822,7 +706,7 @@ router.post('/registertutor/rejecttutor', [
     body('rejectthetutor').not().isEmpty().trim().escape().withMessage("Please select a tutor to reject")
 ], (req, res) => {
     console.log("Processing approvable of tutor.....");
-    let { rejectthetutor } = req.body;
+    let { rejectthetutor, rejectemail } = req.body;
     let errors = [];
     const validatorErrors = validationResult(req);
     if (!validatorErrors.isEmpty()) { //if isEmpty is false
@@ -846,6 +730,15 @@ router.post('/registertutor/rejecttutor', [
             if (pendtut) {
                 console.log("Reject tutor...");
                 pendtut.destroy({})
+                const mailOptions = {
+                    from: 'TutorHub Administrator 👨‍🏫<adm.tutorhub@gmail.com>',
+                    to: rejectemail,
+                    subject: "I am so sorry! Your institution application has been rejected.",
+                    html: "Better luck next time."
+                };
+                sendMail(mailOptions)
+                    .then((result) => console.log('Email sent...', result))
+                    .catch((error) => console.log(error.message));
                 alertMessage(res, 'success', "Successfully rejected.", 'fas fa-sign-in-alt', true);
                 res.redirect("/institution_admin/showregistertutor");
             } else {
@@ -992,8 +885,18 @@ router.post('/yourtutor/updatetutortable', [body('trueFileInstitutionProfileName
                             .catch(err => console.log(err));
                     }).catch(err => console.log(err));
                 }).catch(err => console.log(err));
-            sendMailUpdateTutor(Email, trueFileInstitutionProfileName, FirstName, LastName, Username, Email, Description)
-                .then((result) => console.log("Email sent...", result))
+            const mailOptions = {
+                from: 'TutorHub Administrator 👨‍🏫<adm.tutorhub@gmail.com>',
+                to: Email,
+                subject: "Your Account details have been updated by your administrator",
+                html: "<h3>Here are the updated details of your account.</h3>" + "<br> \
+                    <p>First Name: </p>" + firstname + "<br> <p>Last Name: </p>" + lastname + "<br> \
+                    <p>Username: </p>" + username + "<br><p>Email: </p>" + email + "<br><p>Description: </p>" + description + "\
+                    <br><p>Profile picture file: </p>" + profilepic + " \
+                    <br><p>If there was a mistake, please inform your administrator immediately.</p>"
+            };
+            sendMail(mailOptions)
+                .then((result) => console.log('Email sent...', result))
                 .catch((error) => console.log(error.message));
             alertMessage(res, 'success', "Successfully updated.", 'fas fa-sign-in-alt', true);
             res.redirect('/institution_admin/showyourtutors');
@@ -1057,9 +960,17 @@ router.post('/yourtutor/deletetutortable', uploadnone.none(), [body('removetutor
                         userUserId: removetutortable
                     }
                 }).catch(err => console.log(err));
-                sendMailRemoveTutor(tutoremail, removalreason, deletebannerinst.name)
-                    .then((result) => console.log("Email sent...", result))
+                const mailOptions = {
+                    from: 'TutorHub Administrator 👨‍🏫<adm.tutorhub@gmail.com>',
+                    to: tutoremail,
+                    subject: "You have been removed from  " + institution,
+                    html: "<h3> Unfortunately, " + institution + " removed you from their institution. Due to the removal and security purposes, your account has been deleted. \
+                    <br> <p>This is the reason why you were removed.</p>" + removalreason + "<br><p>If there was a mistake, please inform your administrator immediately.</p>"
+                };
+                sendMail(mailOptions)
+                    .then((result) => console.log('Email sent...', result))
                     .catch((error) => console.log(error.message));
+
                 alertMessage(res, 'success', "Successfully removed.", 'fas fa-sign-in-alt', true);
                 res.redirect('/institution_admin/showyourtutors');
 
@@ -1153,9 +1064,19 @@ router.post('/yourcourse/updatecoursetable', [body('trueFileName').isEmpty().tri
                             .catch(err => console.log(err));
                     }).catch(err => console.log(err));
                 }).catch(err => console.log(err));
-            sendMailUpdateCourse(courseemail, coursetitle, trueFileName, courseshortdescription, Description, hourlyrate)
-                .then((result) => console.log("Email sent...", result))
+            const mailOptions = {
+                from: 'TutorHub Administrator 👨‍🏫<adm.tutorhub@gmail.com>',
+                to: courseemail,
+                subject: "Your course " + coursename + " has been updated by your administrator",
+                html: "<h3>Here are the details of your updated course. </h3>" + "<br> \
+                    <p>Title: </p>" + coursename + "<br><p>Short Description: </p>" + shortdescription + "<br> \
+                    <p>description: </p>" + description + "<br><p><Hourly rate: /p>" + hourylrate + "<br> \
+                    <p>Thumbnail File: </p>" + thumbnail + "<br><p>If there was a mistake, please inform your administrator immediately.</p>"
+            };
+            sendMail(mailOptions)
+                .then((result) => console.log('Email sent...', result))
                 .catch((error) => console.log(error.message));
+
             alertMessage(res, 'success', "Successfully updated.", 'fas fa-sign-in-alt', true);
             res.redirect('/institution_admin/showyourcourses');
         }
@@ -1197,9 +1118,17 @@ router.post('/yourcourse/deletecoursetable', uploadnone.none(), [body('removalre
                             course_id: removecoursetable
                         }
                     }).catch(err => console.log(err));
-                    sendMailRemoveCourse(courseemail, coursename, removalreason)
-                        .then((result) => console.log("Email sent...", result))
+                    const mailOptions = {
+                        from: 'TutorHub Administrator 👨‍🏫<adm.tutorhub@gmail.com>',
+                        to: courseemail,
+                        subject: "Removal of your course: " + coursename,
+                        html: "<h3> Unfortunately, your course: </h3>" + coursename + " was removed by your institution. \
+                        <br> <p>This is the reason why your course was remove.</p>" + removalreason + "<br><p>If there was a mistake, please inform your administrator immediately.</p>"
+                    };
+                    sendMail(mailOptions)
+                        .then((result) => console.log('Email sent...', result))
                         .catch((error) => console.log(error.message));
+
                     alertMessage(res, 'success', "Successfully removed. Email has been sent to the tutor.", 'fas fa-sign-in-alt', true);
                     res.redirect('/institution_admin/showyourcourses');
 

@@ -15,6 +15,9 @@ const Orders = db.define('Orders', { //Creates a table called user
     status: {
         type: Sequelize.STRING
     },
+    total: {
+        type: Sequelize.FLOAT
+    },
     date: {
         type: Sequelize.DATE
     },

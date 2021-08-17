@@ -887,6 +887,8 @@
                                                             </input>
                                                             <input type="hidden" value="{{userUserId}}"
                                                                 name="approvethetutor" id="approvethetutor"></input>
+                                                                <input type="hidden" value="{{user.Email}}"
+                                                                name="approveemail" id="approveemail"></input>
                                                         </div>
                                                         <div class="modal-footer">
                                                             <button type="button" class="btn btn-secondary"
@@ -922,6 +924,8 @@
                                                             <input type="hidden" value="{{pending_institution__tutor_id}}"
                                                                 name="rejectthetutor" id="rejectthetutor">
                                                             </input>
+                                                            <input type="hidden" value="{{user.Email}}"
+                                                                name="rejectemail" id="rejectemail"></input>
                                                         </div>
                                                         <div class="modal-footer">
                                                             <button type="button" class="btn btn-secondary"

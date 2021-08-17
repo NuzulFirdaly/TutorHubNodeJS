@@ -371,7 +371,11 @@ router.get('/success', (req, res) => {
             throw error;
         } else {
             today = new Date();
-            Orders.create({ status: "Ongoing", date: today, BuyerId: req.user.user_id })
+            total = 0;
+            for (var key in cart) {
+                total += cart[key][2];
+            }
+            Orders.create({ status: "Ongoing", date: today, total, BuyerId: req.user.user_id })
                 .then((order) => {
                     order_id = JSON.parse(JSON.stringify(order)).order_id;
                     console.log("this is order", JSON.parse(JSON.stringify(order)));
@@ -380,8 +384,8 @@ router.get('/success', (req, res) => {
                     console.log("this is carts", cart);
                     for (var key in cart) {
                         dict = {};
-                        dict["quantity"] = cart[key][0];
-                        dict["total_price"] = cart[key][1];
+                        dict["quantity"] = cart[key][1];
+                        dict["total_price"] = cart[key][2];
                         dict["item_id"] = key;
                         dict["OrderId"] = order_id;
                         details.push(dict);
@@ -390,9 +394,13 @@ router.get('/success', (req, res) => {
                     OrderDetails.bulkCreate(details)
                         .then(() => {
                             alertMessage(res, "success", 'Order successful.', 'fas fa-sign-in-alt', true);
-                            // console.log(JSON.stringify(payment));
-                            req.session.cart = {};
-                            res.redirect('/shop/viewCart');
+                            var shipping_address = payment.payer.payer_info.shipping_address
+                            cart["street"] = shipping_address.line1;
+                            cart["city"] = shipping_address.city;
+                            cart["postal_code"] = shipping_address.postal_code;
+                            cart["date"] = today;
+                            console.log(cart);
+                            res.redirect('/shop/receipt');
                         })
                         .catch(err => console.log(err));;
                 })

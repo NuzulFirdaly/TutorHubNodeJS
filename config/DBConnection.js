@@ -27,6 +27,7 @@ const professionalProfile = require('../models/professionalProfile');
 const Admin = require('../models/Admin');
 const Notification = require('../models/Notification');
 const NotificationMessages = require('../models/NotificationMessages');
+const ChatData = require('../models/Chat')
 
 // If drop is true, all existing tables are dropped and recreated
 const setUpDB = (drop) => {
@@ -130,6 +131,10 @@ const setUpDB = (drop) => {
             Notification.belongsTo(User, { foreignKey: "userUserId" });
             NotificationMessages.hasMany(Notification);
             Notification.belongsTo(NotificationMessages);
+
+            // Chat
+            User.hasMany(ChatData, { foreignKey: "ChatId" })
+            ChatData.belongsTo(User)
 
             mySQLDB.sync({ // Creates table if none exists
                 force: drop

@@ -20,7 +20,7 @@ router.post("/book/:tutorid/:courseid", async(req, res) => {
     //body
     console.log("this is boook ", req.body)
     calendarId = req.body.calendarId
-    sessionId = req.body.sessionId
+    sessionId = Array.isArray(req.body.sessionId) ? req.body.sessionId[0] : req.body.sessionId
     date = req.body.date
     console.log("THIS SIS DATE FROM REQ BODY DATE", date)
 

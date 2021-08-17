@@ -1,284 +1,283 @@
 <section class="padding-y bg">
-<div class="container">
-<div class="row">
-    <div class="col-md-12">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
         <!-- ============================ COMPONENT BANNER 7 ================================= -->
         <div class="card-banner justify-content-center" style="min-height:200px;">
-					<div class="text-center">
-						<br>
-						<br>
-						<h1 class="card-title float-middle" style="font-size: 60px;">Courses you offer</h1>
-						<p>Look at all the courses under your institution.</p>
-					</div>
-				</div>
+          <div class="text-center">
+            <br>
+            <br>
+            <h1 class="card-title float-middle" style="font-size: 60px;">Courses you offer</h1>
+            <p>Look at all the courses under your institution.</p>
+          </div>
+        </div>
         <!-- ============================ COMPONENT BANNER 7  END .// =========================== -->
-    </div> <!-- col.// -->
-</div>
-</div>
+      </div> <!-- col.// -->
+    </div>
+  </div>
 </section>
 <section>
   <div>
-  {{#if allinstcoursearray}}
-  <table id="example" class="display" style="width:100%; display: block; overflow: scroll; table-layout:fixed;">
-    <thead>
-      <tr>
-        <th>Username</th>
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>Title</th>
-        <th>Category</th>
-        <th>Subcategory</th>
-        <th>Short_description</th>
-        <th>Description</th>
-        <th>Hourlyrate</th>
-        <th>MaximumDays</th>
-        <th>MinimumDays</th>
-        <th>Course_thumbnail</th>
-        {{!-- <th colspan="2" class="ignore-css">
-          <center>Edit Details</center>
-        </th> --}}
-      </tr>
-    </thead>
-    <tbody>
-      {{#each allinstcoursearray}}
-      <tr>
-        <td style="word-wrap:break-word; overflow-wrap: break-word;">{{user.Username}}</td>
-        <td style="word-wrap:break-word; overflow-wrap: break-word;">{{user.FirstName}}</td>
-        <td style="word-wrap:break-word; overflow-wrap: break-word;">{{user.LastName}}</td>
-        <td style="word-wrap:break-word; overflow-wrap: break-word;">{{Title}}</td>
-        <td style="word-wrap:break-word; overflow-wrap: break-word;">{{Category}}</td>
-        <td style="word-wrap:break-word; overflow-wrap: break-word;">{{Subcategory}}</td>
-        <td style="word-wrap:break-word; overflow-wrap: break-word;">{{Short_description}}</td>
-        <td style="word-wrap:break-word; overflow-wrap: break-word;">{{Description}}</td>
-        <td style="word-wrap:break-word; overflow-wrap: break-word;">{{Hourlyrate}}</td>
-        <td style="word-wrap:break-word; overflow-wrap: break-word;">{{MaximumDays}}</td>
-        <td style="word-wrap:break-word; overflow-wrap: break-word;">{{MinimumDays}}</td>
-        <td>
-          <img src="/images/coursethumbnails/{{Course_thumbnail}}"
-                      width="170" height="135" class="border">
-          <br>
-          <br>
-          <span>
-            <button type="button" class="btn btn-primary float-right" name="updatecourse" value="updatecourse"
-              data-toggle="modal" data-target="#updatecoursetable{{course_id}}">
-              <span class="col-md-1">Update</span>
-            </button>
-          </span>
-          <br><br>
-          <span>
-            <button type="button" class="btn btn-danger float-right" name="deletecourse" value="deletecourse"
-              data-toggle="modal" data-target="#deletecoursetable{{course_id}}">
-              <span class="col-md-1">Delete</span>
-            </button>
-          </span>
-        </td>
-      </tr>
-
-      <div class="modal fade" id="updatecoursetable{{course_id}}" tabindex="-1" role="dialog"
-        aria-labelledby="updatecoursetablelabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="updatecoursetablelabel">Update {{Title}} Details</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span
-                  aria-hidden="true">&times;</span>
+    {{#if allinstcoursearray}}
+    <table id="example" class="display" style="width:100%; display: block; overflow: scroll; table-layout:fixed;">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Title</th>
+          <th>Category</th>
+          <th>Subcategory</th>
+          <th>Short_description</th>
+          <th>Description</th>
+          <th>Hourlyrate</th>
+          <th>MaximumDays</th>
+          <th>MinimumDays</th>
+          <th>Course_thumbnail</th>
+          {{!-- <th colspan="2" class="ignore-css">
+            <center>Edit Details</center>
+          </th> --}}
+        </tr>
+      </thead>
+      <tbody>
+        {{#each allinstcoursearray}}
+        <tr>
+          <td style="word-wrap:break-word; overflow-wrap: break-word;">{{user.Username}}</td>
+          <td style="word-wrap:break-word; overflow-wrap: break-word;">{{user.FirstName}}</td>
+          <td style="word-wrap:break-word; overflow-wrap: break-word;">{{user.LastName}}</td>
+          <td style="word-wrap:break-word; overflow-wrap: break-word;">{{Title}}</td>
+          <td style="word-wrap:break-word; overflow-wrap: break-word;">{{Category}}</td>
+          <td style="word-wrap:break-word; overflow-wrap: break-word;">{{Subcategory}}</td>
+          <td style="word-wrap:break-word; overflow-wrap: break-word;">{{Short_description}}</td>
+          <td style="word-wrap:break-word; overflow-wrap: break-word;">{{Description}}</td>
+          <td style="word-wrap:break-word; overflow-wrap: break-word;">{{Hourlyrate}}</td>
+          <td style="word-wrap:break-word; overflow-wrap: break-word;">{{MaximumDays}}</td>
+          <td style="word-wrap:break-word; overflow-wrap: break-word;">{{MinimumDays}}</td>
+          <td>
+            <img src="/images/coursethumbnails/{{Course_thumbnail}}" width="170" height="135" class="border">
+            <br>
+            <br>
+            <span>
+              <button type="button" class="btn btn-primary float-right" name="updatecourse" value="updatecourse"
+                data-toggle="modal" data-target="#updatecoursetable{{course_id}}">
+                <span class="col-md-1">Update</span>
               </button>
-            </div>
-            <div class="modal-body">
-              <form class="block-register" action="/institution_admin/yourcourse/updatecoursetable" method="POST">
-                <div class="form-group form-row">
-                  <div class="col-md-6">
-                    <label>Course Details</label>
-                    <br>
-                    <label class="col-md-3 col-form-label">Course Thumbnail</label>
-                    <div class="col-md-3">
-                      <img id='courseThumbnail'  src="/images/coursethumbnails/{{Course_thumbnail}}" width="240" height="135" class="border">
+            </span>
+            <br><br>
+            <span>
+              <button type="button" class="btn btn-danger float-right" name="deletecourse" value="deletecourse"
+                data-toggle="modal" data-target="#deletecoursetable{{course_id}}">
+                <span class="col-md-1">Delete</span>
+              </button>
+            </span>
+          </td>
+        </tr>
+
+        <div class="modal fade" id="updatecoursetable{{course_id}}" tabindex="-1" role="dialog"
+          aria-labelledby="updatecoursetablelabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="updatecoursetablelabel">Update {{Title}} Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span
+                    aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form class="block-register" action="/institution_admin/yourcourse/updatecoursetable" method="POST">
+                  <div class="form-group form-row">
+                    <div class="col-md-6">
+                      <label>Course Details</label>
+                      <br>
+                      <label class="col-md-3 col-form-label">Course Thumbnail</label>
+                      <div class="col-md-3">
+                        <img id='courseThumbnail' src="/images/coursethumbnails/{{Course_thumbnail}}" width="240"
+                          height="135" class="border">
                         <div style="position:relative; ">
                         </div>
-                        <input type="file" name="courseThumbnailUpload" id="courseThumbnailUpload" accept="image/png, image/jpeg, image/jpg, image/gif">
+                        <input type="file" name="courseThumbnailUpload" id="courseThumbnailUpload"
+                          accept="image/png, image/jpeg, image/jpg, image/gif">
                         <input type="hidden" id='trueFileName' name="trueFileName" value="{{Course_thumbnail}}">
                         <div class="font-weight-bold text-danger small" id="thumbnailErr" style="display:none"></div>
 
-                    <input type="hidden" id='deletecoursetableid' name="deletecoursetableid" value="{{course_id}}">
-                    <div class="font-weight-bold text-danger small" id="profileErr" style="display:none">
+                        <input type="hidden" id='deletecoursetableid' name="deletecoursetableid" value="{{course_id}}">
+                        <div class="font-weight-bold text-danger small" id="profileErr" style="display:none">
+                        </div>
+                      </div>
                     </div>
+                    <div class="form-group form-row">
+                      <div class="col-s-1 col-form-label">
+                        <label>Title of Course</label>
+                      </div>
+                      <div class="col-s-1">
+                        <input class="form-control" type="text" name="coursetitle" placeholder="Course title"
+                          value="{{Title}}" required>
+                      </div>
+                      <br>
+                    </div>
+                    <div class="form-group form-row">
+                      <div class="col-s-1 col-form-label">
+                        <label>Short description</label>
+                      </div>
+                      <div class="col-s-1">
+                        <input class="form-control" type="text" name="courseshortdescription"
+                          placeholder="Short description" value="{{Short_description}}">
+                      </div>
+                    </div>
+                    <div class="form-group form-row">
+                      <div class="col-s-1 col-form-label">
+                        <label>Description: </label>
+                      </div>
+                      <div class="col-s-1">
+                        <textarea class="form-control" name="Description" value="{{Description}}"
+                          placeholder="Course long description">{{Description}}</textarea>
+                      </div>
+                    </div>
+                    <div class="form-group form-row">
+                      <div class="col-s-1 col-form-label">
+                        <label>Hourly rate</label>
+                      </div>
+                      <div class="col-s-1">
+                        <input class="form-control" type="number" id="hourlyrate" name="hourlyrate" min="1"
+                          placeholder="How much do you charge per session?" value="{{Hourlyrate}}">
+                      </div>
+                    </div>
+                    <input type="hidden" id='coursename' name="coursename" value="{{Title}}">
+                    <input type="hidden" id='courseemail' name="courseemail" value="{{user.Email}}">
                   </div>
-                </div>
-                <div class="form-group form-row">
-                  <div class="col-s-1 col-form-label">
-                    <label>Title of Course</label>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Update Changes</button>
                   </div>
-                  <div class="col-s-1">
-                    <input class="form-control" type="text" name="coursetitle" placeholder="Course title"
-                      value="{{Title}}" required>
-                  </div>
-                  <br>
-                </div>
-                <div class="form-group form-row">
-                  <div class="col-s-1 col-form-label">
-                    <label>Short description</label>
-                  </div>
-                  <div class="col-s-1">
-                    <input class="form-control" type="text" name="courseshortdescription" placeholder="Short description" value="{{Short_description}}">
-                  </div>
-                </div>
-                <div class="form-group form-row">
-                  <div class="col-s-1 col-form-label">
-                    <label>Description: </label>
-                  </div>
-                  <div class="col-s-1">
-                    <textarea class="form-control" name="Description"
-																value="{{Description}}"
-																placeholder="Course long description"
-																>{{Description}}</textarea>
-                  </div>
-                </div>
-                <div class="form-group form-row">
-                  <div class="col-s-1 col-form-label">
-                    <label>Hourly rate</label>
-                  </div>
-                  <div class="col-s-1">
-                    <input class="form-control" type="number" id="hourlyrate" name="hourlyrate" min="1"  placeholder="How much do you charge per session?" value="{{Hourlyrate}}">   
-                  </div>
-                </div>
-                <input type="hidden" id='coursename'
-																name="coursename" value="{{Title}}">
-                                <input type="hidden" id='courseemail'
-																name="courseemail" value="{{user.Email}}">
+                </form>
+              </div>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="submit" class="btn btn-primary">Update Changes</button>
-            </div>
-            </form>
           </div>
         </div>
-      </div>
 
 
-      <div class="modal fade" id="deletecoursetable{{course_id}}" tabindex="-1" role="dialog"
-        aria-labelledby="deletecoursetablelabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="deletecoursetablelabel">Selected {{FirstName}} {{LastName}} to be deleted..
-              </h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span
-                  aria-hidden="true">&times;</span>
-              </button>
+          <div class="modal fade" id="deletecoursetable{{course_id}}" tabindex="-1" role="dialog"
+            aria-labelledby="deletecoursetablelabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="deletecoursetablelabel">Selected {{FirstName}} {{LastName}} to be
+                    deleted..
+                  </h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span
+                      aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <form class="block-register" action="/institution_admin/yourcourse/deletecoursetable" method="POST">
+                  <div class="modal-body">
+                    <h4>Are you sure you want to remove "{{Title}}" course from {{user.Username}} ?</h4>
+                    <br>
+                    <p>If so, please state a reason of the removal. An email notification will be sent to
+                      {{user.Username}} informing the removal of their course along with the reason.</p>
+                    <textarea class="form-control" name="removalreason" value="{{removalreason}}"
+                      placeholder="What is the reason for the removal of the course...." required></textarea>
+                    <input type="hidden" id='coursename' name="coursename" value="{{Title}}">
+                    <input type="hidden" id='courseemail' name="courseemail" value="{{user.Email}}">
+
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger" name="removecoursetable" value="{{course_id}}">Remove
+                      Course</button>
+                  </div>
+                </form>
+              </div>
             </div>
-            <form class="block-register" action="/institution_admin/yourcourse/deletecoursetable" method="POST">
-            <div class="modal-body">
-              <h4>Are you sure you want to remove "{{Title}}" course from  {{user.Username}} ?</h4>
-              <br>
-              <p>If so, please state a reason of the removal. An email notification will be sent to {{user.Username}} informing the removal of their course along with the reason.</p>
-              <textarea class="form-control" name="removalreason"
-																value="{{removalreason}}"
-																placeholder="What is the reason for the removal of the course...."
-																required></textarea>
-              <input type="hidden" id='coursename'
-																name="coursename" value="{{Title}}">
-                                <input type="hidden" id='courseemail'
-																name="courseemail" value="{{user.Email}}">
-              
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-danger" name="removecoursetable" value="{{course_id}}">Remove
-                  Course</button>
-            </div>
-            </form>
           </div>
-        </div>
-      </div>
-      {{/each}}
-    </tbody>
-    <tfoot>
-      <tr>
-        <th>Username</th>
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>Title</th>
-        <th>Category</th>
-        <th>Subcategory</th>
-        <th>Short_description</th>
-        <th>Description</th>
-        <th>Hourlyrate</th>
-        <th>MaximumDays</th>
-        <th>MinimumDays</th>
-        <th>Course_thumbnail</th>
-      </tr>
-    </tfoot>
-  </table>
+          {{/each}}
+      </tbody>
+      <tfoot>
+        <tr>
+          <th>Username</th>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Title</th>
+          <th>Category</th>
+          <th>Subcategory</th>
+          <th>Short_description</th>
+          <th>Description</th>
+          <th>Hourlyrate</th>
+          <th>MaximumDays</th>
+          <th>MinimumDays</th>
+          <th>Course_thumbnail</th>
+        </tr>
+      </tfoot>
+    </table>
   </div>
   {{else}}
   <br><br>
-<section class="container-fluid" style="min-height: 84vh; width: 90%">
+  <section class="container-fluid" style="min-height: 84vh; width: 90%">
     <br>
-<div class="col-md-12">
-        <!-- ============================ COMPONENT ITEM BG ================================= -->
-        <div class="card-banner"style="height:500px;">
-            <div class="p-4" style="width:40%; margin-top: 180px;">
-                <h2 class="card-title" style="font-size: 31px;">Oops. Looks like there are currently no registered Courses under your institution.</h2>
-                <h6>Courses will appear when your Tutor's add their courses to TutorHub.</h6>
-                <br>
-            </div>
-            <br>
-            <img src="/images/banners/completion.png" height="500px;" class="img-bg">
+    <div class="col-md-12">
+      <!-- ============================ COMPONENT ITEM BG ================================= -->
+      <div class="card-banner" style="height:500px;">
+        <div class="p-4" style="width:40%; margin-top: 180px;">
+          <h2 class="card-title" style="font-size: 31px;">Oops. Looks like there are currently no registered Courses
+            under your institution.</h2>
+          <h6>Courses will appear when your Tutor's add their courses to TutorHub.</h6>
+          <br>
         </div>
-        <!-- ============================ COMPONENT ITEM BG  END .// =========================== -->
+        <br>
+        <img src="/images/banners/completion.png" height="500px;" class="img-bg">
+      </div>
+      <!-- ============================ COMPONENT ITEM BG  END .// =========================== -->
     </div> <!-- col.// -->
-  {{/if}}
-</section>
-<script>
-  $(document).ready(function () {
-    // Setup - add a text input to each footer cell
-    $('#example tfoot th').each(function () {
-      var title = $(this).text();
-      $(this).html('<input type="text" placeholder="Search ' + title + '" />');
-    });
+    {{/if}}
+  </section>
+  <script>
+    $(document).ready(function () {
+      // Setup - add a text input to each footer cell
+      $('#example tfoot th').each(function () {
+        var title = $(this).text();
+        $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+      });
 
-    // DataTable
-    var table = $('#example').DataTable({
-      initComplete: function () {
-        // Apply the search
-        this.api().columns().every(function () {
-          var that = this;
+      // DataTable
+      var table = $('#example').DataTable({
+        initComplete: function () {
+          // Apply the search
+          this.api().columns().every(function () {
+            var that = this;
 
-          $('input', this.footer()).on('keyup change clear', function () {
-            if (that.search() !== this.value) {
-              that
-                .search(this.value)
-                .draw();
-            }
+            $('input', this.footer()).on('keyup change clear', function () {
+              if (that.search() !== this.value) {
+                that
+                  .search(this.value)
+                  .draw();
+              }
+            });
           });
-        });
-      }
-    });
-  });
-
-  $('#courseThumbnailUpload').on('change', function () {
-    let file = $("#courseThumbnailUpload")[0].files[0];
-    let formdata = new FormData();
-    formdata.append('courseThumbnailUpload', file);
-    $.ajax({
-      url: '/course/courseThumbnailUpload',
-      data: formdata,
-      contentType: false,
-      processData: false,
-      type: 'POST',
-      'success': (data) => {
-        console.log(data)
-        console.log(data.path);
-        $('#courseThumbnail').attr('src', data.path);
-        $('#trueFileName').attr('value', data.file);
-        if (data.err) {
-          $('#thumbnailErr').show();
-          $('#thumbnailErr').text(data.err.message);
-        } else {
-          $('#thumbnailErr').hide();
         }
-      }
+      });
     });
-  });  
-</script>
+
+    $('#courseThumbnailUpload').on('change', function () {
+      let file = $("#courseThumbnailUpload")[0].files[0];
+      let formdata = new FormData();
+      formdata.append('courseThumbnailUpload', file);
+      $.ajax({
+        url: '/course/courseThumbnailUpload',
+        data: formdata,
+        contentType: false,
+        processData: false,
+        type: 'POST',
+        'success': (data) => {
+          console.log(data)
+          console.log(data.path);
+          $('#courseThumbnail').attr('src', data.path);
+          $('#trueFileName').attr('value', data.file);
+          if (data.err) {
+            $('#thumbnailErr').show();
+            $('#thumbnailErr').text(data.err.message);
+          } else {
+            $('#thumbnailErr').hide();
+          }
+        }
+      });
+    });
+  </script>

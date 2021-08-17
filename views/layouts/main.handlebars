@@ -61,6 +61,27 @@
     </div>
   {{/if}}
 
+<script>
+  function courseNameSearch(){
+    input = document.getElementById("searchInput")
+    filter = input.value.toUpperCase()
+    courseCarousel = document.getElementById("courseCarousel")
+    courses = courseCarousel.getElementsByClassName("item-slide");
+    console.log("this is search courses", courses)
 
+    for (i = 0; i < courses.length; i++) {
+      txtValue = courses[i].id;
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        courses[i].style.display = "";
+      } else {
+        courses[i].style.display = "none";
+      }
+  }
+  $('.slider-items-owl').owlCarousel('refresh');
+
+
+
+  }
+</script>
 </body>
 </html>
