@@ -107,12 +107,22 @@ router.post("/CreateCourse", [
                 })
 
             } else {
-                Course.create({ Title: coursetitle, Category: category, Subcategory: subcategory, Short_description: short_description, Description: description, userUserId: userid, Course_thumbnail: trueFileName })
-                    .then(course => {
-                        alertMessage(res, 'success', course.Title + ' added.', 'fas fa-sign-in-alt', true);
-                        res.redirect('/course/CreateSession/' + course.course_id);
-                    })
-                    .catch(err => console.log(err));
+                if (req.user.institutionInstitutionId != null) {
+                    Course.create({ Title: coursetitle, Category: category, Subcategory: subcategory, Short_description: short_description, Description: description, userUserId: userid, Course_thumbnail: trueFileName, institutionInstitutionId: req.user.institutionInstitutionId })
+                        .then(course => {
+                            alertMessage(res, 'success', course.Title + ` added. \n Course will be displayed under your institution's page`, 'fas fa-check', true);
+                            res.redirect('/course/CreateSession/' + course.course_id);
+                        })
+                        .catch(err => console.log(err));
+
+                } else {
+                    Course.create({ Title: coursetitle, Category: category, Subcategory: subcategory, Short_description: short_description, Description: description, userUserId: userid, Course_thumbnail: trueFileName })
+                        .then(course => {
+                            alertMessage(res, 'success', course.Title + ' added.', 'fas fa-sign-in-alt', true);
+                            res.redirect('/course/CreateSession/' + course.course_id);
+                        })
+                        .catch(err => console.log(err));
+                }
             }
         })
     }

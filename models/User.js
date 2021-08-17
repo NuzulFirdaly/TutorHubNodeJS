@@ -39,10 +39,6 @@ const User = db.define('user', { //Creates a table called user
         type: Sequelize.INTEGER,
         defaultValue: 0
     },
-    InstitutionName: {
-        type: Sequelize.STRING,
-        defaultValue: "NIL"
-    }
     // accountType
 });
 console.log("Connected to user table");
