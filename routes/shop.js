@@ -56,7 +56,7 @@ router.post('/ItemListing', (req, res) => {
                 let { name, price, description } = req.body;
                 let filename = req.file.filename
                     //express validator
-                ItemListing.create({ Name: name, Price: price.toFixed(2), Description: description, Picture: filename, userUserId: req.user.user_id })
+                ItemListing.create({ Name: name, Price: price, Description: description, Picture: filename, userUserId: req.user.user_id })
                     .then(itemlist => {
                         alertMessage(res, 'success', itemlist.Name + ' added to Your Listing.', 'fas fa-plus', true);
                         res.redirect(301, '/shop/viewShop');

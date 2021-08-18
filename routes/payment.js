@@ -306,9 +306,8 @@ router.post('/item', ensureAuthenticated, (req, res) => {
         item['currency'] = 'SGD';
         item['quantity'] = cart[key][1];
         items.push(item);
-        total += cart[key][2];
+        total += parseFloat(cart[key][2]);
     }
-
     const create_payment_json = {
         "intent": "sale",
         "payer": {
@@ -351,9 +350,8 @@ router.get('/success', (req, res) => {
     cart = req.session.cart
     total = 0;
     for (var key in cart) {
-        total += cart[key][2];
+        total += parseFloat(cart[key][2]);
     }
-
 
     const execute_payment_json = {
         "payer_id": payerId,
@@ -373,8 +371,9 @@ router.get('/success', (req, res) => {
             today = new Date();
             total = 0;
             for (var key in cart) {
-                total += cart[key][2];
+                total += parseFloat(cart[key][2]);
             }
+
             Orders.create({ status: "Ongoing", date: today, total, BuyerId: req.user.user_id })
                 .then((order) => {
                     order_id = JSON.parse(JSON.stringify(order)).order_id;

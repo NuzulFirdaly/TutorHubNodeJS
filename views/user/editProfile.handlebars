@@ -61,8 +61,11 @@
         <input type="file" name="backgroundUpload" id="backgroundUpload" style="display: none;" accept="image/png,
 image/jpeg,image/jpg">
         <input type="hidden" name="backgroundFile" id="backgroundFile" value="{{extra.background}}">
-        <div class="px-4 pt-0 pb-4 cover"
-          style="background-image: url(/images/background/{{extra.background}}), url(https://images.unsplash.com/photo-1530305408560-82d13781b33a?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1352&q=80);">
+        {{#if extra.background}}
+                    <div class="px-4 pt-0 pb-4 cover" style="background-image: url(/images/background/{{extra.background}})">
+                    {{else}}
+                    <div class="px-4 pt-0 pb-4 cover" style="background-image: url(https://images.unsplash.com/photo-1530305408560-82d13781b33a?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1352&q=80);">
+                    {{/if}}
           <div class="media align-items-end profile-head">
             <div class="profile mr-3">
               <label for="profilePictureUpload">

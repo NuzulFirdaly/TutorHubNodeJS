@@ -207,17 +207,18 @@
             <form class='block-register' action="/shop/addCart" method="POST">
                 <div class="modal-body">
                     <div class="row">
-                        <img src="/images/itemlisting/{{this.Picture}}" height="200" width="200">
+                        <img src="/images/itemlisting/{{this.Picture}}" height="200" width="200" style="border-right: solid grey 0.25px;">
                         <div class="col" style="overflow: auto;">{{#if this.Description}}
                             {{this.Description}}
                             {{else}}
                             No Description
                             {{/if}}
-                            <div style="position:absolute; bottom:0; left:0"><img
+                            <hr>
+                            <a href="/user/viewProfile/{{this.user.user_id}}"><div style="position:absolute; bottom:0; left:20px;"><img
                                     class="icon icon-md rounded-circle border"
                                     src="/images/profilepictures/{{this.user.Profile_pic}}">
                                 <p style="font-size:1em;">{{this.user.Username}}</p>
-                            </div>
+                            </div></a>
                         </div>
                     </div>
                     <br>
