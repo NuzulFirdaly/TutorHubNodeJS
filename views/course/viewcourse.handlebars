@@ -115,13 +115,13 @@
                 {{#if ../yourRateReview}}
                 <hr>
                 <form class='block-register' action="/rate/editRating/course/{{course_id}}" method="POST">
-                    <p><strong>{{ ../yourRateReview.users.Username }}</strong><span></span>
+                    <p><strong>{{ ../yourRateReview.user.Username }}</strong><span></span>
                         <input class="form-control" type="number" min="1" max="5" id="rating" name="rating"
                             value="{{../yourRateReview.Rating}}" required>
                     </p>
                     <p><textarea class="form-control" type="text" id="review" name="review"
                             required>{{../yourRateReview.Review}}</textarea></p>
-                    <p class="text-muted">{{ ../yourRateReview.Date }}</p>
+                    <p class="text-muted">{{#format ../yourRateReview.Date }}{{/format}}</p>
                     <div class="row gx-5">
                         <button class="btn btn-primary" type="submit">Update</button>
                         </form>
@@ -136,7 +136,7 @@
                         {{#if (ifSame this.UserId ../../users.user_id)}}
                         {{else}}
                         <hr>
-                        <p><strong>{{ this.users.Username }}</strong><span class="fa fa-star checked">
+                        <p><strong>{{ this.user.Username }}</strong><span class="fa fa-star checked">
                                 {{ this.Rating }}</span><br></p>
                         <p>{{ this.Review }}</p>
                         <p class="text-muted">{{#format this.Date }}{{/format}}</p>
@@ -161,7 +161,7 @@
                     <div>
                         {{#each ../ratereviews}}
                         <hr>
-                        <p><strong>{{ this.users.Username }}</strong><span class="fa fa-star checked">
+                        <p><strong>{{ this.user.Username }}</strong><span class="fa fa-star checked">
                                 {{ this.Rating }}</span><br></p>
                         <p>{{ this.Review }}</p>
                         <p class="text-muted">{{#format this.Date }}{{/format}}</p>
@@ -178,7 +178,7 @@
                     {{else}}
                     {{#each ../ratereviews}}
                     <hr>
-                    <p><strong>{{ this.users.Username }}</strong><span class="fa fa-star checked">
+                    <p><strong>{{ this.user.Username }}</strong><span class="fa fa-star checked">
                             {{ this.Rating }}</span><br></p>
                     <p>{{ this.Review }}</p>
                     <p class="text-muted">{{#format this.Date }}{{/format}}</p>
