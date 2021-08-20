@@ -28,8 +28,8 @@ const Admin = require('../models/Admin');
 const Notification = require('../models/Notification');
 const NotificationMessages = require('../models/NotificationMessages');
 const ChatData = require('../models/Chat')
-
-// If drop is true, all existing tables are dropped and recreated
+const AdminCertificate = require('../models/AdminCertificate')
+    // If drop is true, all existing tables are dropped and recreated
 const setUpDB = (drop) => {
     mySQLDB.authenticate().then(() => {
             console.log('tutorhub database connected');
@@ -131,6 +131,8 @@ const setUpDB = (drop) => {
             Notification.belongsTo(User, { foreignKey: "userUserId" });
             NotificationMessages.hasMany(Notification);
             Notification.belongsTo(NotificationMessages);
+            User.hasMany(AdminCertificate);
+            AdminCertificate.belongsTo(User);
 
             // Chat
             User.hasMany(ChatData, { foreignKey: "ChatId" })

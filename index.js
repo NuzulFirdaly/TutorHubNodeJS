@@ -55,6 +55,7 @@ const authenticate = require('./config/passport');
 const { username } = require('./config/db');
 const Notification = require('./models/Notification');
 const NotificationMessages = require('./models/NotificationMessages');
+const Admin = require('./models/Admin');
 
 authenticate.localStrategy(passport);
 
@@ -132,10 +133,47 @@ app.engine('handlebars', exphbs({
         },
         takeLast3(notification) {
             var slicednoti = notification.slice(notification.length - 3, notification.length).reverse()
-            console.log("slicednoti", slicednoti)
+                // console.log("slicednoti", slicednoti)
             toreturn = ''
             for (i in slicednoti) {
-                toreturn += `<div class="notifi__item notifiitem${parseInt(i) + 1}"><div class="bg-c1 img-cir img-40"><i class="zmdi zmdi-email-open"></i></div><div class="content"><p>You got a email notification</p><span class="date">${slicednoti[i].notificationmsg.DateSent}</span></div></div>`
+                toreturn += `<div class="notifi__item notifiitem${parseInt(i) + 1}"><div class="bg-c1 img-cir img-40"><i class="zmdi zmdi-email-open"></i></div><div class="content"><h5>You got a notification from <strong>${slicednoti[i].SenderEmail}</strong></h5><span class="date">${slicednoti[i].notificationmsg.DateSent}</span></div></div>`
+            }
+            return toreturn
+                // return notification.slice(notification.length - 3, notification.length).reverse()
+        },
+        takeLast4(notification) {
+            var slicednoti = notification.slice(notification.length - 4, notification.length).reverse()
+                // console.log("slicednoti", slicednoti)
+            toreturn = ''
+            for (i in slicednoti) {
+                toreturn += `<div class="au-task__item au-task__item--primary"><div class="au-task__item-inner"><h5 class="task"><strong>${slicednoti[i].notificationmsg.Subject}</strong></h5><h6 class="task">${slicednoti[i].notificationmsg.Message}</h6><br><span class="time">From: &nbsp; ${slicednoti[i].SenderEmail}</span><br><span class="time">Date Sent: &nbsp; ${slicednoti[i].notificationmsg.DateSent}</span><button class="btn btn-danger btn-sm float-right delmynoti" id="${slicednoti[i].notificationmsgContentID}" value="${slicednoti[i].userUserId}" data-toggle="tooltip" data-placement="top" title="Delete"><i class="zmdi zmdi-delete"></i></button></div></div>`
+            }
+            return toreturn
+                // return notification.slice(notification.length - 3, notification.length).reverse()
+        },
+        takeAllExceptLast4(notification) {
+            var slicednoti = notification.slice(0, notification.length - 4).reverse()
+            toreturn = ''
+            for (i in slicednoti) {
+                toreturn += `<div class="au-task__item au-task__item--primary js-load-item"><div class="au-task__item-inner"><h5 class="task"><strong>${slicednoti[i].notificationmsg.Subject}</strong></h5><h6 class="task">${slicednoti[i].notificationmsg.Message}</h6><br><span class="time">From: &nbsp; ${slicednoti[i].SenderEmail}</span><br><span class="time">Date Sent: &nbsp; ${slicednoti[i].notificationmsg.DateSent}</span><button class="btn btn-danger btn-sm float-right delmynoti" id="${slicednoti[i].notificationmsgContentID}" value="${slicednoti[i].userUserId}" data-toggle="tooltip" data-placement="top" title="Delete"><i class="zmdi zmdi-delete"></i></button></div></div>`
+            }
+            return toreturn
+        },
+        takeLast4s(notification) {
+            var slicednoti = notification.slice(notification.length - 4, notification.length).reverse()
+                // console.log("slicednoti", slicednoti)
+            toreturn = ''
+            for (i in slicednoti) {
+                toreturn += `<div class="au-task__item au-task__item--primary"><div class="au-task__item-inner"><h5 class="task"><strong>${slicednoti[i].notificationmsg.Subject}</strong></h5><h6 class="task">${slicednoti[i].notificationmsg.Message}</h6><br><span class="time">From: &nbsp; ${slicednoti[i].SenderEmail}</span><br><span class="time">Date Sent: &nbsp; ${slicednoti[i].notificationmsg.DateSent}</span><button class="btn btn-danger btn-sm float-right delnoti" id="${slicednoti[i].notificationmsgContentID}" value="${slicednoti[i].userUserId}" data-toggle="tooltip" data-placement="top" title="Delete"><i class="zmdi zmdi-delete"></i></button></div></div>`
+            }
+            return toreturn
+                // return notification.slice(notification.length - 3, notification.length).reverse()
+        },
+        takeAllExceptLast4s(notification) {
+            var slicednoti = notification.slice(0, notification.length - 4).reverse()
+            toreturn = ''
+            for (i in slicednoti) {
+                toreturn += `<div class="au-task__item au-task__item--primary js-load-item"><div class="au-task__item-inner"><h5 class="task"><strong>${slicednoti[i].notificationmsg.Subject}</strong></h5><h6 class="task">${slicednoti[i].notificationmsg.Message}</h6><br><span class="time">From: &nbsp; ${slicednoti[i].SenderEmail}</span><br><span class="time">Date Sent: &nbsp; ${slicednoti[i].notificationmsg.DateSent}</span><button class="btn btn-danger btn-sm float-right delnoti" id="${slicednoti[i].notificationmsgContentID}" value="${slicednoti[i].userUserId}" data-toggle="tooltip" data-placement="top" title="Delete"><i class="zmdi zmdi-delete"></i></button></div></div>`
             }
             return toreturn
         },
@@ -249,19 +287,26 @@ app.use(async function(req, res, next) {
                 where: { userUserId: req.user.user_id },
                 include: [NotificationMessages],
             }).then(notification => {
-                notificationCleaned = []
-                for (let i in notification) {
-                    notificationobject = JSON.parse(JSON.stringify(notification[i], null, 2))
-                    notificationCleaned.push(notificationobject)
+                if (notification != null) {
+                    notificationCleaned = []
+                    for (let i in notification) {
+                        notificationobject = JSON.parse(JSON.stringify(notification[i], null, 2))
+                        notificationCleaned.push(notificationobject)
+                    }
+                    res.locals.notification = notificationCleaned
+                        // console.log("notification", notification)
+                        // console.log("this is res locals notifications", res.locals.notificationCleaned)
                 }
-
-                console.log("notification", notification)
-                res.locals.notification = notificationCleaned
-                console.log("this is res locals notifications", res.locals.notificationCleaned)
-
             })
             .catch(err => console.log(err));
-        // res.locals.notification = req.notification.data
+        await Admin.findOne({ where: { userUserId: req.user.user_id } }).then(bgimg => {
+            if (bgimg) {
+                res.locals.bg_img = bgimg.BackgroundImg
+            } else {
+                res.locals.bg_img = 'bg_1.jpg'
+            }
+        }).catch(err => console.log(err));
+
     }
     //setup framework
     await next();

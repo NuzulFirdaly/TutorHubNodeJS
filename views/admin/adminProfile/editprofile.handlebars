@@ -12,20 +12,27 @@
 				<form method="POST" action="/admin/editprofile" enctype="multipart/form-data">
 					<div class="px-4 py-3">
 						<h4 class="mb-0" style="padding-bottom: 10px;">Personal Info</h4>
-						<div class="img bg-wrap text-center py-5 rounded"
+						<div class="img bg-wrap text-center py-5 rounded" id="output2"
 							style="background-image: url(/admin/images/adminBackgroundPictures/bg_1.jpg);">
 							<div class="form-row">
 								<div class="col-xs-12 col-xl-4 form-group d-flex align-items-center">
 									<div class="work d-flex justify-content-center">
-										<div class="img rounded-circle d-flex align-items-center justify-content-center image-upload" id="output"
+										<div class="img rounded-circle d-flex align-items-center justify-content-center image-upload"
+											id="output"
 											style="height: 180px; width: 180px; background-image: url(/admin/images/adminProfilePictures/{{../user.Profile_pic}});">
 											<label for="profile_pic">
 												<a class="icon d-flex align-items-center justify-content-center"
 													style="height: 180px; width: 180px; background-color: rgb(255, 255, 255, 0.4);">
-													<span class="fas fa-edit" style="color: white;"></span>
+													<span class="fas fa-edit"
+														style="color: white; text-shadow: 2px 2px 5px black;"></span>
 												</a>
 											</label>
-											<input type="file" name="profile_pic" id="profile_pic" accept="image/png,image/jpeg,image/jpg,image/gif" onchange="loadFile(event)">
+											<input type="file" name="profile_pic" id="profile_pic"
+												accept="image/png,image/jpeg,image/jpg,image/gif"
+												onchange="loadFile(event)">
+											<input type="file" name="background_img" id="background_img"
+												accept="image/png,image/jpeg,image/jpg,image/gif"
+												onchange="loadFile2(event)">
 										</div>
 									</div>
 								</div>
@@ -51,9 +58,10 @@
 									</div>
 								</div>
 							</div>
-							<a href="#" class="pull-right rounded"
-								style="color: white; background-color: rgb(0, 0, 0, 0.6); margin-right: 15px; padding-left: 5px; padding-right: 5px;"><span
-									class="fas fa-edit" style="color: white;"></span> Edit Background</a>
+							<label for="background_img" class="pull-right rounded"
+								style="color: white; background-color: rgb(0, 0, 0, 0.6); margin-right: 15px; padding-left: 5px; padding-right: 5px;">
+								<a><span class="fas fa-edit" style="color: white;"></span> Edit Background</a>
+							</label>
 						</div>
 					</div>
 
@@ -65,19 +73,19 @@
 									<div class="form-group">
 										<label class="col-form-label">Language</label>
 										<input class="form-control" type="text" id="language" name="language"
-											value="{{Language}}">
+											value="{{Language}}" required>
 									</div> <!-- form-group end.// -->
 
 									<div class="form-group">
 										<label class="col-form-label">Region</label>
 										<input class="form-control" type="text" id="region" name="region"
-											value="{{Region}}">
+											value="{{Region}}" required>
 									</div> <!-- form-group end.// -->
 
 									<div class="form-group">
 										<label class="col-form-label">Description</label>
 										<textarea style="min-height: 125px;" class="form-control" id="description"
-											name="description">{{Description}}</textarea>
+											name="description" required>{{Description}}</textarea>
 									</div> <!-- form-group end.// -->
 								</div>
 							</div>
@@ -96,7 +104,7 @@
 									<div class="form-group">
 										<label class="col-form-label">Phone Number</label>
 										<input class="form-control" type="text" id="phonenumber" name="phonenumber"
-											value="{{PhoneNumber}}">
+											value="{{PhoneNumber}}" required>
 									</div> <!-- form-group end.// -->
 								</div>
 							</div>
@@ -108,7 +116,7 @@
 						<div class="p-4 rounded shadow-sm bg-light">
 							<div class="form-group">
 								<input type="file" name="certificate" id="certificate"
-									accept="image/png,image/jpeg,image/jpg,image/gif">
+									accept="image/png,image/jpeg,image/jpg,image/gif" multiple>
 							</div> <!-- form-group end.// -->
 						</div>
 					</div>
@@ -122,22 +130,32 @@
 
 				{{else}}
 				<header class="mb-4">
-					<h2 class="card-title">Edit Profile</h4>
+					<h2 class="card-title">Edit Profile</h2>
 				</header>
 				<form method="POST" action="/admin/editprofile" enctype="multipart/form-data">
 					<div class="px-4 py-3">
-						<h4 class="mb-0" style="padding-bottom: 10px;">Personal Info</h5>
-						<div class="img bg-wrap text-center py-5 rounded"
+						<h4 class="mb-0" style="padding-bottom: 10px;">Personal Info</h4>
+						<div class="img bg-wrap text-center py-5 rounded" id="output2"
 							style="background-image: url(/admin/images/adminBackgroundPictures/bg_1.jpg);">
 							<div class="form-row">
 								<div class="col-xs-12 col-xl-4 form-group d-flex align-items-center">
 									<div class="work d-flex justify-content-center">
-										<div class="img rounded-circle d-flex align-items-center justify-content-center"
+										<div class="img rounded-circle d-flex align-items-center justify-content-center image-upload"
+											id="output"
 											style="height: 180px; width: 180px; background-image: url(/admin/images/adminProfilePictures/{{user.Profile_pic}});">
-											<a href="#" class="icon d-flex align-items-center justify-content-center"
-												style="height: 180px; width: 180px; background-color: rgb(255, 255, 255, 0.4);">
-												<span class="fas fa-edit" style="color: white;"></span>
-											</a>
+											<label for="profile_pic">
+												<a class="icon d-flex align-items-center justify-content-center"
+													style="height: 180px; width: 180px; background-color: rgb(255, 255, 255, 0.4);">
+													<span class="fas fa-edit"
+														style="color: white; text-shadow: 2px 2px 5px black;"></span>
+												</a>
+											</label>
+											<input type="file" name="profile_pic" id="profile_pic"
+												accept="image/png,image/jpeg,image/jpg,image/gif"
+												onchange="loadFile(event)">
+											<input type="file" name="background_img" id="background_img"
+												accept="image/png,image/jpeg,image/jpg,image/gif"
+												onchange="loadFile2(event)">
 										</div>
 									</div>
 								</div>
@@ -163,31 +181,34 @@
 									</div>
 								</div>
 							</div>
-							<a href="#" class="pull-right rounded"
-								style="color: white; background-color: rgb(0, 0, 0, 0.6); margin-right: 15px; padding-left: 5px; padding-right: 5px;"><span
-									class="fas fa-edit" style="color: white;"></span> Edit Background</a>
+							<label for="background_img" class="pull-right rounded"
+								style="color: white; background-color: rgb(0, 0, 0, 0.6); margin-right: 15px; padding-left: 5px; padding-right: 5px;">
+								<a><span class="fas fa-edit" style="color: white;"></span> Edit Background</a>
+							</label>
 						</div>
 					</div>
 
 					<div class="form-row">
 						<div class="col form-group">
 							<div class="px-4 py-3">
-								<h4 class="mb-0" style="padding-bottom: 10px;">About</h5>
+								<h4 class="mb-0" style="padding-bottom: 10px;">About</h4>
 								<div class="p-4 rounded shadow-sm bg-light">
 									<div class="form-group">
 										<label class="col-form-label">Language</label>
-										<input class="form-control" type="text" id="language" name="language" value="">
+										<input class="form-control" type="text" id="language" name="language"
+											value="{{Language}}" required>
 									</div> <!-- form-group end.// -->
 
 									<div class="form-group">
 										<label class="col-form-label">Region</label>
-										<input class="form-control" type="text" id="region" name="region" value="">
+										<input class="form-control" type="text" id="region" name="region"
+											value="{{Region}}" required>
 									</div> <!-- form-group end.// -->
 
 									<div class="form-group">
 										<label class="col-form-label">Description</label>
 										<textarea style="min-height: 125px;" class="form-control" id="description"
-											name="description" value=""></textarea>
+											name="description" required>{{Description}}</textarea>
 									</div> <!-- form-group end.// -->
 								</div>
 							</div>
@@ -195,7 +216,7 @@
 
 						<div class="col form-group">
 							<div class="px-4 py-3">
-								<h4 class="mb-0" style="padding-bottom: 10px;">Contact</h5>
+								<h4 class="mb-0" style="padding-bottom: 10px;">Contact</h4>
 								<div class="p-4 rounded shadow-sm bg-light">
 									<div class="form-group">
 										<label class="col-form-label">Email</label>
@@ -206,7 +227,7 @@
 									<div class="form-group">
 										<label class="col-form-label">Phone Number</label>
 										<input class="form-control" type="text" id="phonenumber" name="phonenumber"
-											value="">
+											value="{{PhoneNumber}}" required>
 									</div> <!-- form-group end.// -->
 								</div>
 							</div>
@@ -214,11 +235,11 @@
 					</div>
 
 					<div class="px-4 py-3">
-						<h4 class="mb-0" style="padding-bottom: 10px;">Upload Certificate</h5>
+						<h4 class="mb-0" style="padding-bottom: 10px;">Upload Certificate</h4>
 						<div class="p-4 rounded shadow-sm bg-light">
 							<div class="form-group">
 								<input type="file" name="certificate" id="certificate"
-									accept="image/png,image/jpeg,image/jpg,image/gif">
+									accept="image/png,image/jpeg,image/jpg,image/gif" multiple>
 							</div> <!-- form-group end.// -->
 						</div>
 					</div>
@@ -239,11 +260,23 @@
 		</p>
 		<br><br>
 		<!-- ============================ COMPONENT REGISTER  END.// ================================= -->
-
 	</section>
 	<!-- ========================= SECTION CONTENT END// ========================= -->
 
 </div>
+
+{{!-- <div class="px-4 py-3">
+	<h5 class="mb-0" style="padding-bottom: 10px;">Upload Certificate</h5>
+	<div class="p-4 rounded shadow-sm bg-light">
+		<div class="form-group">
+			<input class="fileNames" type="hidden">
+			<input class="files" onchange="createFileInput(this)" type="file" name="certificate" id="certificate"
+				accept="image/png,image/jpeg,image/jpg,image/gif">
+			<img src="" alt="">
+		</div> <!-- form-group end.// -->
+	</div>
+	<button onclick="getFiles()">Get File</button>
+</div> --}}
 
 {{!-- <div class="px-4 py-3" id="admincertdiv">
 	<h5 class="mb-0" style="padding-bottom: 10px;">Certificate</h5>
@@ -256,8 +289,7 @@
 							<div class="work">
 								<div class="img d-flex align-items-center justify-content-center rounded"
 									style="background-image: url(/images/work-1.jpg);">
-									<a href="#"
-										class="icon d-flex align-items-center justify-content-center">
+									<a href="#" class="icon d-flex align-items-center justify-content-center">
 										<span class="ion-ios-search"></span>
 									</a>
 								</div>
@@ -274,7 +306,7 @@
 			</div>
 		</div>
 	</div>
-</div> 
+</div>
 
 
 <script id="file-upload-template" type="text/x-handlebars-template">
@@ -287,4 +319,4 @@
 	</script>
 
 <div class="file-uploader">
-</div>  --}}
+</div> --}}

@@ -16,7 +16,7 @@ const Admin = db.define('adminlist', {
     PhoneNumber: {
         type: Sequelize.INTEGER,
     },
-    Certificate: {
+    BackgroundImg: {
         type: Sequelize.STRING,
     },
 });

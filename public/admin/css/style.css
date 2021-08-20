@@ -8,8 +8,10 @@ span.dtr-title {
 }
 
 #toOverviewInst,
-#institution {
-    scroll-margin-top: 20px;
+#institution,
+#viewnotificationheader,
+#adminlistheader {
+    scroll-margin-top: 100px;
 }
 
 .image-upload>input {
@@ -383,7 +385,9 @@ section {
 
 .page-wrapper {
     overflow: hidden;
-    background: #e5e5e5;
+    background-image: url(/admin/images/adminBackgroundPictures/bg_1.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
     padding-bottom: 8vh;
 }
 
@@ -396,12 +400,14 @@ section {
 }
 
 .page-container {
-    background: #e5e5e5;
     padding-left: 300px;
 }
 
 @media (max-width: 991px) {
     .page-container {
+        background-image: url(/admin/images/adminBackgroundPictures/bg_1.jpg);
+        background-repeat: no-repeat;
+        background-size: cover;
         position: relative;
         top: 88px;
         padding-left: 0;
@@ -3568,7 +3574,7 @@ section {
 }
 
 .au-task__item-inner .time {
-    font-size: 14px;
+    font-size: 12px;
     color: #555;
     text-transform: uppercase;
     font-weight: 600;

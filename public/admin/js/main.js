@@ -1718,7 +1718,7 @@
         $("#updateadmin").submit(function(e) {
             e.preventDefault();
             var formData = new FormData();
-
+            console.log("this is form data", formData)
             $.ajax({
                 url: "/admin/editprofile",
                 type: 'POST',
@@ -1735,6 +1735,31 @@
         console.log(error);
     }
 })(jQuery);
+
+// (function($) {
+
+//     $('.files').on('change', function() {
+
+//         let image = $(this)[0].files[0];
+//         console.log(image);
+//         let formdata = new FormData();
+//         formdata.append('certificate', image);
+//         console.log("this is form data", formdata)
+//         $.ajax({
+//             url: '/admin/admcertificateUpload',
+//             type: 'POST',
+//             data: formdata,
+//             contentType: false,
+//             processData: false,
+//             'success': (data) => {
+//                 console.log(data.file);
+//                 $(this).next().attr('src', `/admin/images/adminCertificates/${data.file}`);
+//                 $(this).prev().attr('value', data.file);
+//             }
+//         });
+//     });
+// })(jQuery);
+
 (function($) {
 
     "use strict";
@@ -1903,11 +1928,10 @@
     try {
         $(".deleteadmin").on('click', function(e) {
             var dtuserid = $(this).attr('id');
-            var dtname = $('#dtname_' + dtuserid).val();
-            // console.log(roleselected, urtname, urtuserid, urtcrole)
-
+            var dtname = $(this).val();
+            console.log(dtuserid, dtname)
             e.preventDefault();
-            // console.log(validateEmail($('#newadminemail').val()))
+
             swal({
                 title: "Are you sure?",
                 text: "\nOnce deleted you are resposible for this deletion\n\nName: " + dtname + "\nUser ID: " + dtuserid,
@@ -1981,7 +2005,7 @@
             $('.notifiitem2').removeClass('notifiitem2');
             $('.notifiitem1').addClass('notifiitem2');
             $('.notifiitem1').removeClass('notifiitem1');
-            $('<div class="notifi__item notifiitem1"><div class="bg-c1 img-cir img-40"><i class="zmdi zmdi-email-open"></i></div><div class="content"><p>You got a email notification</p><span class="date">' + data.sentdate + '</span></div></div>').insertBefore(".notifiitem2");
+            $('<div class="notifi__item notifiitem1"><div class="bg-c1 img-cir img-40"><i class="zmdi zmdi-email-open"></i></div><div class="content"><h5>You got a notification from <strong>' + data.from + '</strong></h5><span class="date">' + data.sentdate + '</span></div></div>').insertAfter(".notifi__title");
         }
     });
 
@@ -2001,7 +2025,7 @@
 
             // console.log(notificationuserid, notificationtarget, notificationsubject, notificationmessage);
             // console.log(jQuery.type(notificationtarget));
-            console.log(datetime)
+            // console.log(datetime)
             e.preventDefault();
 
             swal({
@@ -2057,10 +2081,120 @@
     }
 })(jQuery);
 
+(function($) {
+
+    "use strict";
+    try {
+        $(".delmynoti").on('click', function(e) {
+            var dtcontentid = $(this).attr('id');
+
+            e.preventDefault();
+
+            swal({
+                title: "Are you sure?",
+                text: "\nOnce deleted you are resposible for this deletion",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((willDelete) => {
+                if (willDelete) {
+                    swal("Account is deleted!", {
+                        icon: "success",
+                    }).then(function(isConfirm) {
+                        if (isConfirm) {
+                            window.location.reload();
+                            window.location.href = '#viewnotification';
+                        }
+                    });
+                    $.ajax({
+                        url: "/admin/notification",
+                        type: "POST",
+                        data: { action: 'delmynoti', contentid: dtcontentid }, //send this to server
+                        success: function(returned) {
+                            console.log(returned)
+                            console.log('aajaxworks'); // here can get the return of route
+                            // window.location.reload();
+                            // window.location.href = '#createadminheader';
+                        },
+                        error: function() {
+                            console.log('aajaxdontwork');
+                        }
+                    });
+                } else {
+                    swal("Delete is canceled!");
+                }
+            });
+
+        });
+
+    } catch (error) {
+        console.log(error);
+    }
+})(jQuery);
+
+(function($) {
+
+    "use strict";
+    try {
+        $(".delnoti").on('click', function(e) {
+            var dtcontentid = $(this).attr('id');
+            var dtuserid = $(this).attr('value');
+            console.log(dtuserid);
+            e.preventDefault();
+
+            swal({
+                title: "Are you sure?",
+                text: "\nOnce deleted you are resposible for this deletion",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((willDelete) => {
+                if (willDelete) {
+                    swal("Account is deleted!", {
+                        icon: "success",
+                    }).then(function(isConfirm) {
+                        if (isConfirm) {
+                            window.location.reload();
+                            window.location.href = '#viewnotification';
+                        }
+                    });
+                    $.ajax({
+                        url: "/admin/notification",
+                        type: "POST",
+                        data: { id: dtuserid, action: 'delnoti', contentid: dtcontentid }, //send this to server
+                        success: function(returned) {
+                            console.log(returned)
+                            console.log('aajaxworks'); // here can get the return of route
+                            // window.location.reload();
+                            // window.location.href = '#createadminheader';
+                        },
+                        error: function() {
+                            console.log('aajaxdontwork');
+                        }
+                    });
+                } else {
+                    swal("Delete is canceled!");
+                }
+            });
+
+        });
+
+    } catch (error) {
+        console.log(error);
+    }
+})(jQuery);
+
 function findInOverview(searchval) {
     $("input[aria-controls=instOverview]").val(searchval);
     setTimeout(function() {
         $('input[aria-controls=instOverview]').focus();
+    }, 650);
+}
+
+function findInOverview2(searchval) {
+    $("input[aria-controls=tutOverview]").val(searchval);
+    setTimeout(function() {
+        $('input[aria-controls=tutOverview]').focus();
     }, 650);
 }
 
@@ -2075,10 +2209,71 @@ var loadFile = function(event) {
     reader.readAsDataURL(event.target.files[0]);
 };
 
+var loadFile2 = function(event) {
+    var reader = new FileReader();
+    reader.onload = function() {
+        var output = document.getElementById('output2');
+        var output2 = document.getElementById('output3');
+        var output3 = document.getElementById('output4');
+        // output.style.backgroundImage = "url('" + reader.result + "');";
+        output.setAttribute("style", "background-image: url('" + reader.result + "');");
+        output2.setAttribute("style", "background-image: url('" + reader.result + "');");
+        output3.setAttribute("style", "background-image: url('" + reader.result + "');");
+        // output.src = reader.result;
+    };
+    reader.readAsDataURL(event.target.files[0]);
+};
+
 function validateEmail($email) {
     var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
     return emailReg.test($email);
 }
+
+function createFileInput(el) {
+    var outDiv = el.parentNode;
+    var newDiv = outDiv.cloneNode(true);
+    newDiv.querySelector('input').value = "";
+    outDiv.parentNode.appendChild(newDiv);
+}
+
+function getFiles() {
+    var filenames = document.getElementsByClassName('files');
+    console.log(filenames);
+    var filelist = [];
+    for (var i = 0; i < filenames.length; i++) {
+        var imgName = (filenames[i].files.length == 0) ? null : filenames[i].files[0].name;
+        if (imgName != null) {
+            filelist.push(imgName)
+        }
+    }
+    console.log(filelist);
+}
+
+// function previewImages() {
+//     var preview = document.querySelector('#preview');
+//     if (this.files) {
+//         [].forEach.call(this.files, readAndPreview);
+//     }
+
+//     function readAndPreview(imgfile) {
+//         console.log(imgfile);
+//         // Make sure `file.name` matches our extensions criteria
+//         if (!/\.(jpe?g|png|gif)$/i.test(imgfile.name)) {
+//             return alert(imgfile.name + " is not an image");
+//         } // else...
+//         var reader = new FileReader();
+//         reader.addEventListener("load", function() {
+//             var image = new Image();
+//             image.height = 100;
+//             image.title = imgfile.name;
+//             image.src = this.result;
+//             preview.appendChild(image);
+//         });
+//         reader.readAsDataURL(imgfile);
+//     }
+// }
+
+// document.querySelector('#file-input').addEventListener("change", previewImages);
 
 $(document).ready(function() {
     $('.updaterolemodal').on('show.bs.modal', function(e) {

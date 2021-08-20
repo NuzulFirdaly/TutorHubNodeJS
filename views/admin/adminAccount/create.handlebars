@@ -27,7 +27,7 @@
 
     <section class="ftco-section">
 
-        <h2 class="heading-section mb-5 pb-md-4"><i class="zmdi zmdi-account-calendar"></i> Admin List</h2>
+        <h2 class="heading-section mb-5 pb-md-4"><i class="zmdi zmdi-account-calendar" id="adminlistheader"></i> Admin List</h2>
 
         <table id="adminList" class="table display responsive nowrap" style="width:100%">
             <thead>
@@ -46,9 +46,6 @@
                     <td>{{Email}}</td>
                     <td>
                         <div class="table-data-feature">
-                            <form>
-                                <input type="hidden" id="dtname_{{user_id}}" value="{{FirstName}} {{LastName}}">
-                            </form>
                             <span class="role {{AccountTypeID}}" style="margin-right: 55px;">
                                 {{AccountTypeID}}
                             </span>
@@ -57,7 +54,7 @@
                                     <i class="zmdi zmdi-edit"></i>
                                 </button>
                             </span>                            
-                            <button id="{{user_id}}" type="submit" class="deleteadmin item" data-toggle="tooltip" data-placement="top" title="Delete">
+                            <button id="{{user_id}}" value="{{FirstName}} {{LastName}}" class="deleteadmin item" data-toggle="tooltip" data-placement="top" title="Delete">
                                 <i class="zmdi zmdi-delete"></i>
                             </button>
                         </div>
@@ -79,14 +76,16 @@
                             </div>
                             <div class="modal-body">
                                 <div class="px-4 py-3">
-                                    <h3 class="updaterolemodalitem">Name                :    {{FirstName}} {{LastName}}</h3>
-                                    <h3 class="updaterolemodalitem">User ID              :    {{user_id}}</h3>
-                                    <h3 class="updaterolemodalitem">Current Role  :    {{AccountTypeID}}</h3>
+                                    <h3 class="updaterolemodalitem">Name : {{FirstName}} {{LastName}}</h3>
+                                    <h3 class="updaterolemodalitem">User ID : {{user_id}}</h3>
+                                    <h3 class="updaterolemodalitem">Current Role : {{AccountTypeID}}</h3>
                                     <br>
                                     <h3 style="margin-bottom: 15px;">Update Role</h3>
                                     <form>
                                         <div class="form-group">
-                                            <select data-placeholder="Select a role..." class="form-control chosen-select" tabindex="2" required id="roleselected_{{user_id}}">
+                                            <select data-placeholder="Select a role..."
+                                                class="form-control chosen-select" tabindex="2" required
+                                                id="roleselected_{{user_id}}">
                                                 <option value=""></option>
                                                 <option value="Admin">
                                                     Admin
@@ -96,20 +95,22 @@
                                                 </option>
                                             </select>
                                         </div>
-                                        <input type="hidden" id="urtname_{{user_id}}" value="{{FirstName}} {{LastName}}">
+                                        <input type="hidden" id="urtname_{{user_id}}"
+                                            value="{{FirstName}} {{LastName}}">
                                         <input type="hidden" id="urtcrole_{{user_id}}" value="{{AccountTypeID}}">
                                     </form>
-                                </div>                        
+                                </div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="submit" id="{{user_id}}" class="updaterole btn btn-primary">Save Changes</button>
+                                <button type="submit" id="{{user_id}}" class="updaterole btn btn-primary">Save
+                                    Changes</button>
                             </div>
                         </div>
                     </div>
                 </div>
                 <!-- Modal -->
-                {{/each}}               
+                {{/each}}
             </tbody>
         </table>
 
